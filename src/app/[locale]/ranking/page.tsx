@@ -1,11 +1,9 @@
 "use client";
 
 import * as React from 'react'
-import {useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {useParams, useSearchParams} from "next/navigation";
-import {redirect} from "next/navigation";
+import {useParams, useSearchParams, redirect} from "next/navigation";
 import {useTranslations} from "use-intl";
 import {cn} from "@/utils/utils";
 import Today from "./today/page";

@@ -2,9 +2,6 @@
   "WebApp": {
     "name": "鼎丰28"
   },
-  "HomePage": {
-    "title": "您好，世界!"
-  },
   "tab": {
     "home": "首页",
     "games": "游戏",
@@ -22,9 +19,5 @@
   "actions": {
     "pc": "电脑版",
     "support": "联系客服"
-  },
-  "PathnamesPage": {
-    "description": "<p>路径名也国际化了。</p><p>如果您使用的是默认语言英语，您将在此页面的浏览器地址栏中看到<code>/en/pathnames</code>。</p><p>如果将区域设置更改为德语，则URL会相应地进行本地化（<code>/de/pfandamen</code>）。</p>",
-    "title": "路径名"
   }
 }

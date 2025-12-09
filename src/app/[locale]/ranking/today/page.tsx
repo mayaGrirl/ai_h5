@@ -1,22 +1,53 @@
+import Image from "next/image";
+import Medal from "@/components/medal";
+
 export default function Today() {
-  const list = [
-    { rank: 1, name: "清秀的石头", value: "15,273,949" },
-    { rank: 2, name: "肯定赢", value: "11,506,811" },
-    { rank: 3, name: "666", value: "11,296,844" },
+  const data = [
+    {rank: 1, level: 1, name: "胡萝卜5266", score: "7,409,929"},
+    {rank: 2, level: 2, name: "极大极小。", score: "7,373,236"},
+    {rank: 3, level: 3, name: "妹子", score: "7,339,776"},
+    {rank: 4, level: 4, name: "赢点外快", score: "7,083,357"},
+    {rank: 5, level: 5, name: "清秀的石头", score: "6,987,563"},
+    {rank: 6, level: 6, name: "kWntpdA06076", score: "6,944,932"},
+    {rank: 7, level: 7, name: "一场空", score: "6,893,473"},
+    {rank: 8, level: 8, name: "黑猫524", score: "6,777,962"},
+    {rank: 9, level: 9, name: "感动的跳跳糖", score: "6,768,791"},
+    {rank: 10, level: 2, name: "仙人掌2472", score: "6,756,124"},
+    {rank: 11, level: 4, name: "草你大爷", score: "6,722,628"}
   ];
 
   return (
-    <div className="space-y-2">
-      {list.map((item) => (
+    <div className="bg-white">
+      {data.map((item) => (
         <div
           key={item.rank}
-          className="flex items-center justify-between p-3 rounded-md bg-white shadow-sm"
+          className="flex items-center justify-between px-4 py-3 border-b border-gray-100"
         >
-          <div className="flex items-center gap-2">
-            <span className="text-orange-500 font-bold">{item.rank}</span>
-            <span>{item.name}</span>
+          {/* 左侧：排名 + 图标 + 名称 */}
+          <div className="flex items-center space-x-3">
+            <Medal rank={item.rank}/>
+
+            {/* 图标 */}
+            <Image className="inline-block" src={`/ranking/vip/${item.level}.png`} alt={item.name} width={20}
+                   height={20}/>
+
+            {/* 名称 */}
+            <div className="text-gray-800 text-sm">{item.name}</div>
           </div>
-          <span className="text-red-500 font-semibold">{item.value}</span>
+
+          {/* 右侧：分数 */}
+          <div className="flex items-center space-x-1">
+            <span className="text-red-500 font-semibold text-sm">
+              {item.score}
+            </span>
+            <Image
+              className="inline-block"
+              src="/ranking/coin.png"
+              alt="gold"
+              width={13}
+              height={13}
+            />
+          </div>
         </div>
       ))}
     </div>
