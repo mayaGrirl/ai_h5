@@ -5,6 +5,7 @@ import {NextIntlClientProvider, hasLocale} from "next-intl";
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import TabBar from "@/components/tab-bar";
+import {Toaster} from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +60,17 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased touch-manipulation`}>
       <NextIntlClientProvider>
         {children}
+
+        {/* 全局 Toast 渲染器（必须） */}
+        <Toaster
+          position="top-center"
+          theme="system"
+          duration={3000}
+          visibleToasts={2}
+          swipeDirections={['left', 'right']}
+          mobileOffset={64}   // 避开 TabBar
+          richColors
+        />
 
         {/* 底部菜单 */}
         <TabBar locale={locale} />

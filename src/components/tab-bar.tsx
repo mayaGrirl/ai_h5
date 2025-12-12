@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import {usePathname} from "next/navigation";
 import { cn } from "@/utils/utils";
+import { useAuthStore } from "@/utils/storage/auth";
+
 
 type Props = {
   locale: string;
@@ -27,16 +29,19 @@ function stripLocale(path: string) {
  * @constructor
  */
 export default function TabBar({locale}: Props) {
+  const isLogin = useAuthStore((s) => s.isLogin);
   const t = useTranslations("tab");
   const pathname = usePathname();
   const cleanPath = stripLocale(pathname);
 
+  console.log('isLoginisLoginisLogin', isLogin)
+
   const tabs = [
-    { name: t("home"), href: "/", icon: Home },
-    { name: t("games"), href: "/games", icon: Gamepad2 },
-    { name: t("ranking"), href: "/ranking", icon: Trophy },
-    { name: t("shop"), href: "/shop", icon: ShoppingBag },
-    { name: t("mine"), href: "/mine", icon: User }
+    { name: t("home"), href: "/", icon: Home, auth: false },
+    { name: t("games"), href: "/games", icon: Gamepad2, auth: true },
+    { name: t("ranking"), href: "/ranking", icon: Trophy, auth: true },
+    { name: t("shop"), href: "/shop", icon: ShoppingBag, auth: true },
+    { name: t("mine"), href: "/mine", icon: User, auth: true }
   ];
 
   const isActive = (href: string) => {
@@ -47,13 +52,17 @@ export default function TabBar({locale}: Props) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white shadow-sm tab-bar-nav">
       <ul className="flex h-14 items-center justify-around">
-        {tabs.map(({name, href, icon: Icon}) => {
+        {tabs.map(({name, href, icon: Icon, auth}) => {
           const active = isActive(href);
+          const _href = `/${locale}/${href}`;
+          // if (auth && !isLogin) {
+          //   _href = `/${locale}/auth/login`;
+          // }
 
           return (
             <li key={href} className="flex-1">
               <Link
-                href={`/${locale}/${href}`}
+                href={_href}
                 className="flex flex-col items-center justify-center"
               >
                 <Icon

@@ -42,8 +42,8 @@ export default function HomePage() {
     {name: "宾果28", src: "/home/hot-games/2.png", href: ""},
     {name: "蛋蛋28", src: "/home/hot-games/3.png", href: ""},
     {name: "美国28", src: "/home/hot-games/4.png", href: ""},
-    {name: "韩国28", src: "/home/hot-games/4.png", href: ""},
-    {name: "加拿大10", src: "/home/hot-games/4.png", href: ""},
+    {name: "韩国28", src: "/home/hot-games/5.png", href: ""},
+    {name: "加拿大10", src: "/home/hot-games/6.png", href: ""},
   ];
 
   const [emblaRef] = useEmblaCarousel({loop: true}, [Autoplay({playOnInit: true, delay: 2000})])
