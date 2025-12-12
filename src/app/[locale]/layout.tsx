@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import {NextIntlClientProvider, hasLocale} from "next-intl";
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
-import TabBar from "@/components/tab-bar";
 import {Toaster} from "sonner";
 
 const geistSans = Geist({
@@ -46,7 +45,7 @@ type Props = {
     params: Promise<{locale: string}>;
 };
 
-// 项目布局入口文件
+// 项目主入口布局文件
 export default async function RootLayout({
   children,
   params
@@ -71,9 +70,6 @@ export default async function RootLayout({
           mobileOffset={64}   // 避开 TabBar
           richColors
         />
-
-        {/* 底部菜单 */}
-        <TabBar locale={locale} />
       </NextIntlClientProvider>
       </body>
     </html>
