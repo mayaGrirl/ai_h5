@@ -16,6 +16,25 @@
     "partners": "合作商家",
     "hot-games": "热门游戏"
   },
+  "mine": {
+    "setting": {
+      "title": "功能菜单",
+      "mail": "我的消息",
+      "receipt-text": "账户记录",
+      "user": "我的资料",
+      "toolcase": "我的道具",
+      "gift": "我的红包",
+      "landmark": "银行服务",
+      "repeat": "换奖记录",
+      "banknote": "我的工资",
+      "hand-coins": "免费兑换",
+      "message-circle-more": "我的吐槽",
+      "shield-plus": "安全设置",
+      "shield-ellipsis": "修改密码",
+      "pencil-line": "修改昵称",
+      "x": "退出"
+    }
+  },
   "actions": {
     "pc": "电脑版",
     "support": "联系客服"

@@ -16,6 +16,25 @@
     "partners": "Partners",
     "hot-games": "Hot Games"
   },
+  "mine": {
+    "setting": {
+      "title": "Menu",
+      "mail": "My Message",
+      "receipt-text": "Account Records",
+      "user": "My Profile",
+      "toolcase": "My Props",
+      "gift": "My Red Envelope",
+      "landmark": "Banking Services",
+      "repeat": "Record Award",
+      "banknote": "My Salary",
+      "hand-coins": "Free Redemption",
+      "message-circle-more": "My Roast",
+      "shield-plus": "Security Settings",
+      "shield-ellipsis": "Change Password",
+      "pencil-line": "Change Nickname",
+      "x": "Exit"
+    }
+  },
   "actions": {
     "pc": "PC Version",
     "support": "Support"
