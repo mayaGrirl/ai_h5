@@ -39,9 +39,14 @@ service.interceptors.response.use(
     if (response?.status === 401 || response?.status === 403) {
       accessToken.remove();
 
+      // return Promise.reject({
+      //   ...response,
+      //   isAuthError: true,
+      // });
+
       if (typeof window !== "undefined") {
-        const current = window.location.pathname;
-        window.location.href = `/auth/login?redirect=${current}`;
+        const pathname = window.location.pathname;
+        window.location.href = `/auth/login?redirect=${pathname}`;
       }
     }
     return Promise.reject(response);

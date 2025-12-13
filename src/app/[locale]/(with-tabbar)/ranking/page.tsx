@@ -9,8 +9,12 @@ import Today from "./today/page";
 import Yesterday from "./yesterday/page";
 import Activity from "./activity/page";
 import LastWeek from "./last-week/page";
+import {useRequireLogin} from "@/hooks/useRequireLogin";
 
 export default function Ranking() {
+  // 页面需要登陆Hook
+  useRequireLogin();
+
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = params.locale as string;

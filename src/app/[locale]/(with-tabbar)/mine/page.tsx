@@ -8,8 +8,12 @@ import styles from "./page.module.css"
 import {CalendarCheck, Flag, MapPin, Settings} from "lucide-react";
 import Link from "next/link";
 import {useParams} from "next/navigation";
+import {useRequireLogin} from "@/hooks/useRequireLogin";
 
 export default function Mine() {
+  // 页面需要登陆Hook
+  useRequireLogin();
+
   const params = useParams();
   const locale = params.locale as string;
 

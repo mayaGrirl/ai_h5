@@ -1,45 +1,52 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { accessToken } from "@/utils/storage/token";
 
 type AuthState = {
   token: string | null;
   isLogin: boolean;
+  hydrated: boolean,
 
   setToken: (token?: string, tokenType?: string, expiresAt?: number) => void;
   logout: () => void;
-  initFromStorage: () => void;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  isLogin: false,
-
-  // 登录成功后调用
-  setToken: (token,tokenType, expiresAt) => {
-    accessToken.setToken(token, tokenType, expiresAt);
-    set({
-      token,
-      isLogin: true,
-    });
-  },
-
-  // 退出登录
-  logout: () => {
-    accessToken.remove();
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
       token: null,
       isLogin: false,
-    });
-  },
+      hydrated: false,
 
-  // 应用初始化时调用（非常重要）
-  initFromStorage: () => {
-    const token = accessToken.getToken();
-    if (token) {
-      set({
-        token: token,
-        isLogin: true,
-      });
+      setToken: (token, tokenType, expiresAt) => {
+        accessToken.setToken(token, tokenType, expiresAt);
+
+        set({
+          token: token ?? null,
+          isLogin: !!token,
+          hydrated: true,
+        });
+      },
+
+      logout: () => {
+        accessToken.remove();
+        set({
+          token: null,
+          isLogin: false,
+          hydrated: false,
+        });
+      },
+    }),
+    {
+      name: "auth-store", // localStorage key
+      onRehydrateStorage: () => (state) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        state?.hydrated === false && (state.hydrated = true);
+      },
+      partialize: (state) => ({
+        token: state.token,
+        isLogin: state.isLogin,
+      }),
     }
-  },
-}));
+  )
+);

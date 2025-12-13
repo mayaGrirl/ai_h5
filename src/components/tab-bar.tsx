@@ -34,8 +34,6 @@ export default function TabBar({locale}: Props) {
   const pathname = usePathname();
   const cleanPath = stripLocale(pathname);
 
-  console.log('isLoginisLoginisLogin', isLogin)
-
   const tabs = [
     { name: t("home"), href: "/", icon: Home, auth: false },
     { name: t("games"), href: "/games", icon: Gamepad2, auth: true },
@@ -54,10 +52,10 @@ export default function TabBar({locale}: Props) {
       <ul className="flex h-14 items-center justify-around">
         {tabs.map(({name, href, icon: Icon, auth}) => {
           const active = isActive(href);
-          const _href = `/${locale}/${href}`;
-          // if (auth && !isLogin) {
-          //   _href = `/${locale}/auth/login`;
-          // }
+          let _href = `/${locale}/${href}`;
+          if (auth && !isLogin) {
+            _href = `/${locale}/auth/login`;
+          }
 
           return (
             <li key={href} className="flex-1">
