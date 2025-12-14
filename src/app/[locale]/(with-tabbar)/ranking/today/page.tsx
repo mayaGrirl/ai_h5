@@ -29,7 +29,7 @@ export default function Today() {
 
             {/* 图标 */}
             <Image className="inline-block" src={`/ranking/vip/${item.level}.png`} alt={item.name} width={20}
-                   height={20}/>
+                   height={20}/>`
 
             {/* 名称 */}
             <div className="text-gray-800 text-sm">{item.name}</div>
@@ -41,7 +41,7 @@ export default function Today() {
               {item.score}
             </span>
             <Image
-              className="inline-block"
+              className="inline-block w-[13px] h-[13px]"
               src="/ranking/coin.png"
               alt="gold"
               width={13}

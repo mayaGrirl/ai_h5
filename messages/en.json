@@ -26,13 +26,20 @@
       "gift": "My Red Envelope",
       "landmark": "Banking Services",
       "repeat": "Record Award",
-      "banknote": "My Salary",
+      "salary": "My Salary",
       "hand-coins": "Free Redemption",
       "message-circle-more": "My Roast",
       "shield-plus": "Security Settings",
       "shield-ellipsis": "Change Password",
       "pencil-line": "Change Nickname",
       "x": "Exit"
+    },
+    "quick": {
+      "mail": "Message",
+      "challenge": "Challenge",
+      "relief": "Receive Relief",
+      "salary": "Receive Salary",
+      "commission": "Receive Commission"
     }
   },
   "actions": {

@@ -21,11 +21,9 @@
   padding-left: 0;
 }
 .embla__slide__image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: var(--slide-height);
   user-select: none;
+  position: relative;
 }
 
 @keyframes autoplay-progress {

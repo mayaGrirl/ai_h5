@@ -43,7 +43,7 @@ export default function Ranking() {
         {/* 顶部 LOGO 区域 */}
         <header className="h-16 bg-[#ff3a00] flex items-center justify-center">
           {/* 你可以用 Image 换成真实 logo */}
-          <Image src="/ranking/header.png" alt="logo" width={140} height={40}/>
+          <Image src="/ranking/header.png" alt="logo" width={140} height={40} className={"w-[140px] h-[40px]"} priority />
         </header>
 
         {/* 内容滚动区，底部预留给 TabBar */}

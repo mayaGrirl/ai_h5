@@ -1,5 +1,7 @@
 import {routing} from '@/i18n/routing';
-import messages from './messages/zh.json';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import messages from './messages/zh.json'
 
 declare module 'next-intl' {
   interface AppConfig {

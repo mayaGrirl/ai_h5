@@ -26,13 +26,20 @@
       "gift": "我的红包",
       "landmark": "银行服务",
       "repeat": "换奖记录",
-      "banknote": "我的工资",
+      "salary": "我的工资",
       "hand-coins": "免费兑换",
       "message-circle-more": "我的吐槽",
       "shield-plus": "安全设置",
       "shield-ellipsis": "修改密码",
       "pencil-line": "修改昵称",
       "x": "退出"
+    },
+    "quick": {
+      "mail": "站内消息",
+      "challenge": "闯关星星",
+      "relief": "领救济",
+      "salary": "领工资",
+      "commission": "领提成"
     }
   },
   "actions": {

@@ -93,7 +93,13 @@ export default function HomePage() {
                   {emblaSlides.map(({name, src, href}, index) => (
                     <div className={styles.embla__slide} key={'slide' + index}>
                       <div className={styles.embla__slide__image}>
-                        <Image src={src} alt='banner' fill/>
+                        <Image src={src} alt={name}
+                               fill
+                               priority={index === 0}
+                               loading={index === 0 ? "eager" : "lazy"}
+                               sizes="(max-width: 768px) 100vw, 768px"
+                               className="object-cover"
+                        />
                       </div>
                     </div>
                   ))}

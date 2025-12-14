@@ -29,20 +29,20 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
   const _t = useTranslations();
 
   const settingItems = [
-    {label: _t("mine.setting.mail"), href: "", icon: Mail},
-    {label: _t("mine.setting.receipt-text"), href: "", icon: ReceiptText},
-    {label: _t("mine.setting.user"), href: "", icon: User},
-    {label: _t("mine.setting.toolcase"), href: "", icon: ToolCase},
-    {label: _t("mine.setting.gift"), href: "", icon: Gift},
-    {label: _t("mine.setting.landmark"), href: "", icon: Landmark},
-    {label: _t("mine.setting.repeat"), href: "", icon: Repeat},
-    {label: _t("mine.setting.banknote"), href: "", icon: Banknote},
-    {label: _t("mine.setting.hand-coins"), href: "", icon: HandCoins},
-    {label: _t("mine.setting.message-circle-more"), href: "", icon: MessageCircleMore},
-    {label: _t("mine.setting.shield-plus"), href: "", icon: ShieldPlus},
-    {label: _t("mine.setting.shield-ellipsis"), href: "", icon: ShieldEllipsis},
-    {label: _t("mine.setting.pencil-line"), href: "", icon: PencilLine},
-    {label: _t("mine.setting.x"), href: "", icon: X},
+    {label: _t("mine.setting.mail"), href: "/mine/message", icon: Mail},
+    {label: _t("mine.setting.receipt-text"), href: "/mine/receipt-text", icon: ReceiptText},
+    {label: _t("mine.setting.user"), href: "/mine/profile", icon: User},
+    {label: _t("mine.setting.toolcase"), href: "/mine/tool-case", icon: ToolCase},
+    {label: _t("mine.setting.gift"), href: "/mine/gift", icon: Gift},
+    {label: _t("mine.setting.landmark"), href: "/mine/landmark", icon: Landmark},
+    {label: _t("mine.setting.repeat"), href: "/mine/repeat", icon: Repeat},
+    {label: _t("mine.setting.salary"), href: "/mine/banknote", icon: Banknote},
+    {label: _t("mine.setting.hand-coins"), href: "/mine/hand-coins", icon: HandCoins},
+    {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
+    {label: _t("mine.setting.shield-plus"), href: "/mine/shield-plus", icon: ShieldPlus},
+    {label: _t("mine.setting.shield-ellipsis"), href: "/mine/shield-ellipsis", icon: ShieldEllipsis},
+    {label: _t("mine.setting.pencil-line"), href: "/mine/pencil-line", icon: PencilLine},
+    {label: _t("mine.setting.x"), href: "/mine/x", icon: X},
   ];
 
   return (
@@ -58,6 +58,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
             {/* Header */}
             <div className="relative flex items-center justify-center h-8">
               <Drawer.Title className="text-base font-medium text-gray-900">{_t("mine.setting.title")}</Drawer.Title>
+              <Drawer.Description className="sr-only"></Drawer.Description>
               <button
                 onClick={() => onOpenChange(false)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"

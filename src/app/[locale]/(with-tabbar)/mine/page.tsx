@@ -10,6 +10,7 @@ import Link from "next/link";
 import {useParams} from "next/navigation";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import SettingDrawer from "./setting.drawer";
+import {useTranslations} from "use-intl";
 
 export default function Mine() {
   // 页面需要登陆Hook
@@ -17,7 +18,9 @@ export default function Mine() {
 
   const params = useParams();
   const locale = params.locale as string;
+  const _t = useTranslations();
 
+  // banner
   const emblaSlides = [
     {name: "01", src: "/mine/slide/01.png", href: ""},
     {name: "02", src: "/mine/slide/01.png", href: ""},
@@ -27,6 +30,15 @@ export default function Mine() {
   const [emblaRef] = useEmblaCarousel({loop: true}, [Autoplay({playOnInit: true, delay: 2000})])
   // 设置弹框状态
   const [isOpenSetting, setIsOpenSetting] = React.useState(false);
+  // 6个快捷入口
+  const quickAccess = [
+    {label: _t("mine.quick.mail"), href: "/mine/message"},
+    {label: _t("mine.setting.toolcase"), href: "/mine/toolcase"},
+    {label: _t("mine.quick.challenge"), href: "/mine/challenge"},
+    {label: _t("mine.quick.relief"), href: "/mine/relief"},
+    {label: _t("mine.quick.salary"), href: "/mine/salary"},
+    {label: _t("mine.quick.commission"), href: "/mine/spread"},
+  ];
 
   return (
     <>
@@ -47,7 +59,7 @@ export default function Mine() {
                   <div className="text-xs flex items-center">
                     ID48566（_sg48566）
                     <span>
-                    <Image src={"/mine/level/0.png"} alt={'等级'} width={15} height={15}/>
+                    <Image src={"/mine/level/0.png"} alt={'等级'} width={15} height={15} className="w-[15px] h-[15px]" />
                   </span>
                   </div>
                   <div className="mt-1 inline-flex h-4 items-center rounded-full text-[10px] px-1 bg-[rgb(64_63_63)]">
@@ -57,7 +69,7 @@ export default function Mine() {
               </div>
 
               {/* 右上角图标 */}
-              <div className="flex items-center space-x-3 text-xl" onClick={() => setIsOpenSetting(true)}>
+              <div className="flex items-center space-x-3 text-xl cursor-pointer" onClick={() => setIsOpenSetting(true)}>
                 <span><Settings/></span>
               </div>
             </div>
@@ -71,7 +83,10 @@ export default function Mine() {
                   {emblaSlides.map(({name, src, href}, index) => (
                     <div className={styles.embla__slide} key={'slide' + index}>
                       <div className={styles.embla__slide__image}>
-                        <Image src={src} alt='banner' fill/>
+                        <Image src={src} alt={name} fill
+                               priority={index === 0}
+                               sizes="(max-width: 768px) 100vw, 768px"
+                               className="object-cover" />
                       </div>
                     </div>
                   ))}
@@ -92,42 +107,14 @@ export default function Mine() {
 
           {/* 六个功能入口 */}
           <section className="mt-2 grid grid-cols-3 gap-2 px-3">
-            <Link className="rounded-md bg-white py-3 text-center shadow-sm"
-                  key={'key-1'}
-                  href={`/${locale}/message`}
-            >
-              站内消息
-            </Link>
-            <Link className="rounded-md bg-white py-3 text-center shadow-sm"
-                  key={'key-2'}
-                  href={`/${locale}/message`}
-            >
-              我的道具
-            </Link>
-            <Link className="rounded-md bg-white py-3 text-center shadow-sm"
-                  key={'key-3'}
-                  href={`/${locale}/message`}
-            >
-              闯关星星
-            </Link>
-            <Link className="rounded-md bg-white py-3 text-center shadow-sm"
-                  key={'key-4'}
-                  href={`/${locale}/message`}
-            >
-              领救济
-            </Link>
-            <Link className="rounded-md bg-white py-3 text-center shadow-sm"
-                  key={'key-5'}
-                  href={`/${locale}/message`}
-            >
-              领工资
-            </Link>
-            <Link className="rounded-md bg-white py-3 text-center shadow-sm"
-                  key={'key-6'}
-                  href={`/${locale}/message`}
-            >
-              领提成
-            </Link>
+            {quickAccess.map(({label, href},index) => (
+              <Link className="rounded-md bg-white py-3 text-center shadow-sm"
+                    key={`quick-key-${index}`}
+                    href={`/${locale}/${href}`}
+              >
+                {label}
+              </Link>
+            ))}
           </section>
 
           {/* 会员卡区域 */}
@@ -160,11 +147,11 @@ export default function Mine() {
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>160</span>
                   <Image
-                    className="inline-block ml-1"
                     src="/ranking/coin.png"
                     alt="gold"
                     width={13}
                     height={13}
+                    className="inline-block ml-1 w-[13px] h-[13px]"
                   />
                 </div>
               </div>
@@ -175,11 +162,11 @@ export default function Mine() {
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-gray-800">
                   <span>111</span>
                   <Image
-                    className="inline-block ml-1"
                     src="/ranking/coin.png"
                     alt="gold"
                     width={13}
                     height={13}
+                    className="inline-block ml-1 w-[13px] h-[13px]"
                   />
                 </div>
               </div>
@@ -218,7 +205,7 @@ export default function Mine() {
               <div>
                 <span>昨日亏损</span>
                 <Image
-                  className="inline-block ml-1"
+                  className="inline-block ml-1 w-[13px] h-[13px]"
                   src="/ranking/coin.png"
                   alt="gold"
                   width={13}

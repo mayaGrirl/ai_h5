@@ -43,7 +43,7 @@ export default function Yesterday() {
               {item.score}
             </span>
             <Image
-              className="inline-block"
+              className="inline-block w-[13px] h-[13px]"
               src="/ranking/coin.png"
               alt="gold"
               width={13}
