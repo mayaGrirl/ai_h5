@@ -9,6 +9,9 @@ import Image from "next/image";
 import {z} from "zod";
 import {PageHeader} from "@/components/page-header";
 import {Alert, AlertTitle} from "@/components/ui/alert";
+import {updateNickname} from "@/api/customer";
+import {toast} from "sonner";
+import {useRouter} from "next/navigation";
 
 const schema = z.object({
   nickname: z.string().min(1, "请输入昵称").max(50),
@@ -18,6 +21,7 @@ type FormValues = z.infer<typeof schema>;
 export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
+  const router = useRouter();
 
   const {
     register,
@@ -29,10 +33,17 @@ export default function Mine() {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    // 模拟接口请求
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const result = await updateNickname({
+      nickname: values.nickname,
+    });
+    const {code, message} = result;
+    if (code !== 200) {
+      toast.error(message);
+    } else {
+      toast.success(message);
 
-    console.log(values)
+      router.back();
+    }
   })
 
   return (

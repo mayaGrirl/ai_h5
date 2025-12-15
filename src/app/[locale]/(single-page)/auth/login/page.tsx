@@ -102,12 +102,6 @@ export default function Login() {
               )}
             </div>
 
-            {/*<button*/}
-            {/*  disabled={isSubmitting}*/}
-            {/*  className={`mt-10 w-full h-12 rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white tracking-wide font-medium cursor-pointer`}*/}
-            {/*>*/}
-            {/*  {isSubmitting ? "登陆中..." : "登陆"}*/}
-            {/*</button>*/}
             <button
               disabled={isSubmitting}
               className={`mt-10 h-12 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
@@ -115,7 +109,7 @@ export default function Login() {
               ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
               }
             >
-              {isSubmitting ? "登陆中..." : "登陆"}
+              {isSubmitting ? "登录中..." : "登录"}
             </button>
             <button
               className="mt-3 w-full h-12 rounded-full bg-[#0d6efd] text-white tracking-wide font-medium cursor-pointer">注册
