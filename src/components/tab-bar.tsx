@@ -54,7 +54,7 @@ export default function TabBar({locale}: Props) {
           const active = isActive(href);
           let _href = `/${locale}/${href}`;
           if (auth && !isLogin) {
-            _href = `/${locale}/auth/login`;
+            // _href = `/${locale}/auth/login`;
           }
 
           return (

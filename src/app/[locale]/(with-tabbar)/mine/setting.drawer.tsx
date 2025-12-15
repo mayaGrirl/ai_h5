@@ -17,7 +17,11 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import {useState} from "react";
 import {useTranslations} from "use-intl";
+import {useRouter} from "next/navigation";
+import {accessToken} from "@/utils/storage/token";
+import {logout} from "@/api/auth";
 
 type Props = {
   open: boolean;
@@ -26,7 +30,9 @@ type Props = {
 };
 
 export default function SettingDrawer({open, onOpenChange, locale}: Props) {
+  const router = useRouter();
   const _t = useTranslations();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const settingItems = [
     {label: _t("mine.setting.mail"), href: "/mine/message", icon: Mail},
@@ -42,8 +48,30 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
     {label: _t("mine.setting.shield-plus"), href: "/mine/shield-plus", icon: ShieldPlus},
     {label: _t("mine.setting.shield-ellipsis"), href: "/mine/shield-ellipsis", icon: ShieldEllipsis},
     {label: _t("mine.setting.pencil-line"), href: "/mine/edit-nickname", icon: PencilLine},
-    {label: _t("mine.setting.x"), href: "/mine/x", icon: X},
+    {label: _t("mine.setting.x"), href: "", icon: X},
   ];
+
+  // 退出登录
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      // 调用后端退出接口（如果有）
+      await logout();
+    } catch (e) {
+      // 即使接口失败，也继续本地退出
+      console.error("logout error", e);
+    } finally {
+      // 清理前端状态
+      accessToken.remove();
+
+      // 关闭抽屉
+      onOpenChange(false);
+
+      // 跳转登录页
+      router.replace(`/${locale}/auth/login`);
+    }
+  };
 
   return (
     <Drawer.Root dismissible={false} open={open} onOpenChange={onOpenChange}>
@@ -70,23 +98,44 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
             {/* Menu */}
             <div className="p-4">
               <div className="grid grid-cols-4 gap-2 text-center">
-                {settingItems.map(({label, href, icon: Icon}) => (
-                  <Link key={label} href={`/${locale}/${href}`}
+                {settingItems.map(({label, href, icon: Icon}) => {
+                  if (href == "") {
+                    return (
+                      <button
+                        key={label}
+                        onClick={handleLogout}
                         className="flex flex-col items-center justify-center gap-2 aspect-square rounded-lg
+                        border border-[#ebedf0] cursor-pointer bg-white hover:bg-gray-50 active:bg-gray-100
+                        transition-colors"
+                      >
+                        <div className="flex h-8 w-8 items-center justify-center text-gray-700">
+                          <Icon className="h-7 w-7"/>
+                        </div>
+                        <span className="text-xs text-gray-700 text-center leading-tight">
+                          {label}
+                        </span>
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <Link key={label} href={`/${locale}/${href}`}
+                          className="flex flex-col items-center justify-center gap-2 aspect-square rounded-lg
                     border border-[#ebedf0] cursor-pointer bg-white hover:bg-gray-50 active:bg-gray-100
                     transition-colors"
-                  >
-                    {/* 图标 */}
-                    <div className="flex h-8 w-8 items-center justify-center text-gray-700">
-                      <Icon className="h-7 w-7"/>
-                    </div>
+                    >
+                      {/* 图标 */}
+                      <div className="flex h-8 w-8 items-center justify-center text-gray-700">
+                        <Icon className="h-7 w-7"/>
+                      </div>
 
-                    {/* 文案 */}
-                    <span className="text-xs text-gray-700 text-center leading-tight">
+                      {/* 文案 */}
+                      <span className="text-xs text-gray-700 text-center leading-tight">
                       {label}
                     </span>
-                  </Link>
-                ))}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>

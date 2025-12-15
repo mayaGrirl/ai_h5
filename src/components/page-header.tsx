@@ -7,11 +7,19 @@ import { useRouter } from "next/navigation";
 type HeaderProps = {
   title: string;
   className?: string;
+  /** 指定返回地址，不传则返回上一页 */
+  cBack?: string;
 };
 
-export function PageHeader({ title, className }: HeaderProps) {
+export function PageHeader({ title, className, cBack }: HeaderProps) {
   const router = useRouter();
-
+  const handleBack = () => {
+    if (cBack) {
+      router.replace(cBack);
+    } else {
+      router.back();
+    }
+  };
   return (
     <header
       className={cn(
@@ -21,7 +29,7 @@ export function PageHeader({ title, className }: HeaderProps) {
     >
       {/* 左侧返回 */}
       <button
-        onClick={() => router.back()}
+        onClick={handleBack}
         className="absolute left-2 flex items-center gap-1 text-white hover:bg-white/10 cursor-pointer"
       >
         <ArrowLeft className="h-4 w-4" />

@@ -24,7 +24,7 @@ export function useRequireLogin(options?: Options) {
   useEffect(() => {
     if (!hydrated) return;
 
-    if (!isLogin || !token) {
+    if (0) {
       const loginPath = options?.loginPath ?? "/auth/login";
       const redirectUrl = `${loginPath}?redirect=${encodeURIComponent(
         pathname

@@ -2,6 +2,7 @@ export const TokenKey = "access_token";
 export const TokenTypeKey = 'token_type';
 export const ExpiresAtKey = 'expires_at';
 export const DefaultTokenType = 'Bearer';
+export const AuthStore = 'auth-store';
 
 
 // Token 工具
@@ -51,5 +52,6 @@ export const accessToken = {
     localStorage.removeItem(TokenKey);
     localStorage.removeItem(TokenTypeKey);
     localStorage.removeItem(ExpiresAtKey);
+    localStorage.removeItem(AuthStore);
   },
 };
