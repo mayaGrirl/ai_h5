@@ -41,7 +41,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
     {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
     {label: _t("mine.setting.shield-plus"), href: "/mine/shield-plus", icon: ShieldPlus},
     {label: _t("mine.setting.shield-ellipsis"), href: "/mine/shield-ellipsis", icon: ShieldEllipsis},
-    {label: _t("mine.setting.pencil-line"), href: "/mine/pencil-line", icon: PencilLine},
+    {label: _t("mine.setting.pencil-line"), href: "/mine/edit-nickname", icon: PencilLine},
     {label: _t("mine.setting.x"), href: "/mine/x", icon: X},
   ];
 

@@ -11,6 +11,7 @@ import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import SettingDrawer from "./setting.drawer";
 import {useTranslations} from "use-intl";
+import {toast} from "sonner";
 
 export default function Mine() {
   // 页面需要登陆Hook
@@ -112,7 +113,11 @@ export default function Mine() {
 
           {/* 新人任务 / 签到 */}
           <section className="mt-2 grid grid-cols-2 gap-2 px-3">
-            <button className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
+            <button className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white"
+                    onClick={() => {
+                      toast.info('新人任务即将上线');
+                    }}
+            >
               <Flag width={17} height={17}/> 新人任务
             </button>
             <button className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
