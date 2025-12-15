@@ -32,7 +32,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
     {label: _t("mine.setting.mail"), href: "/mine/message", icon: Mail},
     {label: _t("mine.setting.receipt-text"), href: "/mine/receipt-text", icon: ReceiptText},
     {label: _t("mine.setting.user"), href: "/mine/profile", icon: User},
-    {label: _t("mine.setting.toolcase"), href: "/mine/tool-case", icon: ToolCase},
+    {label: _t("mine.setting.toolcase"), href: "/mine/toolcase", icon: ToolCase},
     {label: _t("mine.setting.gift"), href: "/mine/gift", icon: Gift},
     {label: _t("mine.setting.landmark"), href: "/mine/landmark", icon: Landmark},
     {label: _t("mine.setting.repeat"), href: "/mine/repeat", icon: Repeat},

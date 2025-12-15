@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { cn } from "@/utils/utils";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 type HeaderProps = {

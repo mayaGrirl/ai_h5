@@ -7,7 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import styles from "./page.module.css"
 import {CalendarCheck, Flag, MapPin, Settings} from "lucide-react";
 import Link from "next/link";
-import {useParams} from "next/navigation";
+import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import SettingDrawer from "./setting.drawer";
 import {useTranslations} from "use-intl";
@@ -16,7 +16,9 @@ export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
 
+  const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
   const _t = useTranslations();
 
@@ -28,8 +30,6 @@ export default function Mine() {
     {name: "04", src: "/mine/slide/01.png", href: ""}
   ];
   const [emblaRef] = useEmblaCarousel({loop: true}, [Autoplay({playOnInit: true, delay: 2000})])
-  // 设置弹框状态
-  const [isOpenSetting, setIsOpenSetting] = React.useState(false);
   // 6个快捷入口
   const quickAccess = [
     {label: _t("mine.quick.mail"), href: "/mine/message"},
@@ -39,6 +39,21 @@ export default function Mine() {
     {label: _t("mine.quick.salary"), href: "/mine/salary"},
     {label: _t("mine.quick.commission"), href: "/mine/spread"},
   ];
+
+  // 设置弹框状态
+  // 从设置抽屉进入页面之后返回到首页默认打开抽屉
+  const isOpenSetting = searchParams.get("drawer") === "setting";
+  const setIsOpenSetting = (open: boolean) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (open) {
+      params.set("drawer", "setting");
+    } else {
+      params.delete("drawer");
+    }
+
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <>

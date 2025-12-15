@@ -13,7 +13,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import {useTranslations} from "use-intl";
-import {cn} from "@/utils/utils";
+import {cn} from "@/lib/utils";
 import styles from "./page.module.css";
 import { useParams } from "next/navigation";
 
