@@ -12,6 +12,7 @@ import {Alert, AlertTitle} from "@/components/ui/alert";
 import {updateNickname} from "@/api/customer";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
+import {useTranslations} from "use-intl";
 
 const schema = z.object({
   nickname: z.string().min(1, "请输入昵称").max(50),
@@ -22,6 +23,7 @@ export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
   const router = useRouter();
+  const _t = useTranslations();
 
   const {
     register,
@@ -51,14 +53,14 @@ export default function Mine() {
       <div className="flex min-h-screen justify-center bg-[#eef3f8]">
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-          <PageHeader title="修改昵称" />
+          <PageHeader title={_t("mine.setting.edit-nickname")} />
           {/* 提示 */}
           <main className="px-3 pb-20 pt-3">
             <Alert variant="destructive">
               <div className="flex items-center gap-2">
                 <AlertCircleIcon />
                 <AlertTitle>
-                  修改昵称需要花费 200
+                  {_t("mine.edit-nickname.alert")}
                   <Image
                     src="/ranking/coin.png"
                     alt="gold"
@@ -73,14 +75,13 @@ export default function Mine() {
             {/* 提交表单 */}
             <form onSubmit={onSubmit} className="mt-5">
               <div className="bg-white rounded-xl shadow-sm p-2">
-                {/* 手机号 */}
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/7 text-gray-700">昵称</label>
+                  <label className="w-2/7 text-gray-700">{_t("mine.profile.form-label.nickname")}</label>
                   <input
                     type="text"
-                    placeholder="请输入昵称"
+                    placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.nickname")}
                     {...register("nickname")}
-                    className="w-6/7 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
+                    className="w-5/7 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
                 </div>
                 {errors.nickname && (
@@ -95,7 +96,7 @@ export default function Mine() {
                   ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
                 }
               >
-                {isSubmitting ? "提交中..." : "确定修改"}
+                {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
               </button>
             </form>
           </main>

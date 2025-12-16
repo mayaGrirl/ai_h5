@@ -21,7 +21,7 @@
       "title": "功能菜单",
       "mail": "我的消息",
       "receipt-text": "账户记录",
-      "user": "我的资料",
+      "profile": "我的资料",
       "toolcase": "我的道具",
       "gift": "我的红包",
       "landmark": "银行服务",
@@ -31,7 +31,7 @@
       "message-circle-more": "我的吐槽",
       "shield-plus": "安全设置",
       "shield-ellipsis": "修改密码",
-      "pencil-line": "修改昵称",
+      "edit-nickname": "修改昵称",
       "x": "退出"
     },
     "quick": {
@@ -40,6 +40,80 @@
       "relief": "领救济",
       "salary": "领工资",
       "commission": "领提成"
+    },
+    "profile": {
+      "edit-nickname": "修改昵称",
+      "alert": "以上内容填写后不可修改，请认真填写",
+      "validation": {
+        "realname": "真实姓名不能超过50字符",
+        "qq": "QQ号格式不正确",
+        "alipay": "支付宝账号不能超过50字符",
+        "wchat": "微信账号不能超过50字符",
+        "address": "地址不能超过150字符",
+        "signature": "签名不能超过200字符"
+      },
+      "form-label": {
+        "nickname": "昵称",
+        "email": "邮箱",
+        "mobile": "手机号码",
+        "realname": "真实姓名",
+        "qq": "QQ",
+        "alipay": "支付宝账号",
+        "wchat": "微信账号",
+        "address": "地址",
+        "signature": "签名"
+      }
+    },
+    "bind-email": {
+      "title": "绑定邮箱",
+      "alert": "绑定后不可修改，请认真填写"
+    },
+    "edit-nickname": {
+      "alert": "修改昵称需要花费 200"
+    },
+    "toolcase": {
+      "form-label": {
+        "question": "安全问题",
+        "answer": "答案"
+      },
+      "question-options": {
+        "1": "我父亲的姓名是什么？",
+        "2": "我母亲的姓名是什么？",
+        "3": "我爷爷的姓名是什么？",
+        "4": "我奶奶的姓名是什么？",
+        "5": "我姐姐的姓名是什么？",
+        "6": "我妹妹的姓名是什么？",
+        "7": "我哥哥的姓名是什么？",
+        "8": "我弟弟的姓名是什么？",
+        "9": "女朋友的姓名是什么？",
+        "10": "男朋友的姓名是什么？",
+        "11": "我的初恋姓名是什么？",
+        "12": "最喜欢的明星叫什么？",
+        "13": "最受启发事情是什么？",
+        "14": "我家狗狗叫什么名字？",
+        "15": "我的启蒙老师是哪位？",
+        "16": "我儿子的名字叫什么？",
+        "17": "我女儿的名字叫什么？",
+        "18": "最崇拜的英雄是哪位？",
+        "19": "我最大的梦想是什么？"
+      }
+    }
+  },
+  "common": {
+    "empty-description": "暂无数据",
+    "loading": "加载中...",
+    "header": {
+      "back": "返回"
+    },
+    "form": {
+      "placeholder": {
+        "enter": "请输入",
+        "select": "请选择"
+      },
+      "button": {
+        "submit": "提交",
+        "submitting": "提交中..."
+      }
     }
   },
   "actions": {

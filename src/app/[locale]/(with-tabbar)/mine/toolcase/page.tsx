@@ -9,6 +9,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "sonner";
 import {z} from "zod";
 import {setSecurityPass} from "@/api/customer";
+import {useTranslations} from "use-intl";
 
 /**
  * 我的道具
@@ -23,6 +24,7 @@ export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
   const router = useRouter();
+  const _t = useTranslations();
 
   const {
     register,
@@ -53,7 +55,7 @@ export default function Mine() {
       <div className="flex min-h-screen justify-center bg-[#eef3f8]">
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-          <PageHeader title="我的道具"/>
+          <PageHeader title={_t("mine.setting.toolcase")}/>
 
           {/* 提示 */}
           <main className="px-3 pb-20 pt-3">
@@ -61,29 +63,29 @@ export default function Mine() {
             <form onSubmit={onSubmit} className="mt-5">
               <div className="bg-white rounded-xl shadow-sm p-2">
                 {/* 手机号 */}
-                <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-700">安全问题</label>
+                <div className="flex justify-center items-center">
+                  <label className="w-1/5 text-gray-700">{_t("mine.toolcase.form-label.question")}</label>
                   <select {...register("safe_ask")} className="w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-12">
-                    <option value={1}>我女儿的名字叫什么</option>
-                        <option value={1}>我父亲的姓名是什么？</option>
-                        <option value={2}>我母亲的姓名是什么？</option>
-                        <option value={3}>我爷爷的姓名是什么？</option>
-                        <option value={4}>我奶奶的姓名是什么？</option>
-                        <option value={5}>我姐姐的姓名是什么？</option>
-                        <option value={6}>我妹妹的姓名是什么？</option>
-                        <option value={7}>我哥哥的姓名是什么？</option>
-                        <option value={8}>我弟弟的姓名是什么？</option>
-                        <option value={9}>女朋友的姓名是什么？</option>
-                        <option value={10}>男朋友的姓名是什么？</option>
-                        <option value={11}>我的初恋姓名是什么？</option>
-                        <option value={12}>最喜欢的明星叫什么？</option>
-                        <option value={13}>最受启发事情是什么？</option>
-                        <option value={14}>我家狗狗叫什么名字？</option>
-                        <option value={15}>我的启蒙老师是哪位？</option>
-                        <option value={16}>我儿子的名字叫什么？</option>
-                        <option value={17}>我女儿的名字叫什么？</option>
-                        <option value={18}>最崇拜的英雄是哪位？</option>
-                        <option value={19}>我最大的梦想是什么？</option>
+                    <option value={1}>{_t("mine.toolcase.question-options.1")}</option>
+                    <option value={1}>{_t("mine.toolcase.question-options.1")}</option>
+                    <option value={2}>{_t("mine.toolcase.question-options.2")}</option>
+                    <option value={3}>{_t("mine.toolcase.question-options.3")}</option>
+                    <option value={4}>{_t("mine.toolcase.question-options.4")}</option>
+                    <option value={5}>{_t("mine.toolcase.question-options.5")}</option>
+                    <option value={6}>{_t("mine.toolcase.question-options.6")}</option>
+                    <option value={7}>{_t("mine.toolcase.question-options.7")}</option>
+                    <option value={8}>{_t("mine.toolcase.question-options.8")}</option>
+                    <option value={9}>{_t("mine.toolcase.question-options.9")}</option>
+                    <option value={10}>{_t("mine.toolcase.question-options.10")}</option>
+                    <option value={11}>{_t("mine.toolcase.question-options.11")}</option>
+                    <option value={12}>{_t("mine.toolcase.question-options.12")}</option>
+                    <option value={13}>{_t("mine.toolcase.question-options.13")}</option>
+                    <option value={14}>{_t("mine.toolcase.question-options.14")}</option>
+                    <option value={15}>{_t("mine.toolcase.question-options.15")}</option>
+                    <option value={16}>{_t("mine.toolcase.question-options.16")}</option>
+                    <option value={17}>{_t("mine.toolcase.question-options.17")}</option>
+                    <option value={18}>{_t("mine.toolcase.question-options.18")}</option>
+                    <option value={19}>{_t("mine.toolcase.question-options.19")}</option>
                   </select>
                 </div>
                 {errors.safe_ask && (
@@ -92,10 +94,10 @@ export default function Mine() {
               </div>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-700">答案</label>
+                  <label className="w-1/5 text-gray-700">{_t("mine.toolcase.form-label.answer")}</label>
                   <input
                     type="text"
-                    placeholder="请输入昵称"
+                    placeholder={_t("common.form.placeholder.enter") + _t("mine.toolcase.form-label.answer")}
                     {...register("answer")}
                     className="w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
@@ -112,7 +114,7 @@ export default function Mine() {
                   ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
                 }
               >
-                {isSubmitting ? "提交中..." : "确定修改"}
+                {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
               </button>
             </form>
           </main>

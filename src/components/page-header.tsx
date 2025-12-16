@@ -3,6 +3,7 @@
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import {useTranslations} from "use-intl";
 
 type HeaderProps = {
   title: string;
@@ -13,6 +14,7 @@ type HeaderProps = {
 
 export function PageHeader({ title, className, cBack }: HeaderProps) {
   const router = useRouter();
+  const _t = useTranslations();
   const handleBack = () => {
     if (cBack) {
       router.replace(cBack);
@@ -33,7 +35,7 @@ export function PageHeader({ title, className, cBack }: HeaderProps) {
         className="absolute left-2 flex items-center gap-1 text-white hover:bg-white/10 cursor-pointer"
       >
         <ArrowLeft className="h-4 w-4" />
-        <span className="text-sm">返回</span>
+        <span className="text-sm">{_t("common.header.back")}</span>
       </button>
 
       {/* 中间标题（真正居中） */}

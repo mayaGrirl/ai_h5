@@ -21,7 +21,7 @@
       "title": "Menu",
       "mail": "My Message",
       "receipt-text": "Account Records",
-      "user": "My Profile",
+      "profile": "My Profile",
       "toolcase": "My Props",
       "gift": "My Red Envelope",
       "landmark": "Banking Services",
@@ -31,7 +31,7 @@
       "message-circle-more": "My Roast",
       "shield-plus": "Security Settings",
       "shield-ellipsis": "Change Password",
-      "pencil-line": "Change Nickname",
+      "edit-nickname": "Change Nickname",
       "x": "Exit"
     },
     "quick": {
@@ -40,6 +40,80 @@
       "relief": "Receive Relief",
       "salary": "Receive Salary",
       "commission": "Receive Commission"
+    },
+    "profile": {
+      "edit-nickname": "Edit Nick Name",
+      "alert": "The above content cannot be modified after filling in, please fill in carefully",
+      "validation": {
+        "realname": "Real name cannot exceed 50 characters",
+        "qq": "QQ number format incorrect",
+        "alipay": "Alipay account cannot exceed 50 characters",
+        "wchat": "WeChat account cannot exceed 50 characters",
+        "address": "The address cannot exceed 150 characters",
+        "signature": "Signature cannot exceed 200 characters"
+      },
+      "form-label": {
+        "nickname": "Nick Name",
+        "email": "Email",
+        "mobile": "Mobile",
+        "realname": "Real Name",
+        "qq": "QQ",
+        "alipay": "AliPay Account",
+        "wchat": "WeChat Account",
+        "address": "Address",
+        "signature": "Signature"
+      }
+    },
+    "bind-email": {
+      "title": "Bind Email",
+      "alert": "After binding, it cannot be modified. Please fill in carefully"
+    },
+    "edit-nickname": {
+      "alert": "Changing a nickname costs 200"
+    },
+    "toolcase": {
+      "form-label": {
+        "question": "Safety Question",
+        "answer": "Answer"
+      },
+      "question-options": {
+        "1": "What is my father's name?",
+        "2": "What is my mother's name?",
+        "3": "What is my grandfather's name?",
+        "4": "What is my grandmother's name?",
+        "5": "What is my older sister's name?",
+        "6": "What is my younger sister's name?",
+        "7": "What is my older brother's name?",
+        "8": "What is my younger brother's name?",
+        "9": "What is my girlfriend's name?",
+        "10": "What is my boyfriend's name?",
+        "11": "What is the name of my first love?",
+        "12": "Who is my favorite celebrity?",
+        "13": "What is the most inspiring thing that has happened to me?",
+        "14": "What is my dog's name?",
+        "15": "Who is my mentor?",
+        "16": "What is my son's name?",
+        "17": "What is my daughter's name?",
+        "18": "Who is the hero I admire the most?",
+        "19": "What is my biggest dream?"
+      }
+    }
+  },
+  "common": {
+    "empty-description": "No data available",
+    "loading": "Loading...",
+    "header": {
+      "back": "Back"
+    },
+    "form": {
+      "placeholder": {
+        "enter": "Place enter ",
+        "select": "Place select "
+      },
+      "button": {
+        "submit": "Submit",
+        "submitting": "Submitting..."
+      }
     }
   },
   "actions": {

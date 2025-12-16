@@ -37,7 +37,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
   const settingItems = [
     {label: _t("mine.setting.mail"), href: "/mine/message", icon: Mail},
     {label: _t("mine.setting.receipt-text"), href: "/mine/receipt-text", icon: ReceiptText},
-    {label: _t("mine.setting.user"), href: "/mine/profile", icon: User},
+    {label: _t("mine.setting.profile"), href: "/mine/profile", icon: User},
     {label: _t("mine.setting.toolcase"), href: "/mine/toolcase", icon: ToolCase},
     {label: _t("mine.setting.gift"), href: "/mine/gift", icon: Gift},
     {label: _t("mine.setting.landmark"), href: "/mine/landmark", icon: Landmark},
@@ -47,7 +47,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
     {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
     {label: _t("mine.setting.shield-plus"), href: "/mine/shield-plus", icon: ShieldPlus},
     {label: _t("mine.setting.shield-ellipsis"), href: "/mine/shield-ellipsis", icon: ShieldEllipsis},
-    {label: _t("mine.setting.pencil-line"), href: "/mine/edit-nickname", icon: PencilLine},
+    {label: _t("mine.setting.edit-nickname"), href: "/mine/edit-nickname", icon: PencilLine},
     {label: _t("mine.setting.x"), href: "", icon: X},
   ];
 

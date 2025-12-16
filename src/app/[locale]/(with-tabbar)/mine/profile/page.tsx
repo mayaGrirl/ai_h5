@@ -14,34 +14,7 @@ import Link from "next/link";
 import {useEffect} from "react";
 import {MemberField} from "@/types/customer.type";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
-
-const schema = z.object({
-  realname: z.string().trim().refine(
-    (v) => v === "" || v.length <= 50,
-    {message: "真实姓名不能超过50字符"}
-  ),
-  qq: z.string().trim().refine(
-    (v) => v === "" || /^\d{5,12}$/.test(v),
-    {message: "QQ号格式不正确"}
-  ),
-  alipay: z.string().trim().refine(
-    (v) => v === "" || v.length <= 50,
-    {message: "支付宝账号必须是邮箱"}
-  ),
-  wchat: z.string().trim().refine(
-    (v) => v === "" || v.length <= 50,
-    {message: "支付宝账号必须是邮箱"}
-  ),
-  address: z.string().trim().refine(
-    (v) => v === "" || v.length <= 150,
-    {message: "地址不能超过150字符"}
-  ),
-  signature: z.string().trim().refine(
-    (v) => v === "" || v.length <= 200,
-    {message: "签名不能超过200字符"}
-  ),
-});
-type FormValues = z.infer<typeof schema>;
+import {useTranslations} from "use-intl";
 
 /**
  * 我的资料
@@ -53,8 +26,37 @@ export default function ProfilePage() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
+  const _t = useTranslations();
 
   const [profile, setProfile] = React.useState<MemberField>();
+
+  const schema = z.object({
+    realname: z.string().trim().refine(
+      (v) => v === "" || v.length <= 50,
+      {message: _t("mine.profile.validation.realname")}
+    ),
+    qq: z.string().trim().refine(
+      (v) => v === "" || /^\d{5,12}$/.test(v),
+      {message: _t("mine.profile.validation.qq")}
+    ),
+    alipay: z.string().trim().refine(
+      (v) => v === "" || v.length <= 50,
+      {message: _t("mine.profile.validation.alipay")}
+    ),
+    wchat: z.string().trim().refine(
+      (v) => v === "" || v.length <= 50,
+      {message: _t("mine.profile.validation.wchat")}
+    ),
+    address: z.string().trim().refine(
+      (v) => v === "" || v.length <= 150,
+      {message: _t("mine.profile.validation.address")}
+    ),
+    signature: z.string().trim().refine(
+      (v) => v === "" || v.length <= 200,
+      {message: _t("mine.profile.validation.signature")}
+    ),
+  });
+  type FormValues = z.infer<typeof schema>;
 
   const {
     register,
@@ -116,18 +118,18 @@ export default function ProfilePage() {
       <div className="flex min-h-screen justify-center bg-[#eef3f8]">
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-          <PageHeader title="我的资料"/>
+          <PageHeader title={_t("mine.setting.profile")} />
 
           {/* 提示 */}
           <main className="px-3 pb-20 pt-3">
             <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
               <div className="flex justify-center items-center ">
                 <div className="flex w-3/5">
-                  <div className="w-4/9 text-gray-500">昵称</div>
-                  <div className="w-6/7 text-gray-700">我就改个昵称</div>
+                  <div className="w-4/9 text-gray-500">{_t("mine.profile.form-label.nickname")}</div>
+                  <div className="w-6/7 text-gray-700">{profile?.nickname}</div>
                 </div>
                 <Link className="flex justify-end w-2/5 cursor-pointer text-red-700" href={`/${locale}/mine/edit-nickname`}>
-                  修改昵称<ChevronRight/>
+                  {_t("mine.profile.edit-nickname")}<ChevronRight/>
                 </Link>
               </div>
             </div>
@@ -135,14 +137,14 @@ export default function ProfilePage() {
               <div className="flex justify-center items-center">
                 {profile?.email ?
                   <>
-                    <div className="w-1/5 text-gray-500">邮箱</div>
+                    <div className="w-1/5 text-gray-500">{_t("mine.profile.form-label.email")}</div>
                     <div className="flex items-center ml-1 w-4/5 text-[#c8c9cc] placeholder-gray-400 focus:outline-none">{profile?.email}</div>
                   </>
                   :
                   <>
-                    <div className="w-3/5 text-gray-500">邮箱</div>
+                    <div className="w-3/5 text-gray-500">{_t("mine.profile.form-label.email")}</div>
                     <Link className="flex justify-end ml-1 w-2/5 text-red-700" href={`/${locale}/mine/bind-email`}>
-                      绑定邮箱<ChevronRight/>
+                      {_t("mine.bind-email.title")}<ChevronRight/>
                     </Link>
                   </>
                 }
@@ -150,7 +152,7 @@ export default function ProfilePage() {
             </div>
             <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
               <div className="flex justify-center items-center">
-                <div className="w-1/5 text-gray-500">手机号码</div>
+                <div className="w-1/5 text-gray-500">{_t("mine.profile.form-label.mobile")}</div>
                 <div className="flex ml-1 w-4/5 text-[#c8c9cc]">{profile?.mobile}</div>
               </div>
             </div>
@@ -159,13 +161,13 @@ export default function ProfilePage() {
             <form onSubmit={onSubmit} className="mt-5">
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-500">QQ</label>
+                  <label className="w-1/5 text-gray-500">{_t("mine.profile.form-label.qq")}</label>
                   {profile?.qq ?
                     <div className="flex items-center ml-1 w-4/5 text-[#c8c9cc] placeholder-gray-400 focus:outline-none h-10">{profile?.qq}</div>
                     :
                     <input
                       type="text"
-                      placeholder="请输入QQ"
+                      placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.qq")}
                       {...register("qq")}
                       disabled={!!profile?.qq}
                       className="ml-1 w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-10"
@@ -178,13 +180,13 @@ export default function ProfilePage() {
               </div>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-500">支付宝账号</label>
+                  <label className="w-1/5 text-gray-500">{_t("mine.profile.form-label.alipay")}</label>
                   {profile?.alipay ?
                     <div className="flex items-center ml-1 w-4/5 text-[#c8c9cc] placeholder-gray-400 focus:outline-none h-10">{profile?.alipay}</div>
                     :
                     <input
                       type="text"
-                      placeholder="请输入支付宝账号"
+                      placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.alipay")}
                       {...register("alipay")}
                       disabled={!!profile?.alipay}
                       className="ml-1 w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-10"
@@ -197,13 +199,13 @@ export default function ProfilePage() {
               </div>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-500">微信账号</label>
+                  <label className="w-1/5 text-gray-500">{_t("mine.profile.form-label.wchat")}</label>
                   {profile?.wchat ?
                     <div className="flex items-center ml-1 w-4/5 text-[#c8c9cc] placeholder-gray-400 focus:outline-none h-10">{profile?.wchat}</div>
                     :
                     <input
                       type="text"
-                      placeholder="请输入微信账号"
+                      placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.wchat")}
                       {...register("wchat")}
                       disabled={!!profile?.wchat}
                       className="ml-1 w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-10"
@@ -216,12 +218,12 @@ export default function ProfilePage() {
               </div>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-500">真实姓名</label>
+                  <label className="w-1/5 text-gray-500">{_t("mine.profile.form-label.realname")}</label>
                   {profile?.realname ?
                     <div className="flex items-center ml-1 w-4/5 text-[#c8c9cc] placeholder-gray-400 focus:outline-none h-10">{profile?.realname}</div>
                     : <input
                       type="text"
-                      placeholder="请输入真实姓名"
+                      placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.realname")}
                       {...register("realname")}
                       disabled={!!profile?.realname}
                       className="ml-1 w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-10"
@@ -234,13 +236,13 @@ export default function ProfilePage() {
               </div>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-500">收货地址</label>
+                  <label className="w-1/5 text-gray-500">{_t("mine.profile.form-label.address")}</label>
                   {profile?.address ?
                     <div className="flex items-center ml-1 w-4/5 text-[#c8c9cc] placeholder-gray-400 focus:outline-none h-10">{profile?.address}</div>
                     :
                     <input
                       type="text"
-                      placeholder="请输入收货地址"
+                      placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.address")}
                       {...register("address")}
                       disabled={!!profile?.address}
                       className="ml-1 w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-10"
@@ -254,14 +256,14 @@ export default function ProfilePage() {
               <Alert variant="destructive" className="mt-2 ">
                 <div className="flex items-center gap-2">
                   <AlertCircleIcon/>
-                  <AlertTitle>以上内容填写后不可修改，请认真填写</AlertTitle>
+                  <AlertTitle>{_t("mine.profile.alert")}</AlertTitle>
                 </div>
               </Alert>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
                 <div className="flex justify-center items-center ">
-                  <label className="w-1/5 text-gray-500">签名</label>
+                  <label className="w-1/5 text-gray-500">{_t("mine.profile.form-label.signature")}</label>
                   <textarea
-                    placeholder="请输入签名"
+                    placeholder={_t("common.form.placeholder.enter") + _t("mine.profile.form-label.signature")}
                     {...register("signature")}
                     className="ml-1 w-4/5 text-gray-800 placeholder-gray-400 focus:outline-none h-20"
                   />
@@ -278,7 +280,7 @@ export default function ProfilePage() {
                   ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
                 }
               >
-                {isSubmitting ? "提交中..." : "提交"}
+                {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
               </button>
             </form>
           </main>
