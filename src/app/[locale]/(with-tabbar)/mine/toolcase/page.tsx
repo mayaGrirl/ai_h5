@@ -91,7 +91,6 @@ export default function Mine() {
                 )}
               </div>
               <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
-                {/* 手机号 */}
                 <div className="flex justify-center items-center ">
                   <label className="w-1/5 text-gray-700">答案</label>
                   <input
