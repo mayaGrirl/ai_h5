@@ -7,6 +7,15 @@ import {
   RegistrationDto,
   RegistrationReq,
 } from '@/types/login.type';
+import {CustomerField} from "@/types/customer.type";
+
+/**
+ * 当前登录用户信息
+ * @returns
+ */
+export const currentCustomer = (): Promise<HttpRes<CustomerField>> => {
+  return http.get<HttpRes<CustomerField>>(`/api/app/v1/current/customer`, {});
+};
 
 /**
  * 注册

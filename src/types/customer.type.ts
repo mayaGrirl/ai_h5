@@ -13,6 +13,16 @@ export interface BindEmailDto {
 }
 
 /**
+ * 修改密码
+ */
+export interface UpdatePasswordDto {
+  safe_ask: string;
+  answer: string;
+  password: string;
+  confirm_password: string;
+}
+
+/**
  * 设置密保问题
  */
 export interface SetSecurityPassDto {
@@ -55,6 +65,7 @@ export interface CustomerField {
   sid: number;
   user: string;
   mobile: string;
+  securitypass: string;
   email: string;
   gid: number;
   level: number;

@@ -29,8 +29,9 @@
       "salary": "My Salary",
       "hand-coins": "Free Redemption",
       "message-circle-more": "My Roast",
-      "shield-plus": "Security Settings",
-      "shield-ellipsis": "Change Password",
+      "security-settings": "Security Settings",
+      "edit-password": "Change Password",
+      "edit-pay-password": "Change Pay Password",
       "edit-nickname": "Change Nickname",
       "x": "Exit"
     },
@@ -77,6 +78,7 @@
         "answer": "Answer"
       },
       "question-options": {
+        "default": "Place select safety question",
         "1": "What is my father's name?",
         "2": "What is my mother's name?",
         "3": "What is my grandfather's name?",
@@ -96,6 +98,50 @@
         "17": "What is my daughter's name?",
         "18": "Who is the hero I admire the most?",
         "19": "What is my biggest dream?"
+      }
+    },
+    "security-settings": {
+      "group-account": {
+        "title": "Account Security",
+        "login": "Login Password",
+        "address": "Login Location Verification",
+        "sms": "SMS Login Verification",
+        "password": {
+          "login-password": "Login Password",
+          "login-password-placeholder": "Place entry update login password",
+          "login-password-min": "Change login password to at least 8 characters",
+          "confirm-password": "Confirm Password",
+          "confirm-password-placeholder": "Place entry confirm login password",
+          "confirm-password-eq": "The passwords entered twice are inconsistent",
+          "answer-max": "The answer cannot exceed 50 characters",
+          "safe-ask-valid": "Security Validation",
+          "tip": "Kind Reminder",
+          "tip-1": "Your password is used as a login credential. Please keep it safe.",
+          "tip-2": "Set a password with a length of 8–16 characters.",
+          "tip-3": "The password must contain at least two of the following: letters and numbers."
+        },
+        "pay-password": {
+          "password": "Pay Password",
+          "password-placeholder": "Place entry update pay password",
+          "password-min": "Change pay password to at least 8 characters",
+          "confirm-password": "Confirm Password",
+          "confirm-password-placeholder": "Place entry confirm pay password",
+          "tip-1": "Please keep your password safe as proof of transactions, withdrawals, etc"
+        },
+        "question": {
+          "tip-1": "Security questions will be used for viewing card codes, changing the login password, changing the secondary password, and more.",
+          "tip-2": "Security questions can only be set once. Please set them carefully."
+        }
+      },
+      "group-pay": {
+        "title": "Payment Security",
+        "pay": "Secondary Password",
+        "security": "Security Questions"
+      },
+      "group-other": {
+        "title": "Other Permission Verification",
+        "redeem": "Reward Redemption",
+        "card": "Card Code Viewing"
       }
     }
   },

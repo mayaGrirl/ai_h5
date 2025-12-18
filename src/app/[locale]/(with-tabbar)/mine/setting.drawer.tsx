@@ -45,8 +45,8 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
     {label: _t("mine.setting.salary"), href: "/mine/banknote", icon: Banknote},
     {label: _t("mine.setting.hand-coins"), href: "/mine/hand-coins", icon: HandCoins},
     {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
-    {label: _t("mine.setting.shield-plus"), href: "/mine/shield-plus", icon: ShieldPlus},
-    {label: _t("mine.setting.shield-ellipsis"), href: "/mine/shield-ellipsis", icon: ShieldEllipsis},
+    {label: _t("mine.setting.security-settings"), href: "/mine/security-settings", icon: ShieldPlus},
+    // {label: _t("mine.setting.edit-password"), href: "/mine/security-settings/password", icon: ShieldEllipsis},
     {label: _t("mine.setting.edit-nickname"), href: "/mine/edit-nickname", icon: PencilLine},
     {label: _t("mine.setting.x"), href: "", icon: X},
   ];
@@ -79,7 +79,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
         {/* 遮罩层 */}
         <Drawer.Overlay className="fixed inset-0 bg-black/40"/>
         <Drawer.Content
-          className="fixed bottom-0 left-1/2 -translate-x-[51%] w-full max-w-xl z-[100] bg-white rounded-t-[10px]
+          className="fixed bottom-0 left-1/2 -translate-x-[50%] w-full max-w-xl z-[100] bg-white rounded-t-[10px]
             outline-none pb-[env(safe-area-inset-bottom)]"
         >
           <div className="p-4 rounded-t-[10px]">

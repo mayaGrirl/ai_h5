@@ -8,12 +8,13 @@ import {AlertCircleIcon} from "lucide-react";
 import {z} from "zod";
 import {PageHeader} from "@/components/page-header";
 import {Alert, AlertTitle} from "@/components/ui/alert";
-import {bindEmail, currentCustomer} from "@/api/customer";
+import {bindEmail} from "@/api/customer";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
 import {CustomerField} from "@/types/customer.type";
 import {useTranslations} from "use-intl";
+import {useAuthStore} from "@/utils/storage/auth";
 
 const schema = z.object({
   email: z.string().min(1).max(50).regex(/^[\w\-\.]+@[\w\-]+(\.\w+)+$/, "邮箱格式不正确"),
@@ -32,6 +33,9 @@ export default function Mine() {
 
   const [profile, setProfile] = React.useState<CustomerField>();
 
+  const currentCustomer = useAuthStore((s) => s.currentCustomer);
+  const {hydrated} = useAuthStore();
+
   const {
     register,
     handleSubmit,
@@ -43,18 +47,17 @@ export default function Mine() {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const {code, data} = await currentCustomer();
-      if (code === 200) {
-        setProfile(data)
-        if (data?.email) {
-          setValue("email", data.email)
-        }
+    if (!hydrated) return;
+
+    const init = async () => {
+      if (currentCustomer) {
+        setProfile(currentCustomer)
+        setValue("email", currentCustomer?.email)
       }
     };
 
-    void fetchProfile();
-  }, [setValue]);
+    void init();
+  }, [setValue, hydrated, currentCustomer]);
 
   const onSubmit = handleSubmit(async (values) => {
     const result = await bindEmail({
@@ -75,12 +78,12 @@ export default function Mine() {
       <div className="flex min-h-screen justify-center bg-[#eef3f8]">
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-          <PageHeader title={_t("mine.bind-email.title")} />
+          <PageHeader title={_t("mine.bind-email.title")}/>
           {/* 提示 */}
           <main className="px-3 pb-20 pt-3">
             <Alert variant="destructive">
               <div className="flex items-center gap-2">
-                <AlertCircleIcon />
+                <AlertCircleIcon/>
                 <AlertTitle>{_t("mine.bind-email.alert")}</AlertTitle>
               </div>
             </Alert>

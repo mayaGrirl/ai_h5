@@ -57,7 +57,7 @@ export interface ForgetPasswordDto {
    * 滑动验证分数
    */
   point: string;
-  [property: string]: any;
+  [property: string]: unknown;
 }
 
 export interface ResetPasswordDto {
@@ -72,7 +72,7 @@ export interface ResetPasswordDto {
   password: string;
   point: string;
   verify_code: string;
-  [property: string]: any;
+  [property: string]: unknown;
 }
 
 /**
@@ -99,5 +99,5 @@ export interface ITradePasswordDto {
    * 验证code
    */
   verify_code: string;
-  [property: string]: any;
+  [property: string]: unknown;
 }

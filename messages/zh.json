@@ -29,8 +29,9 @@
       "salary": "我的工资",
       "hand-coins": "免费兑换",
       "message-circle-more": "我的吐槽",
-      "shield-plus": "安全设置",
-      "shield-ellipsis": "修改密码",
+      "security-settings": "安全设置",
+      "edit-password": "修改密码",
+      "edit-pay-password": "修改二级密码",
       "edit-nickname": "修改昵称",
       "x": "退出"
     },
@@ -77,6 +78,7 @@
         "answer": "答案"
       },
       "question-options": {
+        "default": "请选择安全问题",
         "1": "我父亲的姓名是什么？",
         "2": "我母亲的姓名是什么？",
         "3": "我爷爷的姓名是什么？",
@@ -96,6 +98,50 @@
         "17": "我女儿的名字叫什么？",
         "18": "最崇拜的英雄是哪位？",
         "19": "我最大的梦想是什么？"
+      }
+    },
+    "security-settings": {
+      "group-account": {
+        "title": "账户安全",
+        "login": "登录密码",
+        "address": "登录地限制",
+        "sms": "短信登录验证",
+        "password": {
+          "login-password": "登陆密码",
+          "login-password-placeholder": "请输入修改登录密码",
+          "login-password-min": "修改登录密码至少8位",
+          "confirm-password": "确认登录密码",
+          "confirm-password-placeholder": "请输入确认登录密码",
+          "confirm-password-eq": "两次输入的密码不一致",
+          "answer-max": "答案不能超过50字符",
+          "safe-ask-valid": "安全验证",
+          "tip": "温馨提示",
+          "tip-1": "密码作为登录凭证，请妥善保管",
+          "tip-2": "设置密码等长度为8-16位字符",
+          "tip-3": "密码中必须包含英文、数字至少2种"
+        },
+        "pay-password": {
+          "password": "二级密码",
+          "password-placeholder": "请输入二级密码",
+          "password-min": "修改二级密码至少8位",
+          "confirm-password": "确认二级密码",
+          "confirm-password-placeholder": "请输入确认二级密码",
+          "tip-1": "密码作为交易、取现等凭证，请妥善保管"
+        },
+        "question": {
+          "tip-1": "密保将用于查看卡密、修改登录密码、修改二级密码等",
+          "tip-2": "密保问题只能设置一次，请谨慎设置"
+        }
+      },
+      "group-pay": {
+        "title": "支付安全",
+        "pay": "二级密码",
+        "security": "密保设置"
+      },
+      "group-other": {
+        "title": "其他权限验证",
+        "redeem": "兑奖验证方式",
+        "card": "查看卡密验证方式"
       }
     }
   },

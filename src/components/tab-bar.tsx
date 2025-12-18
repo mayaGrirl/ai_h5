@@ -13,7 +13,6 @@ import {usePathname} from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/utils/storage/auth";
 
-
 type Props = {
   locale: string;
 };
@@ -36,9 +35,9 @@ export default function TabBar({locale}: Props) {
 
   const tabs = [
     { name: t("home"), href: "/", icon: Home, auth: false },
+    { name: t("shop"), href: "/shop", icon: ShoppingBag, auth: true },
     { name: t("games"), href: "/games", icon: Gamepad2, auth: true },
     { name: t("ranking"), href: "/ranking", icon: Trophy, auth: true },
-    { name: t("shop"), href: "/shop", icon: ShoppingBag, auth: true },
     { name: t("mine"), href: "/mine", icon: User, auth: true }
   ];
 

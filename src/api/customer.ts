@@ -1,20 +1,12 @@
 import {HttpRes} from "@/types/http.type";
 import http from "@/utils/request";
 import {
-  BindEmailDto, CustomerField,
+  BindEmailDto,
   MemberField,
   SetSecurityPassDto,
-  UpdateNicknameDto,
+  UpdateNicknameDto, UpdatePasswordDto,
   UpdateProfileDto
 } from "@/types/customer.type";
-
-/**
- * 当前登录用户信息
- * @returns
- */
-export const currentCustomer = (): Promise<HttpRes<CustomerField>> => {
-  return http.get<HttpRes<CustomerField>>(`/api/app/v1/current/customer`, {});
-};
 
 /**
  * 更新昵称
@@ -58,4 +50,22 @@ export const updateProfile = (data: UpdateProfileDto): Promise<HttpRes<unknown>>
  */
 export const getProfile = (): Promise<HttpRes<MemberField>> => {
   return http.get<HttpRes<MemberField>>(`/api/app/v1/customer/profile/detail`, {});
+};
+
+/**
+ * 更新登录密码
+ * @param data
+ * @returns
+ */
+export const updateLoginPassword = (data: UpdatePasswordDto): Promise<HttpRes<unknown>> => {
+  return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/login-password`, data);
+};
+
+/**
+ * 更新二级密码
+ * @param data
+ * @returns
+ */
+export const updatePayPassword = (data: UpdatePasswordDto): Promise<HttpRes<unknown>> => {
+  return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/pay-password`, data);
 };

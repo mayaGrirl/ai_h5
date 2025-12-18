@@ -5,6 +5,7 @@ import {NextIntlClientProvider, hasLocale} from "next-intl";
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import {Toaster} from "sonner";
+import AuthProvider from "@/components/provider/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,7 +59,9 @@ export default async function RootLayout({
     <html lang={locale} className='h-full'>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased touch-manipulation`}>
       <NextIntlClientProvider>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
 
         {/* 全局 Toast 渲染器（必须） */}
         <Toaster
