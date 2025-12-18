@@ -32,6 +32,13 @@ export interface SettingLoginAddressDto {
 }
 
 /**
+ * 设置登录短信验证
+ */
+export interface SettingLoginSmsDto {
+  login_verify_type: string,
+}
+
+/**
  * 设置密保问题
  */
 export interface SetSecurityPassDto {

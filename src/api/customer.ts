@@ -3,7 +3,7 @@ import http from "@/utils/request";
 import {
   BindEmailDto,
   MemberField,
-  SetSecurityPassDto, SettingLoginAddressDto,
+  SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
   UpdateNicknameDto, UpdatePasswordDto,
   UpdateProfileDto
 } from "@/types/customer.type";
@@ -77,4 +77,13 @@ export const updatePayPassword = (data: UpdatePasswordDto): Promise<HttpRes<unkn
  */
 export const settingLoginAddress = (data: SettingLoginAddressDto): Promise<HttpRes<unknown>> => {
   return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/login-location`, data);
+};
+
+/**
+ * 设置登录短信验证
+ * @param data
+ * @returns
+ */
+export const settingLoginVerifyType = (data: SettingLoginSmsDto): Promise<HttpRes<unknown>> => {
+  return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/login-sms`, data);
 };

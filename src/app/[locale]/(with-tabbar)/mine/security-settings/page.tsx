@@ -59,7 +59,7 @@ export default function SecuritySettingsPage() {
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-account.address")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
                   </Link>
-                  <Link href={"/mine/edit-password/login-sms"}
+                  <Link href={"/mine/security-settings/login-sms"}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-account.sms")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
