@@ -17,7 +17,7 @@ import {useAuthStore} from "@/utils/storage/auth";
 /**
  * 我的道具
  */
-export default function Mine() {
+export default function SecurityQuestionPage() {
   // 页面需要登陆Hook
   useRequireLogin();
   const router = useRouter();

@@ -131,6 +131,16 @@
         "question": {
           "tip-1": "密保将用于查看卡密、修改登录密码、修改二级密码等",
           "tip-2": "密保问题只能设置一次，请谨慎设置"
+        },
+        "login-location": {
+          "title": "登录地限制设置",
+          "enabled-label": "是否开启限制",
+          "address1-label": "登录地1",
+          "address1-max": "最多20个字",
+          "address1-empty": "开启后至少填写一个登录地",
+          "address2-label": "登录地2",
+          "alert-1": "如果限制城市，如上海市，请填写“上海”",
+          "alert-2": "如果限制省份，如广东省，请填写“广东”"
         }
       },
       "group-pay": {

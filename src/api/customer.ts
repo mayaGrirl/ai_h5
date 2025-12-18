@@ -3,7 +3,7 @@ import http from "@/utils/request";
 import {
   BindEmailDto,
   MemberField,
-  SetSecurityPassDto,
+  SetSecurityPassDto, SettingLoginAddressDto,
   UpdateNicknameDto, UpdatePasswordDto,
   UpdateProfileDto
 } from "@/types/customer.type";
@@ -68,4 +68,13 @@ export const updateLoginPassword = (data: UpdatePasswordDto): Promise<HttpRes<un
  */
 export const updatePayPassword = (data: UpdatePasswordDto): Promise<HttpRes<unknown>> => {
   return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/pay-password`, data);
+};
+
+/**
+ * 设置登录地验证
+ * @param data
+ * @returns
+ */
+export const settingLoginAddress = (data: SettingLoginAddressDto): Promise<HttpRes<unknown>> => {
+  return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/login-location`, data);
 };

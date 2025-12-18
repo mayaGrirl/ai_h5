@@ -131,6 +131,16 @@
         "question": {
           "tip-1": "Security questions will be used for viewing card codes, changing the login password, changing the secondary password, and more.",
           "tip-2": "Security questions can only be set once. Please set them carefully."
+        },
+        "login-location": {
+          "title": "Login Location Restriction Settings",
+          "enabled-label": "Enable Restriction",
+          "address1-label": "Login Location 1",
+          "address1-max": "Up to 20 characters",
+          "address1-empty": "At least one login location must be filled in after enabling",
+          "address2-label": "Login Location 2",
+          "alert-1": "If restricting a city, such as Shanghai City, please enter \"Shanghai\"",
+          "alert-2": "If restricting a province, such as Guangdong Province, please enter \"Guangdong\""
         }
       },
       "group-pay": {

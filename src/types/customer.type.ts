@@ -23,6 +23,15 @@ export interface UpdatePasswordDto {
 }
 
 /**
+ * 设置登录地限制
+ */
+export interface SettingLoginAddressDto {
+  enabled: number,
+  address1?: string,
+  address2?: string,
+}
+
+/**
  * 设置密保问题
  */
 export interface SetSecurityPassDto {
@@ -44,60 +53,60 @@ export interface UpdateProfileDto {
 
 // 管理员 / 用户基础信息
 export interface MemberField {
-  aid: number;
-  qq: string | null;
-  nickname: string | null;
-  birthday: number;
-  signature: string | null;
-  realname: string | null;
-  gender: number | null;
-  alipay: string | null;
-  wchat: string | null;
-  address: string | null;
-  sign: string | null;
-  mobile: string | null;
-  email: string | null;
+  aid?: number;
+  qq?: string | null;
+  nickname?: string | null;
+  birthday?: number;
+  signature?: string | null;
+  realname?: string | null;
+  gender?: number | null;
+  alipay?: string | null;
+  wchat?: string | null;
+  address?: string | null;
+  sign?: string | null;
+  mobile?: string | null;
+  email?: string | null;
 }
 
 // 管理员 / 用户基础信息
 export interface CustomerField {
-  id: number;
-  sid: number;
-  user: string;
-  mobile: string;
-  securitypass: string;
-  email: string;
-  gid: number;
-  level: number;
-  nw: number;
-  vip: number;
-  vipStime: number;
-  vipEtime: number;
-  avatar: string;
-  regtime: number;
-  reg_ip: string;
-  reg_address: string;
-  last_login_time: number;
-  last_login_ip: string;
-  last_login_address: string;
-  login_sun: number;
-  status: number;
-  tjr: number;
-  tgall: number;
-  isLogin: number;
-  address1: string;
-  address2: string;
-  loginVerifyType: string;
-  isMobile: number;
-  prizeVerifyType: string;
-  selectcardVerifyType: string;
-  sc: number;
-  cz: number;
-  czf: number;
-  tz: number;
-  tzf: number;
-  zcf: number;
-  scf: number;
-  ksf: number;
-  xm: number;
+  id?: number;
+  sid?: number;
+  user?: string;
+  mobile?: string;
+  securitypass?: string;
+  email?: string;
+  gid?: number;
+  level?: number;
+  nw?: number;
+  vip?: number;
+  vipStime?: number;
+  vipEtime?: number;
+  avatar?: string;
+  regtime?: number;
+  reg_ip?: string;
+  reg_address?: string;
+  last_login_time?: number;
+  last_login_ip?: string;
+  last_login_address?: string;
+  login_sun?: number;
+  status?: number;
+  tjr?: number;
+  tgall?: number;
+  isLogin?: number;
+  address1?: string;
+  address2?: string;
+  loginVerifyType?: string;
+  isMobile?: number;
+  prizeVerifyType?: string;
+  selectcardVerifyType?: string;
+  sc?: number;
+  cz?: number;
+  czf?: number;
+  tz?: number;
+  tzf?: number;
+  zcf?: number;
+  scf?: number;
+  ksf?: number;
+  xm?: number;
 }

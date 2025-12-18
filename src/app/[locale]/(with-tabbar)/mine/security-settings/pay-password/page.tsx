@@ -12,7 +12,7 @@ import {useRouter} from "next/navigation";
 import {useTranslations} from "use-intl";
 import {SAFE_QUESTION_OPTIONS} from "@/constants/constants";
 
-export default function Mine() {
+export default function PayPasswordPage() {
   // 页面需要登陆Hook
   useRequireLogin();
 
