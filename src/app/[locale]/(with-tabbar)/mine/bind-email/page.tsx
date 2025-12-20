@@ -33,6 +33,7 @@ export default function Mine() {
 
   const [profile, setProfile] = React.useState<CustomerField>();
 
+  // 当前登录会员信息
   const currentCustomer = useAuthStore((s) => s.currentCustomer);
   const {hydrated} = useAuthStore();
 
@@ -52,7 +53,9 @@ export default function Mine() {
     const init = async () => {
       if (currentCustomer) {
         setProfile(currentCustomer)
-        setValue("email", currentCustomer?.email)
+        if (currentCustomer?.email) {
+          setValue("email", currentCustomer?.email)
+        }
       }
     };
 

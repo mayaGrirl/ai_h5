@@ -2,11 +2,12 @@ import {HttpRes} from "@/types/http.type";
 import http from "@/utils/request";
 import {
   BindEmailDto,
-  MemberField,
+  MemberField, RedeemGiftVerifyTypeDto,
   SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
   UpdateNicknameDto, UpdatePasswordDto,
-  UpdateProfileDto
+  UpdateProfileDto, ViewCardVerifyTypeDto
 } from "@/types/customer.type";
+import {LoginReq} from "@/types/login.type";
 
 /**
  * 更新昵称
@@ -86,4 +87,29 @@ export const settingLoginAddress = (data: SettingLoginAddressDto): Promise<HttpR
  */
 export const settingLoginVerifyType = (data: SettingLoginSmsDto): Promise<HttpRes<unknown>> => {
   return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/login-sms`, data);
+};
+
+/**
+ * 设置兑换礼品验证方式
+ * @param data
+ * @returns
+ */
+export const settingRedeemGiftVerifyType = (data: RedeemGiftVerifyTypeDto): Promise<HttpRes<unknown>> => {
+  return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/redeem-gift`, data);
+};
+
+/**
+ * 设置查看卡密验证方式
+ * @param data
+ * @returns
+ */
+export const settingViewCardVerifyType = (data: ViewCardVerifyTypeDto): Promise<HttpRes<unknown>> => {
+  return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/view-card`, data);
+};
+
+/**
+ * 会员接受短信
+ */
+export const customerReceiveSms = (): Promise<HttpRes<unknown>> => {
+  return http.get('/api/app/v1/customer/receive-sms', {});
 };

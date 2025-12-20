@@ -147,6 +147,10 @@
           "option-1": "无",
           "option-2": "每次登录短信验证",
           "option-3": "异地登录短信验证"
+        },
+        "redeem": {
+          "option-2": "密保验证",
+          "option-3": "邮箱验证"
         }
       },
       "group-pay": {

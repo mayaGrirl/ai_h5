@@ -1,3 +1,5 @@
+import {settingRedeemGiftVerifyType} from "@/api/customer";
+
 /**
  * 更新昵称
  */
@@ -36,6 +38,20 @@ export interface SettingLoginAddressDto {
  */
 export interface SettingLoginSmsDto {
   login_verify_type: string,
+}
+
+/**
+ * 设置兑换礼品验证方式
+ */
+export interface RedeemGiftVerifyTypeDto {
+  prize_verify_type: string,
+}
+
+/**
+ * 设置查看卡密验证方式
+ */
+export interface ViewCardVerifyTypeDto {
+  select_card_verify_type: string,
 }
 
 /**

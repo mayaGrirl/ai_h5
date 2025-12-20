@@ -6,7 +6,7 @@ import {PageHeader} from "@/components/page-header";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {settingLoginVerifyType} from "@/api/customer";
+import {settingViewCardVerifyType} from "@/api/customer";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {useTranslations} from "use-intl";
@@ -14,7 +14,13 @@ import {useAuthStore} from "@/utils/storage/auth";
 import {useEffect} from "react";
 import {cn} from "@/lib/utils";
 
-export default function LoginSmsPage() {
+// 选项
+const RadioOptions = [
+  {value: "safeQuestion", i18nKey: "mine.security-settings.group-account.redeem.option-2"},
+  {value: "emailVerify", i18nKey: "mine.security-settings.group-account.redeem.option-3"},
+];
+
+export default function CardPage() {
   // 页面需要登陆Hook
   useRequireLogin();
 
@@ -28,7 +34,7 @@ export default function LoginSmsPage() {
 
   // 表单验证
   const schema = z.object({
-    loginVerifyType: z.string(),
+    selectcardVerifyType: z.string(),
   });
   type FormValues = z.infer<typeof schema>;
   const {
@@ -40,16 +46,16 @@ export default function LoginSmsPage() {
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      loginVerifyType: "none",
+      selectcardVerifyType: "safeQuestion",
     },
     mode: "onSubmit",
   });
-  const currentValue = watch("loginVerifyType");
+  const currentValue = watch("selectcardVerifyType");
 
   // 提交表单
   const onSubmit = handleSubmit(async (values) => {
-    const result = await settingLoginVerifyType({
-      login_verify_type: values.loginVerifyType,
+    const result = await settingViewCardVerifyType({
+      select_card_verify_type: values.selectcardVerifyType,
     });
     const {code, message} = result;
     if (code !== 200) {
@@ -58,7 +64,7 @@ export default function LoginSmsPage() {
       toast.success(message);
 
       if (currentCustomer) {
-        currentCustomer.loginVerifyType = values.loginVerifyType;
+        currentCustomer.selectcardVerifyType = values.selectcardVerifyType;
         setCurrentCustomer(currentCustomer);
       }
 
@@ -67,18 +73,18 @@ export default function LoginSmsPage() {
     }
   })
 
-  const RadioOptions = [
-    {value: "none", i18nKey: "mine.security-settings.group-account.login-sms.option-1"},
-    {value: "everyloginNeedSMS", i18nKey: "mine.security-settings.group-account.login-sms.option-2"},
-    {value: "otherAddrNeedSMS", i18nKey: "mine.security-settings.group-account.login-sms.option-3"},
-  ];
-
   useEffect(() => {
     if (!hydrated) return;
 
     const init = async () => {
-      if (currentCustomer && currentCustomer.loginVerifyType) {
-        setValue("loginVerifyType", currentCustomer.loginVerifyType);
+      if (currentCustomer && currentCustomer.selectcardVerifyType) {
+        const radioValues = RadioOptions.map(item => item.value);
+
+        let selectcardVerifyType = 'safeQuestion';
+        if (radioValues.includes(currentCustomer.selectcardVerifyType)) {
+          selectcardVerifyType = currentCustomer.selectcardVerifyType
+        }
+        setValue("selectcardVerifyType", selectcardVerifyType);
       }
     };
 
@@ -90,10 +96,9 @@ export default function LoginSmsPage() {
       <div className="flex min-h-screen justify-center bg-[#eef3f8]">
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-          <PageHeader title={_t("mine.security-settings.group-account.login-sms.title")}/>
+          <PageHeader title={_t("mine.security-settings.group-other.card")}/>
 
           <form onSubmit={onSubmit} className="w-full bg-gray-100 px-3 py-4">
-            {/* 修改二级密码 */}
             <div className="bg-white rounded-lg mb-3 overflow-hidden">
               <div className="flex flex-wrap flex-col items-start content-start px-4 py-3 border-b">
                 {RadioOptions.map(({value, i18nKey}) => {
@@ -111,7 +116,7 @@ export default function LoginSmsPage() {
                       <input
                         type="radio"
                         value={value}
-                        {...register("loginVerifyType")}
+                        {...register("selectcardVerifyType")}
                         className="hidden"
                       />
 
@@ -134,15 +139,6 @@ export default function LoginSmsPage() {
                 })}
               </div>
             </div>
-
-            {/*<Alert variant="warning">*/}
-            {/*  <div className="flex items-center gap-2">*/}
-            {/*    <AlertCircleIcon/>*/}
-            {/*    <AlertTitle>*/}
-            {/*      当生态值大于0时可选择开启手机验证方式，每次验证扣除0豆豆。 当生态值小于0时，此处设置无效，登录会随机进行手机验证。*/}
-            {/*    </AlertTitle>*/}
-            {/*  </div>*/}
-            {/*</Alert>*/}
 
             {/* 确认按钮 */}
             <button

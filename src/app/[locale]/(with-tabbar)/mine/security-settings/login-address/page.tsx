@@ -15,7 +15,6 @@ import {Alert, AlertTitle} from "@/components/ui/alert";
 import {useAuthStore} from "@/utils/storage/auth";
 import {useEffect} from "react";
 
-
 export default function LoginAddressPage() {
   // 页面需要登陆Hook
   useRequireLogin();
@@ -23,6 +22,7 @@ export default function LoginAddressPage() {
   const router = useRouter();
   const _t = useTranslations();
 
+  // 当前登录会员信息
   const setCurrentCustomer = useAuthStore((s) => s.setCurrentCustomer);
   const currentCustomer = useAuthStore((s) => s.currentCustomer);
   const {hydrated} = useAuthStore();

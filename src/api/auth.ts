@@ -43,7 +43,6 @@ export const login = (data: LoginDto): Promise<HttpRes<LoginReq>> => {
  * @param data
  * @returns
  */
-
 export const forgetPassword = (
   data: ForgetPasswordDto,
 ): Promise<HttpRes<LoginReq>> => {

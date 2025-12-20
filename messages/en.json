@@ -147,6 +147,10 @@
           "option-1": "None",
           "option-2": "SMS verification for every login",
           "option-3": "SMS verification for login from a different location"
+        },
+        "redeem": {
+          "option-2": "Security Verify",
+          "option-3": "Email Verify"
         }
       },
       "group-pay": {
