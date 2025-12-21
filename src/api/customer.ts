@@ -2,12 +2,11 @@ import {HttpRes} from "@/types/http.type";
 import http from "@/utils/request";
 import {
   BindEmailDto,
-  MemberField, RedeemGiftVerifyTypeDto,
+  MemberField, RedeemGiftVerifyTypeDto, ReliefResponse,
   SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
   UpdateNicknameDto, UpdatePasswordDto,
   UpdateProfileDto, ViewCardVerifyTypeDto
 } from "@/types/customer.type";
-import {LoginReq} from "@/types/login.type";
 
 /**
  * 更新昵称
@@ -105,6 +104,21 @@ export const settingRedeemGiftVerifyType = (data: RedeemGiftVerifyTypeDto): Prom
  */
 export const settingViewCardVerifyType = (data: ViewCardVerifyTypeDto): Promise<HttpRes<unknown>> => {
   return http.put<HttpRes<unknown>>(`/api/app/v1/customer/edit/view-card`, data);
+};
+
+/**
+ * 获取救济数据
+ */
+export const getReliefData = (): Promise<HttpRes<ReliefResponse>> => {
+  return http.get('/api/app/v1/customer/relief', {});
+};
+
+/**
+ * 领取救济
+ * @returns
+ */
+export const receiveRelief = (): Promise<HttpRes<unknown>> => {
+  return http.post<HttpRes<unknown>>(`/api/app/v1/customer/receive/relief`, {});
 };
 
 /**

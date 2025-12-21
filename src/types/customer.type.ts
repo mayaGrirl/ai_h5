@@ -1,5 +1,3 @@
-import {settingRedeemGiftVerifyType} from "@/api/customer";
-
 /**
  * 更新昵称
  */
@@ -91,7 +89,7 @@ export interface MemberField {
   email?: string | null;
 }
 
-// 管理员 / 用户基础信息
+// 用户基础信息
 export interface CustomerField {
   id?: number;
   sid?: number;
@@ -132,4 +130,23 @@ export interface CustomerField {
   scf?: number;
   ksf?: number;
   xm?: number;
+}
+
+// 获取救济数据
+export interface ReliefResponse {
+  options: MemberLevel[],
+  receive_count: number,
+  limit: number,
+}
+
+// 会员等级配置
+export interface MemberLevel {
+  id?: number;
+  name?: string;
+  level?: number;
+  emin?: number;
+  emax?: number;
+  tg?: number;
+  day_jiuji_point?: number;
+  reward_discount?: string;
 }

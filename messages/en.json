@@ -163,6 +163,14 @@
         "redeem": "Reward Redemption",
         "card": "Card Code Viewing"
       }
+    },
+    "relief": {
+      "table-header-1": "Level",
+      "table-header-2": "Claimable Coins",
+      "table-header-3": "Balance",
+      "table-row-hit": "When the balance is less than {point}, you can claim {limit} per day",
+      "button": "Remaining {remaining} times, claim now",
+      "receive-limit-hit": "You have already claimed all for today. Please come back tomorrow"
     }
   },
   "common": {

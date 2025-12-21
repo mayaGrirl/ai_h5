@@ -163,6 +163,14 @@
         "redeem": "兑奖验证方式",
         "card": "查看卡密验证方式"
       }
+    },
+    "relief": {
+      "table-header-1":  "等级",
+      "table-header-2":  "可领取金币",
+      "table-header-3":  "余额",
+      "table-row-hit":  "余额少于{point}，每日可领取{limit}",
+      "button":  "剩余{remaining}次，立即领取",
+      "receive-limit-hit":  "你今天已经领取完了，请明天再来领取"
     }
   },
   "common": {

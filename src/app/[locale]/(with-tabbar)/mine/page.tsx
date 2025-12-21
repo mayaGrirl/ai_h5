@@ -162,7 +162,7 @@ export default function Mine() {
           {/* 账户信息：金币 / 存款 / 生态值 */}
           <section className="mt-3 px-3">
             <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
-              <div className="flex flex-col cursor-pointer">
+              <Link className="flex flex-col cursor-pointer" href={""}>
                 <div className="text-gray-500">金币</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>160</span>
@@ -174,12 +174,10 @@ export default function Mine() {
                     className="inline-block ml-1 w-[13px] h-[13px]"
                   />
                 </div>
-              </div>
-
-              {/* 中间项：左右画分隔线 */}
-              <div className="flex flex-col border-x border-gray-200 cursor-pointer">
+              </Link>
+              <Link className="flex flex-col border-x border-gray-200 cursor-pointer" href={"/mine/customer-transfer"}>
                 <div className="text-gray-500">存款</div>
-                <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-gray-800">
+                <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>111</span>
                   <Image
                     src="/ranking/coin.png"
@@ -189,8 +187,7 @@ export default function Mine() {
                     className="inline-block ml-1 w-[13px] h-[13px]"
                   />
                 </div>
-              </div>
-
+              </Link>
               <div className="flex flex-col">
                 <div className=" text-gray-500">生态值</div>
                 <div className="mt-1 text-[13px] font-semibold text-gray-800">
@@ -202,15 +199,12 @@ export default function Mine() {
             <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
               <div className="flex flex-col">
                 <div className=" text-gray-500">今日排名</div>
-                <div className="mt-1 text-[13px] font-semibold text-[#ff3a00]">500以外</div>
+                <div className="mt-1 text-[13px] font-semibold">500以外</div>
               </div>
-
-              {/* 中间项：左右画分隔线 */}
               <div className="flex flex-col border-x border-gray-200">
                 <div className=" text-gray-500">积分</div>
                 <div className="mt-1 text-[13px] font-semibold text-gray-800">22</div>
               </div>
-
               <div className="flex flex-col">
                 <div className=" text-gray-500">本周工资</div>
                 <div className="mt-1 text-[13px] font-semibold text-gray-800">0</div>
