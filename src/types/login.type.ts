@@ -1,13 +1,8 @@
 export interface RegistrationDto {
-  email: string;
+  mobile: string;
   verify_code: string;
-  inviteCode: string;
   password: string;
   confirm_password: string;
-  public_key: string;
-  private_key: string;
-  point: string;
-  key: string;
 }
 
 export interface LoginDto {

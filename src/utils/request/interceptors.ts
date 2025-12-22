@@ -106,9 +106,13 @@ export const responseDefaultInterceptors = {
     switch (error?.response?.status) {
       // 未登录
       case 401:
-        break;
       // token 过期
       case 403:
+        accessToken.remove();
+        if (typeof window !== "undefined") {
+          const pathname = window.location.pathname;
+          window.location.href = `/auth/login?redirect=${pathname}`;
+        }
         break;
       // 网络请求不存在
       case 404:

@@ -30,6 +30,13 @@ export const registration = (data: RegistrationDto) => {
 };
 
 /**
+ * 发送短信
+ */
+export const sendSmsToMobile = (mobile: string): Promise<HttpRes<unknown>> => {
+  return http.post('/api/app/v1/registration/send-sms', {mobile: mobile});
+};
+
+/**
  * 登录
  * @param data
  * @returns

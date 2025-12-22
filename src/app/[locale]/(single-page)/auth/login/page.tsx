@@ -11,6 +11,8 @@ import {LoginReq} from "@/types/login.type";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/utils/storage/auth";
+import Link from "next/link";
+import {useTranslations} from "use-intl";
 
 const schema = z.object({
   mobile: z.string().min(1, "请输入手机号码").max(50),
@@ -20,6 +22,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function Login() {
+  const _t = useTranslations();
+
   const {
     register,
     handleSubmit,
@@ -40,7 +44,6 @@ export default function Login() {
       password: values.password,
       mfa_code: '',
     }).then((result: HttpRes<LoginReq>) => {
-      console.log(result)
       const {code, data, message} = result;
       if (code !== 200) {
         toast.error(message);
@@ -108,12 +111,14 @@ export default function Login() {
               ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
               }
             >
-              {isSubmitting ? "登录中..." : "登录"}
-            </button>
-            <button
-              className="mt-3 w-full h-12 rounded-full bg-[#0d6efd] text-white tracking-wide font-medium cursor-pointer">注册
+              {isSubmitting ? _t("common.form.button.submitting") : "登录"}
             </button>
           </form>
+          <Link
+            href={'/auth/register'}
+            className="mt-3 h-12 w-full flex items-center justify-center rounded-full bg-[#0d6efd] text-white font-medium tracking-wide transition transform active:scale-95">
+            注册
+          </Link>
         </main>
       </div>
     </div>

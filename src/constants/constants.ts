@@ -1,3 +1,6 @@
+/**
+ * 密保问题选项
+ */
 export const SAFE_QUESTION_OPTIONS = [
   { value: 1, i18nKey: "mine.toolcase.question-options.1" },
   { value: 2, i18nKey: "mine.toolcase.question-options.2" },
@@ -18,4 +21,13 @@ export const SAFE_QUESTION_OPTIONS = [
   { value: 17, i18nKey: "mine.toolcase.question-options.17" },
   { value: 18, i18nKey: "mine.toolcase.question-options.18" },
   { value: 19, i18nKey: "mine.toolcase.question-options.19" },
+];
+
+/**
+ * 不需要登录的页面路由
+ */
+export const NOT_LOGIN_WHITELIST = [
+  "/auth/registration",
+  "/auth/login",
+  "/auth/find-password",
 ];
