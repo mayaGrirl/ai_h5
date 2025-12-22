@@ -1,11 +1,11 @@
 "use client"
 
 import {useEffect, useState} from "react";
-import Skeleton from './skeleton'
 import {getBlockByIdentifier} from "@/api/common";
 import Image from "next/image";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import {useTranslations} from "use-intl";
+import TextSkeleton from "@/components/text-skeleton";
 
 export default function IntroPage() {
   // 页面需要登陆Hook
@@ -42,7 +42,7 @@ export default function IntroPage() {
 
       {/* 异步加载工资简介 */}
       {loading ? (
-        <Skeleton lines={12}/>
+        <TextSkeleton lines={12}/>
       ) : (
         <div
           className="prose prose-sm max-w-none text-gray-700"

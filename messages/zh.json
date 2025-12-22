@@ -115,18 +115,14 @@
           "confirm-password-eq": "两次输入的密码不一致",
           "answer-max": "答案不能超过50字符",
           "safe-ask-valid": "安全验证",
-          "tip": "温馨提示",
-          "tip-1": "密码作为登录凭证，请妥善保管",
-          "tip-2": "设置密码等长度为8-16位字符",
-          "tip-3": "密码中必须包含英文、数字至少2种"
+          "tip": "温馨提示"
         },
         "pay-password": {
           "password": "二级密码",
           "password-placeholder": "请输入二级密码",
           "password-min": "修改二级密码至少8位",
           "confirm-password": "确认二级密码",
-          "confirm-password-placeholder": "请输入确认二级密码",
-          "tip-1": "密码作为交易、取现等凭证，请妥善保管"
+          "confirm-password-placeholder": "请输入确认二级密码"
         },
         "question": {
           "tip-1": "密保将用于查看卡密、修改登录密码、修改二级密码等",

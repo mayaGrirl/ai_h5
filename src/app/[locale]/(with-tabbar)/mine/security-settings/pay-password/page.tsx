@@ -11,14 +11,19 @@ import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {useTranslations} from "use-intl";
 import {SAFE_QUESTION_OPTIONS} from "@/constants/constants";
+import TextSkeleton from "@/components/text-skeleton";
+import {useEffect, useState} from "react";
+import {getBlockByIdentifier} from "@/api/common";
 
 export default function PayPasswordPage() {
   // 页面需要登陆Hook
   useRequireLogin();
 
   const router = useRouter();
-
   const _t = useTranslations();
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [tipContent, setTipContent] = useState<string | null>(null);
 
   // 表单验证
   const schema = z.object({
@@ -61,7 +66,18 @@ export default function PayPasswordPage() {
       // 跳转登录页
       router.back();
     }
-  })
+  });
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      setLoading(true);
+      const {data} = await getBlockByIdentifier('customer_pay_password_tips');
+      setTipContent(data?.content || '');
+      setLoading(false);
+    };
+
+    void fetchContent();
+  }, []);
 
   return (
     <>
@@ -143,20 +159,15 @@ export default function PayPasswordPage() {
                   <span className="w-1 h-4 bg-red-600 rounded mr-2"></span>
                   {_t("mine.security-settings.group-account.password.tip")}
                 </div>
-                <div className="px-4 py-3 text-gray-600">
-                  <p
-                    className="relative pl-3 text-gray-600 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-1 before:rounded-full before:bg-red-400">
-                    {_t("mine.security-settings.group-account.pay-password.tip-1")}
-                  </p>
-                  <p
-                    className="relative pl-3 text-gray-600 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-1 before:rounded-full before:bg-red-400">
-                    {_t("mine.security-settings.group-account.password.tip-2")}
-                  </p>
-                  <p
-                    className="relative pl-3 text-gray-600 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-1 before:rounded-full before:bg-red-400">
-                    {_t("mine.security-settings.group-account.password.tip-3")}
-                  </p>
-                </div>
+                {/* 异步加载温馨提示 */}
+                {loading ? (
+                  <TextSkeleton lines={3}/>
+                ) : (
+                  <div
+                    className="px-4 py-3 text-gray-600"
+                    dangerouslySetInnerHTML={{__html: tipContent!}}
+                  />
+                )}
               </div>
 
               {/* 确认按钮 */}

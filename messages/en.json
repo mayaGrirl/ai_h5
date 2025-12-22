@@ -115,18 +115,14 @@
           "confirm-password-eq": "The passwords entered twice are inconsistent",
           "answer-max": "The answer cannot exceed 50 characters",
           "safe-ask-valid": "Security Validation",
-          "tip": "Kind Reminder",
-          "tip-1": "Your password is used as a login credential. Please keep it safe.",
-          "tip-2": "Set a password with a length of 8–16 characters.",
-          "tip-3": "The password must contain at least two of the following: letters and numbers."
+          "tip": "Kind Reminder"
         },
         "pay-password": {
           "password": "Pay Password",
           "password-placeholder": "Place entry update pay password",
           "password-min": "Change pay password to at least 8 characters",
           "confirm-password": "Confirm Password",
-          "confirm-password-placeholder": "Place entry confirm pay password",
-          "tip-1": "Please keep your password safe as proof of transactions, withdrawals, etc"
+          "confirm-password-placeholder": "Place entry confirm pay password"
         },
         "question": {
           "tip-1": "Security questions will be used for viewing card codes, changing the login password, changing the secondary password, and more.",

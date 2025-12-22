@@ -1,4 +1,4 @@
-export default function Skeleton({lines = 10,}: {
+export default function TextSkeleton({lines = 10,}: {
   lines?: number;
 }) {
   return (
