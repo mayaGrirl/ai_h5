@@ -40,18 +40,17 @@ export default function Login() {
       password: values.password,
       mfa_code: '',
     }).then((result: HttpRes<LoginReq>) => {
-      const {code, data} = result;
+      console.log(result)
+      const {code, data, message} = result;
       if (code !== 200) {
-        toast.error(result.message);
+        toast.error(message);
       } else {
-        toast.success(result.message);
+        toast.success(message);
 
         // 设置token
         // accessToken.setToken(data?.access_token, data?.token_type, data?.expires_at);
         // 用 Zustand 统一设置
         setToken(data?.access_token, data?.token_type, data?.expires_at);
-
-        // 查询并设置会员信息
 
         // 跳转到指定页面
         const urlParams = new URL(window.location.href).searchParams;

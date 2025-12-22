@@ -1,6 +1,7 @@
 import {AxiosError, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
 import {CryptoUtils} from '@/utils/crypto';
 import {accessToken} from '@/utils/storage/token';
+import {getLocale} from "@/i18n/routing";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -27,11 +28,9 @@ export const requestDefaultInterceptors = async (
   const body = config.headers['Content-Type'] === 'multipart/form-data' ? {} : config.data;
 
   const method = config.method?.toLowerCase();
-  const url = config.url || '';
-  const params = config.params;
+  const url = window.location.pathname;
 
-  // todo 调试如何拿到语言
-  config.headers['Accept-Language'] = 'zh-cn';
+  config.headers['Accept-Language'] = getLocale(url);
 
   const isWhitelisted = whitelist.some(whitelistedPath => {
     // 判断 GET 请求：检查路径和查询参数

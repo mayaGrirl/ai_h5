@@ -171,6 +171,20 @@
       "table-row-hit":  "余额少于{point}，每日可领取{limit}",
       "button":  "剩余{remaining}次，立即领取",
       "receive-limit-hit":  "你今天已经领取完了，请明天再来领取"
+    },
+    "salary": {
+      "tab-1": "工资概况",
+      "tab-2": "领取工资",
+      "tab-3": "工资日记录",
+      "intro-accumulated-salary": "本周累计工资",
+      "receive-grid-1": "统计日期{start}至{end}",
+      "receive-grid-2": "工资",
+      "receive-grid-btn": "领取",
+      "receive-grid-3": "已领取",
+      "record-grid-1": "类型",
+      "record-grid-2": "统计金额",
+      "record-grid-3": "获得工资",
+      "record-grid-4": "记录日期"
     }
   },
   "common": {
@@ -188,7 +202,9 @@
         "submit": "提交",
         "submitting": "提交中..."
       }
-    }
+    },
+    "loading-hit": "上拉加载更多",
+    "loading-list-empty": "没有更多数据了"
   },
   "actions": {
     "pc": "电脑版",

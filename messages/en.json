@@ -171,6 +171,20 @@
       "table-row-hit": "When the balance is less than {point}, you can claim {limit} per day",
       "button": "Remaining {remaining} times, claim now",
       "receive-limit-hit": "You have already claimed all for today. Please come back tomorrow"
+    },
+    "salary": {
+      "tab-1": "Salary Overview",
+      "tab-2": "Receive Salary",
+      "tab-3": "Salary Day Records",
+      "intro-accumulated-salary": "Accumulated Salary This Week",
+      "receive-grid-1": "Statistics period: {start} to {end}",
+      "receive-grid-2": "Salary",
+      "receive-grid-btn": "Receive",
+      "receive-grid-3": "Received",
+      "record-grid-1": "Type",
+      "record-grid-2": "Calculated Amount",
+      "record-grid-3": "Salary Earned",
+      "record-grid-4": "Record Date"
     }
   },
   "common": {
@@ -188,7 +202,9 @@
         "submit": "Submit",
         "submitting": "Submitting..."
       }
-    }
+    },
+    "loading-hit": "Pull up to load more",
+    "loading-list-empty": "No more data"
   },
   "actions": {
     "pc": "PC Version",

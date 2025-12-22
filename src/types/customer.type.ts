@@ -150,3 +150,18 @@ export interface MemberLevel {
   day_jiuji_point?: number;
   reward_discount?: string;
 }
+
+export interface BlockField {
+  id?: number;
+  identifier?: string;
+  language?: string;
+  title?: string;
+  content_type?: number;
+  content?: string;
+  status?: number;
+  disable_action?: string;
+  operator_user_id?: number;
+  operator_at?: string;
+  created_at?: string;
+  updated_at?: string;
+}
