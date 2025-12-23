@@ -17,18 +17,23 @@ import {cn} from "@/lib/utils";
 // 倒计时页面刷新继续保持的存储key
 const STORAGE_KEY = "sms_countdown_end_at_register";
 
-const schema = z.object({
-  mobile: z.string().min(1, "请输入手机号码").max(50),
-  verify_code: z.string().min(1, "请输入验证码").max(6),
-  password: z.string().min(1, "请输入密码"),
-  confirm_password: z.string(),
-});
-
-type FormValues = z.infer<typeof schema>;
-
 export default function RegisterPage() {
   const _t = useTranslations();
 
+  const schema = z.object({
+    mobile: z.string().min(1, _t('register.mobile-placeholder')).max(50, _t('register.mobile-max')),
+    verify_code: z.string().min(1, _t('common.sms-verify_code-placeholder')).max(6, _t('common.sms-verify_code-max')),
+    password: z.string().min(8, _t("register.password-placeholder")),
+    confirm_password: z.string(),
+  }).refine(
+    (data) => data.password === data.confirm_password,
+    {
+      path: ["confirm_password"],
+      message: _t("register.confirm_password-eq"),
+    }
+  );
+
+  type FormValues = z.infer<typeof schema>;
   const {
     register,
     handleSubmit,
@@ -67,7 +72,7 @@ export default function RegisterPage() {
     if (mobile.length < 1) {
       setError("mobile", {
         type: "manual",
-        message: "请输入手机号",
+        message: _t('register.mobile-placeholder'),
       });
       return;
     }
@@ -85,7 +90,7 @@ export default function RegisterPage() {
         toast.success(message);
       }
     } catch (error) {
-      const msg = error instanceof Error ? error.message : "发送失败";
+      const msg = error instanceof Error ? error.message : _t('common.sms-verify_code-send-failed');
       toast.error(msg);
     } finally {
       setIsSending(false);
@@ -146,12 +151,12 @@ export default function RegisterPage() {
             <div className="bg-white rounded-xl shadow-sm p-2">
               {/* 手机号 */}
               <div className="flex justify-center items-center border-b border-gray-200">
-                <label className="w-1/4 text-gray-700" htmlFor={'mobile'}>手机号码</label>
+                <label className="w-1/4 text-gray-700" htmlFor={'mobile'}>{_t('register.mobile-label')}</label>
                 <div className="w-3/4">
                   <input
                     id="mobile"
                     type="text"
-                    placeholder="请输入手机号码"
+                    placeholder={_t('register.mobile-placeholder')}
                     {...register("mobile")}
                     className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                     onChange={(e)  => {
@@ -170,12 +175,12 @@ export default function RegisterPage() {
               )}
               {/* 验证码 */}
               <div className="flex justify-center items-center border-b border-gray-200">
-                <label className="w-1/4 text-gray-700" htmlFor={'verify_code'}>验证码</label>
+                <label className="w-1/4 text-gray-700" htmlFor={'verify_code'}>{_t('common.sms-verify_code-label')}</label>
                 <div className="flex w-3/4 items-center gap-2">
                   <input
                     id="verify_code"
                     type="text"
-                    placeholder="请输入验证码"
+                    placeholder={_t('common.sms-verify_code-placeholder')}
                     {...register("verify_code")}
                     className="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
@@ -191,7 +196,7 @@ export default function RegisterPage() {
                     )}
                   >
                     {/*{sendButI18Key}*/}
-                    {isSending ? "发送中..." : countdown > 0 ? `${countdown}s` : "发送验证码"}
+                    {isSending ? _t('common.sms-verify_code-sending') : countdown > 0 ? `${countdown}s` : _t('common.sms-verify_code-send-btn')}
                   </button>
                 </div>
               </div>
@@ -201,13 +206,13 @@ export default function RegisterPage() {
 
               {/* 密码 */}
               <div className="flex justify-center items-center border-b border-gray-200">
-                <label className="w-1/4 text-gray-700" htmlFor={'password'}>密码</label>
+                <label className="w-1/4 text-gray-700" htmlFor={'password'}>{_t('register.password-label')}</label>
                 <div className="w-3/4">
                   <input
                     id="password"
                     type="password"
                     {...register("password")}
-                    placeholder="请输入密码"
+                    placeholder={_t('register.password-placeholder')}
                     className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
                 </div>
@@ -218,13 +223,13 @@ export default function RegisterPage() {
 
               {/* 确认密码 */}
               <div className="flex justify-center items-center">
-                <label className="w-1/4 text-gray-700" htmlFor={'confirm_password'}>确认密码</label>
+                <label className="w-1/4 text-gray-700" htmlFor={'confirm_password'}>{_t('register.confirm_password-label')}</label>
                 <div className="w-3/4">
                   <input
                     id="confirm_password"
                     type="password"
                     {...register("confirm_password")}
-                    placeholder="请输入确认密码"
+                    placeholder={_t('register.confirm_password-placeholder')}
                     className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
                 </div>
@@ -241,12 +246,12 @@ export default function RegisterPage() {
               ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
               }
             >
-              {isSubmitting ? _t("common.form.button.submitting") : "免费注册"}
+              {isSubmitting ? _t("common.form.button.submitting") : _t('register.form-submit-button')}
             </button>
           </form>
           <Link href={`/auth/login`}
                 className={"flex justify-center items-center mt-6 text-[rgb(0,0,238)]"}
-          >已有账号了，去登录吧</Link>
+          >{_t('register.back-login')}</Link>
         </main>
       </div>
     </div>

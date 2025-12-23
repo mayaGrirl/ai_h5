@@ -199,11 +199,42 @@
         "submitting": "Submitting..."
       }
     },
+    "catch-error": "Something went wrong, please try again later",
     "loading-hit": "Pull up to load more",
-    "loading-list-empty": "No more data"
+    "loading-list-empty": "No more data",
+    "sms-verify_code-label": "Verification Code",
+    "sms-verify_code-placeholder": "Please enter the verification code",
+    "sms-verify_code-max": "Invalid verification code",
+    "sms-verify_code-send-failed": "Failed to send. Please try again later",
+    "sms-verify_code-sending": "Sending...",
+    "sms-verify_code-send-btn": "Send SMS Code"
   },
   "actions": {
     "pc": "PC Version",
     "support": "Support"
+  },
+  "login": {
+    "submit-btn": "Login",
+    "forgot-password-btn": "Forgot Password?",
+    "register-btn": "Register"
+  },
+  "register": {
+    "mobile-label": "Mobile",
+    "mobile-placeholder": "Please enter your mobile number",
+    "mobile-max": "Invalid mobile number",
+    "password-label": "Password",
+    "password-placeholder": "Please enter your password",
+    "confirm_password-label": "Confirm Password",
+    "confirm_password-placeholder": "Please enter the confirmation password",
+    "confirm_password-eq": "The two passwords do not match",
+    "form-submit-button": "Register for Free",
+    "back-login": "Already have an account? Go to login"
+  },
+  "forgot-password": {
+    "submit-btn1": "Next Step",
+    "submit-btn2": "Save New Password",
+    "submit-btn3": "Go Back",
+    "submit-step1": "Verify Mobile Number",
+    "submit-step2": "Reset Password"
   }
 }

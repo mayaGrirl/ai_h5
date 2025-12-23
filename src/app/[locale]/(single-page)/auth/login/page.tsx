@@ -14,16 +14,15 @@ import {useAuthStore} from "@/utils/storage/auth";
 import Link from "next/link";
 import {useTranslations} from "use-intl";
 
-const schema = z.object({
-  mobile: z.string().min(1, "请输入手机号码").max(50),
-  password: z.string().min(1, "请输入密码"),
-});
-
-type FormValues = z.infer<typeof schema>;
-
-export default function Login() {
+export default function LoginPage() {
   const _t = useTranslations();
 
+  const schema = z.object({
+    mobile: z.string().min(1, _t('register.mobile-placeholder')).max(50),
+    password: z.string().min(1, _t('register.password-placeholder')),
+  });
+
+  type FormValues = z.infer<typeof schema>;
   const {
     register,
     handleSubmit,
@@ -77,10 +76,10 @@ export default function Login() {
             <div className="bg-white rounded-xl shadow-sm p-2">
               {/* 手机号 */}
               <div className="flex justify-center items-center border-b border-gray-200">
-                <label className="w-1/4 text-gray-700">手机号码</label>
+                <label className="w-1/4 text-gray-700">{_t('register.mobile-label')}</label>
                 <input
                   type="text"
-                  placeholder="手机号码"
+                  placeholder={_t('register.mobile-placeholder')}
                   {...register("mobile")}
                   className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                 />
@@ -91,11 +90,11 @@ export default function Login() {
 
               {/* 密码 */}
               <div className="flex justify-center items-center">
-                <label className="w-1/4 text-gray-700">密码</label>
+                <label className="w-1/4 text-gray-700">{_t('register.password-label')}</label>
                 <input
                   type="password"
                   {...register("password")}
-                  placeholder="密码"
+                  placeholder={_t('register.password-placeholder')}
                   className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                 />
               </div>
@@ -111,14 +110,18 @@ export default function Login() {
               ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
               }
             >
-              {isSubmitting ? _t("common.form.button.submitting") : "登录"}
+              {isSubmitting ? _t("common.form.button.submitting") : _t('login.submit-btn')}
             </button>
           </form>
           <Link
             href={'/auth/register'}
             className="mt-3 h-12 w-full flex items-center justify-center rounded-full bg-[#0d6efd] text-white font-medium tracking-wide transition transform active:scale-95">
-            注册
+            {_t('login.register-btn')}
           </Link>
+
+          <Link href={`/auth/forgot-password`}
+                className={"flex justify-center items-center mt-6 text-[rgb(0,0,238)]"}
+          >{_t('login.forgot-password-btn')}</Link>
         </main>
       </div>
     </div>

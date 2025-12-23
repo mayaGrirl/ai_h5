@@ -27,7 +27,7 @@ export const SAFE_QUESTION_OPTIONS = [
  * 不需要登录的页面路由
  */
 export const NOT_LOGIN_WHITELIST = [
-  "/auth/registration",
+  "/auth/register",
   "/auth/login",
-  "/auth/find-password",
+  "/auth/forgot-password",
 ];

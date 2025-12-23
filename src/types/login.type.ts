@@ -29,29 +29,21 @@ export interface LoginReq {
 
 export interface ForgetPasswordDto {
   /**
-   * 邮件验证码
+   * 手机号码
+   */
+  mobile: string;
+  /**
+   * 验证码
    */
   verify_code: string;
-  /**
-   * 确认密码
-   */
-  confirm_password: string;
-  /**
-   * 邮件账户
-   */
-  email: string;
-  /**
-   * 滑动验证key
-   */
-  key: string;
   /**
    * 新密码
    */
   password: string;
   /**
-   * 滑动验证分数
+   * 确认密码
    */
-  point: string;
+  confirm_password: string;
   [property: string]: unknown;
 }
 

@@ -30,10 +30,35 @@ export const registration = (data: RegistrationDto) => {
 };
 
 /**
- * 发送短信
+ * 注册发送短信
  */
 export const sendSmsToMobile = (mobile: string): Promise<HttpRes<unknown>> => {
   return http.post('/api/app/v1/registration/send-sms', {mobile: mobile});
+};
+
+/**
+ * 注册发送短信
+ */
+export const forgotPasswordSendSms = (mobile: string): Promise<HttpRes<unknown>> => {
+  return http.post('/api/app/v1/forgot-password/send-sms', {mobile: mobile});
+};
+
+/**
+ * 注册发送短信验证是否正确
+ */
+export const forgotPasswordVerifyCode = (data: ForgetPasswordDto): Promise<HttpRes<unknown>> => {
+  return http.post('/api/app/v1/forgot-password/verify', data);
+};
+
+/**
+ * 忘记密码重置密码
+ * @param data
+ * @returns
+ */
+export const forgetPasswordReset = (
+  data: ForgetPasswordDto,
+): Promise<HttpRes<LoginReq>> => {
+  return http.post('/api/app/v1/forgot-password/reset', data);
 };
 
 /**
@@ -43,17 +68,6 @@ export const sendSmsToMobile = (mobile: string): Promise<HttpRes<unknown>> => {
  */
 export const login = (data: LoginDto): Promise<HttpRes<LoginReq>> => {
   return http.post<HttpRes<LoginReq>>('/api/app/v1/customer/login', data);
-};
-
-/**
- * 忘记密码
- * @param data
- * @returns
- */
-export const forgetPassword = (
-  data: ForgetPasswordDto,
-): Promise<HttpRes<LoginReq>> => {
-  return http.post('/api/app/v1/customer/find-password', data);
 };
 
 /**
