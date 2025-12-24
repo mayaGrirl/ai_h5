@@ -46,6 +46,15 @@ export interface RedeemGiftVerifyTypeDto {
 }
 
 /**
+ * 存款转入转出
+ */
+export interface CustomerTransferDto {
+  type: string,
+  amount: number,
+  pay_password?: string,
+}
+
+/**
  * 设置查看卡密验证方式
  */
 export interface ViewCardVerifyTypeDto {
@@ -80,7 +89,7 @@ export interface MemberField {
   birthday?: number;
   signature?: string | null;
   realname?: string | null;
-  gender?: number | null;
+  gender?: number;
   alipay?: string | null;
   wchat?: string | null;
   address?: string | null;
@@ -89,38 +98,66 @@ export interface MemberField {
   email?: string | null;
 }
 
+// 会员余额
+export interface MemberCapital {
+  cid?: number;
+  money?: string | null;
+  gold?: number;
+  points?: number;
+  bankpoints?: number;
+  blessing?: number;
+  bill?: string | null;
+  bond?: string | null;
+  frozen?: string | null;
+  signin?: number;
+  signins?: number;
+  experience?: number;
+  next_level?: number;
+  udapoints?: number;
+}
+
+// 会员明细
+export interface CustomerProfile {
+  "customer": CustomerField;
+  "member_field": MemberField;
+  "member_capital": MemberCapital;
+}
+
 // 用户基础信息
 export interface CustomerField {
   id?: number;
   sid?: number;
-  user?: string;
-  mobile?: string;
-  securitypass?: string;
-  email?: string;
+  user?: string | null;
+  mobile?: string | null;
+  securitypass?: string | null;
+  email?: string | null;
   gid?: number;
+  gid_label?: string | null;
   level?: number;
   nw?: number;
   vip?: number;
+  vip_label?: string | null;
   vipStime?: number;
   vipEtime?: number;
-  avatar?: string;
+  avatar?: string | null;
+  avatar_url?: string | null;
   regtime?: number;
-  reg_ip?: string;
-  reg_address?: string;
+  reg_ip?: string | null;
+  reg_address?: string | null;
   last_login_time?: number;
-  last_login_ip?: string;
-  last_login_address?: string;
+  last_login_ip?: string | null;
+  last_login_address?: string | null;
   login_sun?: number;
   status?: number;
   tjr?: number;
   tgall?: number;
   isLogin?: number;
-  address1?: string;
-  address2?: string;
-  loginVerifyType?: string;
+  address1?: string | null;
+  address2?: string | null;
+  loginVerifyType?: string | null;
   isMobile?: number;
-  prizeVerifyType?: string;
-  selectcardVerifyType?: string;
+  prizeVerifyType?: string | null;
+  selectcardVerifyType?: string | null;
   sc?: number;
   cz?: number;
   czf?: number;
@@ -142,26 +179,26 @@ export interface ReliefResponse {
 // 会员等级配置
 export interface MemberLevel {
   id?: number;
-  name?: string;
+  name?: string | null;
   level?: number;
   emin?: number;
   emax?: number;
   tg?: number;
   day_jiuji_point?: number;
-  reward_discount?: string;
+  reward_discount?: string | null;
 }
 
 export interface BlockField {
   id?: number;
-  identifier?: string;
-  language?: string;
-  title?: string;
+  identifier?: string | null;
+  language?: string | null;
+  title?: string | null;
   content_type?: number;
-  content?: string;
+  content?: string | null;
   status?: number;
-  disable_action?: string;
+  disable_action?: string | null;
   operator_user_id?: number;
-  operator_at?: string;
-  created_at?: string;
-  updated_at?: string;
+  operator_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }

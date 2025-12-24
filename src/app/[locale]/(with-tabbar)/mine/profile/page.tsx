@@ -7,7 +7,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "sonner";
 import {z} from "zod";
-import {getProfile, updateProfile} from "@/api/customer";
+import {getMemberField, updateProfile} from "@/api/customer";
 import {AlertCircleIcon, ChevronRight} from "lucide-react";
 import {Alert, AlertTitle} from "@/components/ui/alert";
 import Link from "next/link";
@@ -70,7 +70,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const {code, data} = await getProfile();
+      const {code, data} = await getMemberField();
       if (code === 200) {
         setProfile(data)
         if (data?.signature) {

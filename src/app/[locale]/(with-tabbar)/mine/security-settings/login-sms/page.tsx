@@ -3,7 +3,7 @@
 import * as React from "react";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import {PageHeader} from "@/components/page-header";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {settingLoginVerifyType} from "@/api/customer";
@@ -34,7 +34,7 @@ export default function LoginSmsPage() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: {isSubmitting},
   } = useForm<FormValues>({
@@ -44,7 +44,10 @@ export default function LoginSmsPage() {
     },
     mode: "onSubmit",
   });
-  const currentValue = watch("loginVerifyType");
+  const currentValue = useWatch({
+    control,
+    name: "loginVerifyType",
+  });
 
   // 提交表单
   const onSubmit = handleSubmit(async (values) => {
@@ -58,8 +61,10 @@ export default function LoginSmsPage() {
       toast.success(message);
 
       if (currentCustomer) {
-        currentCustomer.loginVerifyType = values.loginVerifyType;
-        setCurrentCustomer(currentCustomer);
+        setCurrentCustomer({
+          ...currentCustomer,
+          loginVerifyType: values.loginVerifyType,
+        });
       }
 
       // 跳转登录页

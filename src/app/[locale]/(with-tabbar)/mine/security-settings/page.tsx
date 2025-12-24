@@ -6,8 +6,6 @@ import {PageHeader} from "@/components/page-header";
 import {useTranslations} from "use-intl";
 import {ChevronRight} from "lucide-react";
 import Link from "next/link";
-import {useEffect} from "react";
-import {CustomerField} from "@/types/customer.type";
 import {useAuthStore} from "@/utils/storage/auth";
 import {isEmpty} from "@/utils/utils";
 
@@ -16,22 +14,7 @@ export default function SecuritySettingsPage() {
   useRequireLogin();
   const _t = useTranslations("mine");
 
-  const [profile, setProfile] = React.useState<CustomerField>();
-
-  const currentCustomer = useAuthStore((s) => s.currentCustomer);
-  const {hydrated} = useAuthStore();
-
-  useEffect(() => {
-    if (!hydrated) return;
-
-    const init = async () => {
-      if (currentCustomer) {
-        setProfile(currentCustomer)
-      }
-    };
-
-    void init();
-  }, [hydrated, currentCustomer]);
+  const { currentCustomer } = useAuthStore();
 
   return (
     <>
@@ -79,7 +62,7 @@ export default function SecuritySettingsPage() {
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-pay.pay")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
                   </Link>
-                  {isEmpty(profile?.securitypass) && (
+                  {isEmpty(currentCustomer?.securitypass) && (
                     <Link href={"/mine/security-settings/question"}
                           className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                       <span className="text-gray-800 text-sm">{_t("security-settings.group-pay.security")}</span>

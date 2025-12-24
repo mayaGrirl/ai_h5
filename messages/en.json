@@ -17,6 +17,7 @@
     "hot-games": "Hot Games"
   },
   "mine": {
+    "vip_title": "My Membership Card",
     "setting": {
       "title": "Menu",
       "mail": "My Message",
@@ -181,9 +182,21 @@
       "record-grid-2": "Calculated Amount",
       "record-grid-3": "Salary Earned",
       "record-grid-4": "Record Date"
+    },
+    "transfer": {
+      "type-label": "Operation Type",
+      "type-option-1": "Deposit",
+      "type-option-2": "Withdrawal",
+      "amount-label": "Amount",
+      "amount-placeholder": "Please enter a positive integer",
+      "amount-verify-int": "Must be an integer",
+      "amount-verify-gt0": "Amount must be greater than 0",
+      "amount-verify-max": "Amount exceeds the limit",
+      "pay_password-verify-out": "A secondary password is required for withdrawals"
     }
   },
   "common": {
+    "points": "Points",
     "empty-description": "No data available",
     "loading": "Loading...",
     "header": {

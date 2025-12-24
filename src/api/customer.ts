@@ -1,7 +1,7 @@
 import {HttpRes} from "@/types/http.type";
 import http from "@/utils/request";
 import {
-  BindEmailDto,
+  BindEmailDto, CustomerProfile, CustomerTransferDto, MemberCapital,
   MemberField, RedeemGiftVerifyTypeDto, ReliefResponse,
   SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
   UpdateNicknameDto, UpdatePasswordDto,
@@ -48,8 +48,8 @@ export const updateProfile = (data: UpdateProfileDto): Promise<HttpRes<unknown>>
  * 更新资料
  * @returns
  */
-export const getProfile = (): Promise<HttpRes<MemberField>> => {
-  return http.get<HttpRes<MemberField>>(`/api/app/v1/customer/profile/detail`, {});
+export const getMemberField = (): Promise<HttpRes<MemberField>> => {
+  return http.get<HttpRes<MemberField>>(`/api/app/v1/member-field/detail`, {});
 };
 
 /**
@@ -126,4 +126,31 @@ export const receiveRelief = (): Promise<HttpRes<unknown>> => {
  */
 export const customerReceiveSms = (): Promise<HttpRes<unknown>> => {
   return http.get('/api/app/v1/customer/receive-sms', {});
+};
+
+/**
+ * 会员明细，包含：
+ * 1. 会员详情
+ * 2. 会员余额
+ */
+export const customerProfile = (): Promise<HttpRes<CustomerProfile>> => {
+  return http.get('/api/app/v1/customer/mine', {});
+};
+
+/**
+ * 会员明细，包含：
+ * 1. 会员详情
+ * 2. 会员余额
+ */
+export const getMemberCapital = (): Promise<HttpRes<MemberCapital>> => {
+  return http.get('/api/app/v1/member-capital/detail', {});
+};
+
+/**
+ * 存款转入转出
+ * @param data
+ * @returns
+ */
+export const memberCapitalTransfer = (data: CustomerTransferDto): Promise<HttpRes<unknown>> => {
+  return http.post<HttpRes<unknown>>(`/api/app/v1/member-capital/transfer`, data);
 };

@@ -17,6 +17,7 @@
     "hot-games": "热门游戏"
   },
   "mine": {
+    "vip_title": "我的会员卡",
     "setting": {
       "title": "功能菜单",
       "mail": "我的消息",
@@ -181,9 +182,21 @@
       "record-grid-2": "统计金额",
       "record-grid-3": "获得工资",
       "record-grid-4": "记录日期"
+    },
+    "transfer": {
+      "type-label": "操作类型",
+      "type-option-1": "存款",
+      "type-option-2": "取款",
+      "amount-label": "金额",
+      "amount-placeholder": "请输入正整数",
+      "amount-verify-int": "必须是整数",
+      "amount-verify-gt0": "金额必须大于 0",
+      "amount-verify-max": "金额超出限制",
+      "pay_password-verify-out": "取款时必须输入二级密码"
     }
   },
   "common": {
+    "points": "金豆",
     "empty-description": "暂无数据",
     "loading": "加载中...",
     "header": {

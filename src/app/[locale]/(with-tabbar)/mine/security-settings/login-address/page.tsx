@@ -3,7 +3,7 @@
 import * as React from "react";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import {PageHeader} from "@/components/page-header";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {settingLoginAddress} from "@/api/customer";
@@ -46,7 +46,7 @@ export default function LoginAddressPage() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: {errors, isSubmitting},
   } = useForm<FormValues>({
@@ -58,7 +58,10 @@ export default function LoginAddressPage() {
     },
     mode: "onSubmit",
   });
-  const enabled = watch("enabled");
+  const enabled = useWatch({
+    control,
+    name: "enabled",
+  });
 
   // 提交表单
   const onSubmit = handleSubmit(async (values) => {
@@ -74,14 +77,12 @@ export default function LoginAddressPage() {
       toast.success(message);
 
       if (currentCustomer) {
-        currentCustomer.isLogin = values.enabled ? 1 : 0;
-        if (values.address1) {
-          currentCustomer.address1 = values.address1;
-        }
-        if (values.address2) {
-          currentCustomer.address2 = values.address2;
-        }
-        setCurrentCustomer(currentCustomer);
+        setCurrentCustomer({
+          ...currentCustomer,
+          isLogin: values.enabled ? 1 : 0,
+          address1: values.address1 ?? currentCustomer.address1,
+          address2: values.address2 ?? currentCustomer.address2,
+        });
       }
 
       // 跳转登录页
@@ -95,8 +96,8 @@ export default function LoginAddressPage() {
     const init = async () => {
       if (currentCustomer) {
         setValue("enabled", !!currentCustomer?.isLogin)
-        setValue("address1", currentCustomer?.address1)
-        setValue("address2", currentCustomer?.address2)
+        setValue("address1", currentCustomer?.address1 ?? '')
+        setValue("address2", currentCustomer?.address2 ?? '')
       }
     };
 

@@ -5,23 +5,34 @@ import * as React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import styles from "./page.module.css"
-import {CalendarCheck, Flag, MapPin, Settings} from "lucide-react";
+import {CalendarCheck, Flag, MapPin, Settings, User} from "lucide-react";
 import Link from "next/link";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import SettingDrawer from "./setting.drawer";
-import {useTranslations} from "use-intl";
+import {useFormatter, useTranslations} from "use-intl";
 import {toast} from "sonner";
+import {CustomerField, CustomerProfile, MemberCapital, MemberField} from "@/types/customer.type";
+import {useAuthStore} from "@/utils/storage/auth";
+import {useEffect, useState} from "react";
+import {customerProfile} from "@/api/customer";
+import {number} from "zod";
 
 export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
 
+  // 格式化金额
+  const format = useFormatter();
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = params.locale as string;
   const _t = useTranslations();
+  const [member, setMember] = useState<CustomerField>();
+  const [memberField, setMemberField] = useState<MemberField>();
+  const [memberCapital, setMemberCapital] = useState<MemberCapital>();
+  const {currentCustomer, hydrated} = useAuthStore();
 
   // banner
   const emblaSlides = [
@@ -53,8 +64,16 @@ export default function Mine() {
       params.delete("drawer");
     }
 
-    router.replace(`?${params.toString()}`, { scroll: false });
+    router.replace(`?${params.toString()}`, {scroll: false});
   };
+
+  useEffect(() => {
+    customerProfile().then(({data}) => {
+      setMember(data.customer);
+      setMemberField(data.member_field);
+      setMemberCapital(data.member_capital);
+    }).finally();
+  }, []);
 
   return (
     <>
@@ -68,24 +87,50 @@ export default function Mine() {
                 {/* 头像 */}
                 <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
                   {/* 用真实图片时替换成 <Image /> */}
-                  <span className="text-2xl">🐧</span>
+                  {/*<span className="text-2xl"><Image src={customer?.avatar_url || '🐧'} alt={customer?.avatar || ''} /></span>*/}
+                  {!hydrated ? (
+                    // 1. store 还没 hydrate：骨架
+                    <div className="h-full w-full bg-gray-200 animate-pulse"/>
+                  ) : currentCustomer?.avatar_url ? (
+                    // 2. 有头像
+                    <Image
+                      src={currentCustomer.avatar_url}
+                      alt="avatar"
+                      width={40}
+                      height={40}
+                      className="h-full w-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    // 3. 无头像
+                    <User className="h-5 w-5 text-gray-400"/>
+                  )}
                 </div>
                 {/* 昵称 & ID */}
                 <div className="leading-tight font-medium">
                   <div className="text-xs flex items-center">
-                    ID48566（_sg48566）
+                    ID{currentCustomer?.id}（{memberField?.nickname}）
                     <span>
-                    <Image src={"/mine/level/0.png"} alt={'等级'} width={15} height={15} className="w-[15px] h-[15px]" />
-                  </span>
+                      {!hydrated ? (
+                        // 1. store 还没 hydrate：骨架
+                        <Image src={`/mine/level/0.png`} alt={'level'} width={15} height={15}
+                               className="w-[15px] h-[15px]"/>
+                      ) : (
+                        <Image src={`/mine/level/${currentCustomer?.level}.png`} alt={'level'} width={15} height={15}
+                               className="w-[15px] h-[15px]"/>
+                      )}
+                    </span>
                   </div>
-                  <div className="mt-1 inline-flex h-4 items-center rounded-full text-[10px] px-1 bg-[rgb(64_63_63)]">
-                    普通用户
+                  <div
+                    className="min-w-12 mt-1 inline-flex h-4 items-center rounded-full text-[10px] px-1 bg-[rgb(64_63_63)]">
+                    {member?.gid_label}
                   </div>
                 </div>
               </div>
 
               {/* 右上角图标 */}
-              <div className="flex items-center space-x-3 text-xl cursor-pointer" onClick={() => setIsOpenSetting(true)}>
+              <div className="flex items-center space-x-3 text-xl cursor-pointer"
+                   onClick={() => setIsOpenSetting(true)}>
                 <span><Settings/></span>
               </div>
             </div>
@@ -102,7 +147,7 @@ export default function Mine() {
                         <Image src={src} alt={name} fill
                                priority={index === 0}
                                sizes="(max-width: 768px) 100vw, 768px"
-                               className="object-cover" />
+                               className="object-cover"/>
                       </div>
                     </div>
                   ))}
@@ -127,7 +172,7 @@ export default function Mine() {
 
           {/* 六个功能入口 */}
           <section className="mt-2 grid grid-cols-3 gap-2 px-3">
-            {quickAccess.map(({label, href},index) => (
+            {quickAccess.map(({label, href}, index) => (
               <Link className="rounded-md bg-white py-3 text-center shadow-sm"
                     key={`quick-key-${index}`}
                     href={`/${locale}/${href}`}
@@ -140,10 +185,10 @@ export default function Mine() {
           {/* 会员卡区域 */}
           <section className="mt-3 px-3">
             <div className="rounded-t-md border-b border-[#ff3a00] bg-white py-1 text-center  text-[#ff3a00]">
-              我的会员卡
+              {_t('mine.vip_title')}
             </div>
             <div className="rounded-b-md bg-gradient-to-r from-[#ff8e4a] to-[#ff3a00] px-4 py-3 text-center  text-white">
-              普通会员
+              <div className={"min-h-6"}>{member?.vip ? member?.vip_label : member?.gid_label}</div>
               <div className="mt-1 text-[14px] opacity-90">
                 注册新用户充值领取会员卡 →
               </div>
@@ -165,7 +210,7 @@ export default function Mine() {
               <Link className="flex flex-col cursor-pointer" href={""}>
                 <div className="text-gray-500">金币</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
-                  <span>160</span>
+                  <span>{format.number(memberCapital?.points ?? 0)}</span>
                   <Image
                     src="/ranking/coin.png"
                     alt="gold"
@@ -178,7 +223,7 @@ export default function Mine() {
               <Link className="flex flex-col border-x border-gray-200 cursor-pointer" href={"/mine/customer-transfer"}>
                 <div className="text-gray-500">存款</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
-                  <span>111</span>
+                  <span>{format.number(memberCapital?.bankpoints ?? 0)}</span>
                   <Image
                     src="/ranking/coin.png"
                     alt="gold"
@@ -191,7 +236,7 @@ export default function Mine() {
               <div className="flex flex-col">
                 <div className=" text-gray-500">生态值</div>
                 <div className="mt-1 text-[13px] font-semibold text-gray-800">
-                  0
+                  {memberCapital?.experience ?? 0}
                 </div>
               </div>
             </div>
@@ -203,7 +248,7 @@ export default function Mine() {
               </div>
               <div className="flex flex-col border-x border-gray-200">
                 <div className=" text-gray-500">积分</div>
-                <div className="mt-1 text-[13px] font-semibold text-gray-800">22</div>
+                <div className="mt-1 text-[13px] font-semibold text-gray-800">{memberCapital?.blessing ?? 0}</div>
               </div>
               <div className="flex flex-col">
                 <div className=" text-gray-500">本周工资</div>
@@ -254,7 +299,8 @@ export default function Mine() {
                   <td className="px-4 py-2">3%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         13%
                       </div>
                     </div>
@@ -266,7 +312,8 @@ export default function Mine() {
                   <td className="px-4 py-2">6%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         100%
                       </div>
                     </div>
@@ -278,7 +325,8 @@ export default function Mine() {
                   <td className="px-4 py-2">10%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         0%
                       </div>
                     </div>
@@ -312,7 +360,8 @@ export default function Mine() {
                   <td className="px-4 py-2">2%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         100%
                       </div>
                     </div>
@@ -324,7 +373,8 @@ export default function Mine() {
                   <td className="px-4 py-2">3%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         13%
                       </div>
                     </div>
@@ -336,7 +386,8 @@ export default function Mine() {
                   <td className="px-4 py-2">4%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         100%
                       </div>
                     </div>
@@ -348,7 +399,8 @@ export default function Mine() {
                   <td className="px-4 py-2">5%</td>
                   <td className="px-4 py-2">
                     <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">
+                      <div
+                        className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">
                         0%
                       </div>
                     </div>

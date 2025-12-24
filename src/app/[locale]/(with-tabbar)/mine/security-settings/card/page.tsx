@@ -3,7 +3,7 @@
 import * as React from "react";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import {PageHeader} from "@/components/page-header";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {settingViewCardVerifyType} from "@/api/customer";
@@ -40,7 +40,7 @@ export default function CardPage() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: {isSubmitting},
   } = useForm<FormValues>({
@@ -50,7 +50,10 @@ export default function CardPage() {
     },
     mode: "onSubmit",
   });
-  const currentValue = watch("selectcardVerifyType");
+  const currentValue = useWatch({
+    control,
+    name: "selectcardVerifyType",
+  });
 
   // 提交表单
   const onSubmit = handleSubmit(async (values) => {
@@ -64,8 +67,10 @@ export default function CardPage() {
       toast.success(message);
 
       if (currentCustomer) {
-        currentCustomer.selectcardVerifyType = values.selectcardVerifyType;
-        setCurrentCustomer(currentCustomer);
+        setCurrentCustomer({
+          ...currentCustomer,
+          selectcardVerifyType: values.selectcardVerifyType,
+        });
       }
 
       // 跳转登录页
