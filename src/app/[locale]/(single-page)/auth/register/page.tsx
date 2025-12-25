@@ -6,10 +6,8 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {registration, sendSmsToMobile} from '@/api/auth';
-import {HttpRes} from "@/types/http.type";
-import {RegistrationReq} from "@/types/login.type";
 import {toast} from "sonner";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {useTranslations} from "use-intl";
 import {cn} from "@/lib/utils";
@@ -19,6 +17,9 @@ const STORAGE_KEY = "sms_countdown_end_at_register";
 
 export default function RegisterPage() {
   const _t = useTranslations();
+  const searchParams = useSearchParams();
+  // 原样保留
+  const queryString = searchParams.toString();
 
   const schema = z.object({
     mobile: z.string().min(1, _t('register.mobile-placeholder')).max(50, _t('register.mobile-max')),
@@ -116,26 +117,25 @@ export default function RegisterPage() {
   }, [countdown]);
 
   // 表单提交
-  const onSubmit = handleSubmit((values) => {
-    registration({
+  const onSubmit = handleSubmit(async (values) => {
+    // 推荐人的key
+    const recommend = searchParams.get('t');
+    const {code, message} = await registration({
       mobile: values.mobile,
       verify_code: values.verify_code,
       password: values.password,
       confirm_password: values.password,
-    }).then((result: HttpRes<RegistrationReq>) => {
-      const {code, message} = result;
-      if (code !== 200) {
-        toast.error(message);
-      } else {
-        toast.success(message);
-
-        // 跳转到指定页面
-        const urlParams = new URL(window.location.href).searchParams;
-        router.replace(urlParams.get('redirect') || '/auth/login');
-      }
-    }).catch(error => {
-      toast.warning(error.message);
+      recommend: recommend || '',
     });
+    if (code !== 200) {
+      toast.error(message);
+    } else {
+      toast.success(message);
+
+      // 跳转到指定页面
+      const urlParams = new URL(window.location.href).searchParams;
+      router.replace(urlParams.get('redirect') || '/auth/login');
+    }
   });
 
   return (
@@ -249,7 +249,7 @@ export default function RegisterPage() {
               {isSubmitting ? _t("common.form.button.submitting") : _t('register.form-submit-button')}
             </button>
           </form>
-          <Link href={`/auth/login`}
+          <Link href={`/auth/login?${queryString}`}
                 className={"flex justify-center items-center mt-6 text-[rgb(0,0,238)]"}
           >{_t('register.back-login')}</Link>
         </main>

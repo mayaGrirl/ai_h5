@@ -3,6 +3,7 @@ export interface RegistrationDto {
   verify_code: string;
   password: string;
   confirm_password: string;
+  recommend?: string;
 }
 
 export interface LoginDto {

@@ -249,5 +249,24 @@
     "submit-btn3": "返回上一步",
     "submit-step1": "验证手机号",
     "submit-step2": "重置密码"
+  },
+  "recommend": {
+    "header-title": "推广",
+    "tab-1": "推广简介",
+    "tab-2": "我要推广",
+    "tab-3": "近期收益",
+    "intro-table-header-1": "好友等级",
+    "intro-table-header-2": "需要生态值",
+    "intro-table-header-3": "升级奖励",
+    "intro-table-header-4": "投注提成",
+    "promotion-title": "推广文本",
+    "promotion-desc": "以下为本站专属的注册推广地址，您可以通过微信、QQ、MSN等发送给您的好友！",
+    "promotion-btn-1": "复制成功",
+    "promotion-btn-2": "复制推广链接",
+    "copied-text": "重磅推出工资系统，游戏就可以领取工资。另外每日幸运送奖励千万豆作为奖励，幸运儿上线另外可以领取10%奖励！您还在等什么？赶快行动吧！您的推广地址：{link}",
+    "record-table-header-1": "昵称",
+    "record-table-header-2": "生态值",
+    "record-table-header-3": "今日提成",
+    "record-table-header-4": "累计提成"
   }
 }

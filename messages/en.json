@@ -249,5 +249,24 @@
     "submit-btn3": "Go Back",
     "submit-step1": "Verify Mobile Number",
     "submit-step2": "Reset Password"
+  },
+  "recommend": {
+    "header-title": "Promotion",
+    "tab-1": "Promotion Overview",
+    "tab-2": "Promote Now",
+    "tab-3": "Recent Earnings",
+    "intro-table-header-1": "Friend Level",
+    "intro-table-header-2": "Required Ecosystem Value",
+    "intro-table-header-3": "Upgrade Reward",
+    "intro-table-header-4": "Betting Commission",
+    "promotion-title": "Promotional Text",
+    "promotion-desc": "Below is your exclusive registration promotion link. You can share it with your friends via WeChat, QQ, MSN, and more!",
+    "promotion-btn-1": "Copied Successfully",
+    "promotion-btn-2": "Copy Promotion Link",
+    "copied-text": "Introducing the brand-new salary system — play games and earn salary! Plus, daily lucky rewards with tens of millions of coins. Lucky users can also receive an extra 10% bonus upon login! What are you waiting for? Take action now! Your promotion link: {link}",
+    "record-table-header-1": "Nickname",
+    "record-table-header-2": "Ecosystem Value",
+    "record-table-header-3": "Today Commission",
+    "record-table-header-4": "Total Commission"
   }
 }

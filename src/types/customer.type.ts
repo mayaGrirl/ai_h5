@@ -81,6 +81,19 @@ export interface UpdateProfileDto {
   signature?: string;
 }
 
+export interface RecommendLinkKey {
+  key: string;
+}
+
+export interface RecommendCustomer {
+  "id"?: number,
+  "regtime"?: number,
+  "tgall"?: number,
+  "nickname"?: string | null,
+  "experience"?: number,
+  "tzpoints"?: number
+}
+
 // 管理员 / 用户基础信息
 export interface MemberField {
   aid?: number;

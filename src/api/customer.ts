@@ -1,8 +1,8 @@
-import {HttpRes} from "@/types/http.type";
+import {HttpRes, PageRequest} from "@/types/http.type";
 import http from "@/utils/request";
 import {
   BindEmailDto, CustomerProfile, CustomerTransferDto, MemberCapital,
-  MemberField, RedeemGiftVerifyTypeDto, ReliefResponse,
+  MemberField, RecommendCustomer, RecommendLinkKey, RedeemGiftVerifyTypeDto, ReliefResponse,
   SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
   UpdateNicknameDto, UpdatePasswordDto,
   UpdateProfileDto, ViewCardVerifyTypeDto
@@ -153,4 +153,18 @@ export const getMemberCapital = (): Promise<HttpRes<MemberCapital>> => {
  */
 export const memberCapitalTransfer = (data: CustomerTransferDto): Promise<HttpRes<unknown>> => {
   return http.post<HttpRes<unknown>>(`/api/app/v1/member-capital/transfer`, data);
+};
+
+/**
+ * 获取推广邀请链接
+ */
+export const recommendLink = (): Promise<HttpRes<RecommendLinkKey>> => {
+  return http.get('/api/app/v1/recommend/link', {});
+};
+
+/**
+ * 我推广的会员
+ */
+export const recommendCustomers = (data: PageRequest): Promise<HttpRes<RecommendCustomer[]>> => {
+  return http.post('/api/app/v1/recommend/customers', data);
 };
