@@ -2,7 +2,7 @@ import {HttpRes, PageRequest} from "@/types/http.type";
 import http from "@/utils/request";
 import {
   BindEmailDto, CustomerProfile, CustomerTransferDto, MemberCapital,
-  MemberField, RecommendCustomer, RecommendLinkKey, RedeemGiftVerifyTypeDto, ReliefResponse,
+  MemberField, ReceiveRecommendRewardDto, RecommendCustomer, RecommendLinkKey, RedeemGiftVerifyTypeDto, ReliefResponse,
   SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
   UpdateNicknameDto, UpdatePasswordDto,
   UpdateProfileDto, ViewCardVerifyTypeDto
@@ -167,4 +167,12 @@ export const recommendLink = (): Promise<HttpRes<RecommendLinkKey>> => {
  */
 export const recommendCustomers = (data: PageRequest): Promise<HttpRes<RecommendCustomer[]>> => {
   return http.post('/api/app/v1/recommend/customers', data);
+};
+
+/**
+ * 一键领取奖励(升级 + 投注)
+ * @param data
+ */
+export const receiveRecommendReward = (data: ReceiveRecommendRewardDto): Promise<HttpRes<RecommendCustomer[]>> => {
+  return http.post('/api/app/v1/recommend/receive-reward', data);
 };

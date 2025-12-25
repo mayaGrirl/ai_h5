@@ -267,6 +267,8 @@
     "record-table-header-1": "昵称",
     "record-table-header-2": "生态值",
     "record-table-header-3": "今日提成",
-    "record-table-header-4": "累计提成"
+    "record-table-header-4": "累计提成",
+    "record-receive-btn-1": "一键领取升级奖励",
+    "record-receive-btn-2": "一键领取投注奖励"
   }
 }

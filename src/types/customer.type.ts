@@ -81,6 +81,13 @@ export interface UpdateProfileDto {
   signature?: string;
 }
 
+/**
+ * 一键领取推荐奖励
+ */
+export interface ReceiveRecommendRewardDto {
+  type: number,
+}
+
 export interface RecommendLinkKey {
   key: string;
 }

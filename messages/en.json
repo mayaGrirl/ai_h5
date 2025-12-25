@@ -267,6 +267,8 @@
     "record-table-header-1": "Nickname",
     "record-table-header-2": "Ecosystem Value",
     "record-table-header-3": "Today Commission",
-    "record-table-header-4": "Total Commission"
+    "record-table-header-4": "Total Commission",
+    "record-receive-btn-1": "Claim Upgrade Rewards with One Click",
+    "record-receive-btn-2": "Claim Betting Rewards with One Click"
   }
 }

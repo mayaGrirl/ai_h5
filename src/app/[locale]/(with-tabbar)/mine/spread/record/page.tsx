@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from "react";
 import * as React from "react";
 import {useTranslations} from "use-intl";
-import {recommendCustomers} from "@/api/customer";
+import {receiveRecommendReward, recommendCustomers} from "@/api/customer";
 import {toast} from "sonner";
 import {RecommendCustomer} from "@/types/customer.type";
 
@@ -14,6 +14,9 @@ export default function AllPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  const [receivingLevel, setReceivingLevel] = useState(false);
+  const [receivingBet, setReceivingBet] = useState(false);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -40,7 +43,6 @@ export default function AllPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData(1).then(() => {});
   }, []);
 
@@ -52,7 +54,8 @@ export default function AllPage() {
         if (entry.isIntersecting && !loading) {
           const nextPage = page + 1;
           setPage(nextPage);
-          fetchData(nextPage).then(() => {});
+          fetchData(nextPage).then(() => {
+          });
         }
       },
       {threshold: 1}
@@ -63,10 +66,61 @@ export default function AllPage() {
     return () => observer.disconnect();
   }, [page, hasMore, loading]);
 
+  /**
+   * 一键领取奖励(升级 + 投注)
+   * @param t
+   * @param setLoading
+   */
+  const handleReceive = async (
+    t: number,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setLoading(true);
+    try {
+      const {code, message} = await receiveRecommendReward({
+        type: t
+      });
+      if (code === 200) {
+        toast.success(message);
+        // 可选：刷新列表
+        setList([]);
+        setPage(1);
+        fetchData(1).then(() => {});
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : _t('common.catch-error');
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
+      <div className="grid grid-cols-2 gap-2 px-3">
+        <button
+          onClick={() => handleReceive(9, setReceivingLevel)}
+          disabled={receivingLevel}
+          className={`mb-1 h-9 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
+          font-medium transition active:scale-95 ${receivingLevel ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+        >
+          {receivingLevel ? _t("common.loading") : _t("recommend.record-receive-btn-1")}
+        </button>
+
+        <button
+          onClick={() => handleReceive(34, setReceivingBet)}
+          disabled={receivingBet}
+          className={`mb-1 h-9 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
+          font-medium transition active:scale-95 ${receivingBet ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+        >
+          {receivingBet ? _t("common.loading") : _t("recommend.record-receive-btn-2")}
+        </button>
+      </div>
+
       {/* 表头 */}
-      <div className="grid grid-cols-[0.5fr_1fr_1fr_1fr] px-3 py-2 text-xs text-muted-foreground border-b">
+      <div className="grid grid-cols-[0.5fr_1fr_1fr_1fr] px-3 py-2 text-xs text-muted-foreground border-b bg-[#cccccc]">
         <div className="text-center">{_t("recommend.record-table-header-1")}</div>
         <div className="text-center">{_t("recommend.record-table-header-2")}</div>
         <div className="text-center">{_t("recommend.record-table-header-3")}</div>
