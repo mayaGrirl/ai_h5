@@ -35,7 +35,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
 
   const settingItems = [
     {label: _t("mine.setting.mail"), href: "/mine/message", icon: Mail},
-    {label: _t("mine.setting.receipt-text"), href: "/mine/receipt-text", icon: ReceiptText},
+    {label: _t("mine.setting.receipt-text"), href: "/mine/receipt-text?from=drawer", icon: ReceiptText},
     {label: _t("mine.setting.profile"), href: "/mine/profile", icon: User},
     {label: _t("mine.setting.toolcase"), href: "/mine/toolcase", icon: ToolCase},
     {label: _t("mine.setting.gift"), href: "/mine/gift", icon: Gift},

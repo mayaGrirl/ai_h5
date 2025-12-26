@@ -270,5 +270,13 @@
     "record-table-header-4": "累计提成",
     "record-receive-btn-1": "一键领取升级奖励",
     "record-receive-btn-2": "一键领取投注奖励"
+  },
+  "capital-record": {
+    "tab-1": "金豆",
+    "tab-2": "存款",
+    "table-header-1": "来源",
+    "table-header-2": "变动前",
+    "table-header-3": "金额",
+    "table-header-4": "变动后"
   }
 }

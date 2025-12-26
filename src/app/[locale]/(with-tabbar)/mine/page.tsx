@@ -207,7 +207,7 @@ export default function Mine() {
           {/* 账户信息：金币 / 存款 / 生态值 */}
           <section className="mt-3 px-3">
             <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
-              <Link className="flex flex-col cursor-pointer" href={""}>
+              <Link className="flex flex-col cursor-pointer" href={`/mine/receipt-text`}>
                 <div className="text-gray-500">金币</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>{format.number(memberCapital?.points ?? 0)}</span>

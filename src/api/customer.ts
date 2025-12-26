@@ -1,11 +1,24 @@
 import {HttpRes, PageRequest} from "@/types/http.type";
 import http from "@/utils/request";
 import {
-  BindEmailDto, CustomerProfile, CustomerTransferDto, MemberCapital,
-  MemberField, ReceiveRecommendRewardDto, RecommendCustomer, RecommendLinkKey, RedeemGiftVerifyTypeDto, ReliefResponse,
-  SetSecurityPassDto, SettingLoginAddressDto, SettingLoginSmsDto,
-  UpdateNicknameDto, UpdatePasswordDto,
-  UpdateProfileDto, ViewCardVerifyTypeDto
+  BindEmailDto,
+  CustomerProfile,
+  CustomerTransferDto, DepositRecordField,
+  MemberCapital,
+  MemberField,
+  PointsRecordField,
+  ReceiveRecommendRewardDto,
+  RecommendCustomer,
+  RecommendLinkKey,
+  RedeemGiftVerifyTypeDto,
+  ReliefResponse,
+  SetSecurityPassDto,
+  SettingLoginAddressDto,
+  SettingLoginSmsDto,
+  UpdateNicknameDto,
+  UpdatePasswordDto,
+  UpdateProfileDto,
+  ViewCardVerifyTypeDto
 } from "@/types/customer.type";
 
 /**
@@ -175,4 +188,18 @@ export const recommendCustomers = (data: PageRequest): Promise<HttpRes<Recommend
  */
 export const receiveRecommendReward = (data: ReceiveRecommendRewardDto): Promise<HttpRes<RecommendCustomer[]>> => {
   return http.post('/api/app/v1/recommend/receive-reward', data);
+};
+
+/**
+ * 金豆账户变动记录
+ */
+export const pointsRecords = (data: PageRequest): Promise<HttpRes<PointsRecordField[]>> => {
+  return http.post('/api/app/v1/points/records', data);
+};
+
+/**
+ * 存款账户变动记录
+ */
+export const depositRecords = (data: PageRequest): Promise<HttpRes<DepositRecordField[]>> => {
+  return http.post('/api/app/v1/deposit/records', data);
 };

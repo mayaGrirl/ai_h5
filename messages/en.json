@@ -270,5 +270,13 @@
     "record-table-header-4": "Total Commission",
     "record-receive-btn-1": "Claim Upgrade Rewards with One Click",
     "record-receive-btn-2": "Claim Betting Rewards with One Click"
+  },
+  "capital-record": {
+    "tab-1": "Points",
+    "tab-2": "Deposit",
+    "table-header-1": "Type",
+    "table-header-2": "Before Amount",
+    "table-header-3": "Amount",
+    "table-header-4": "After Amount"
   }
 }

@@ -222,3 +222,35 @@ export interface BlockField {
   created_at?: string | null;
   updated_at?: string | null;
 }
+
+// 金豆变动记录
+export interface PointsRecordField {
+  id?: number;
+  member_id?: number;
+  mobile?: string | null;
+  type?: number;
+  type_label?: string | null;
+  points?: number;
+  b_points?: number;
+  a_points?: number;
+  remark?: string | null;
+  deleted_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+// 存款变动记录
+export interface DepositRecordField {
+  id?: number;
+  member_id?: number;
+  mobile?: string | null;
+  type?: number;
+  type_label?: string | null;
+  points?: number;
+  b_points?: number;
+  a_points?: number;
+  remark?: string | null;
+  deleted_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
