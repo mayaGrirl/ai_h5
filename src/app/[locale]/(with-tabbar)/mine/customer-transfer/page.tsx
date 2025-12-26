@@ -40,9 +40,9 @@ export default function CustomerTransferPage() {
   // 表单验证
   const schema = z.object({
     type: z.string(),
-    amount: z.number({message: _t('mine.transfer.amount-placeholder')}).
-    int(_t('mine.transfer.amount-verify-int')).
-    positive(_t('mine.transfer.amount-verify-gt0')),
+    amount: z.number({message: _t('mine.transfer.amount-placeholder')})
+      .int(_t('mine.transfer.amount-verify-int'))
+      .positive(_t('mine.transfer.amount-verify-gt0')),
     pay_password: z.string().optional(),
   }).superRefine((data, ctx) => {
     if (data.type === "out" && !data.pay_password) {

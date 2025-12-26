@@ -1,3 +1,5 @@
+import {packExchange} from "@/api/customer";
+
 /**
  * 更新昵称
  */
@@ -86,6 +88,13 @@ export interface UpdateProfileDto {
  */
 export interface ReceiveRecommendRewardDto {
   type: number,
+}
+
+/**
+ * 兑换红包
+ */
+export interface PackExchangeDto {
+  code: string,
 }
 
 export interface RecommendLinkKey {
@@ -246,9 +255,9 @@ export interface DepositRecordField {
   mobile?: string | null;
   type?: number;
   type_label?: string | null;
-  points?: number;
-  b_points?: number;
-  a_points?: number;
+  deposit?: number;
+  b_deposit?: number;
+  a_deposit?: number;
   remark?: string | null;
   deleted_at?: string | null;
   created_at?: string | null;

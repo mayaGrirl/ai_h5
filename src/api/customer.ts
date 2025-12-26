@@ -5,7 +5,7 @@ import {
   CustomerProfile,
   CustomerTransferDto, DepositRecordField,
   MemberCapital,
-  MemberField,
+  MemberField, PackExchangeDto,
   PointsRecordField,
   ReceiveRecommendRewardDto,
   RecommendCustomer,
@@ -202,4 +202,13 @@ export const pointsRecords = (data: PageRequest): Promise<HttpRes<PointsRecordFi
  */
 export const depositRecords = (data: PageRequest): Promise<HttpRes<DepositRecordField[]>> => {
   return http.post('/api/app/v1/deposit/records', data);
+};
+
+/**
+ * 兑换红包
+ * @param data
+ * @returns
+ */
+export const packExchange = (data: PackExchangeDto): Promise<HttpRes<unknown>> => {
+  return http.post<HttpRes<unknown>>(`/api/app/v1/pack/exchange`, data);
 };

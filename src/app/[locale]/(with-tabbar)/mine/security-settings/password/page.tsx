@@ -55,7 +55,6 @@ export default function UpdateLoginPasswordPage() {
 
   // 提交表单
   const onSubmit = handleSubmit(async (values) => {
-    console.log(values);
     const result = await updateLoginPassword({
       safe_ask: values.safe_ask,
       answer: values.answer,

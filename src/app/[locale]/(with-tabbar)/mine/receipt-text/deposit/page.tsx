@@ -81,14 +81,14 @@ export default function DepositPage() {
           </div>
 
           {/* 金额 */}
-          <div className="text-center font-medium text-red-500">{format.number(item?.b_points || 0)}</div>
+          <div className="text-center font-medium text-red-500">{format.number(item?.b_deposit || 0)}</div>
 
           {/* 金额 */}
-          <div className="text-center font-medium text-red-500">{format.number(item?.points || 0)}</div>
+          <div className="text-center font-medium text-red-500">{format.number(item?.deposit || 0)}</div>
 
           {/* 余额 */}
           <div className="flex justify-center items-center gap-1 text-red-500 font-medium">
-            {format.number(item?.a_points || 0)}
+            {format.number(item?.a_deposit || 0)}
             <Image
               src="/ranking/coin.png"
               alt="coin"

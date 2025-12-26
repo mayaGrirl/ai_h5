@@ -278,5 +278,12 @@
     "table-header-2": "Before Amount",
     "table-header-3": "Amount",
     "table-header-4": "After Amount"
+  },
+  "gift": {
+    "title": "Claim Red Packet",
+    "code-label": "Red Packet Code",
+    "code-max": "Maximum of 10 characters",
+    "code-regex": "Invalid red packet code. Only letters and numbers are allowed",
+    "code-placeholder": "Please enter the red packet code"
   }
 }

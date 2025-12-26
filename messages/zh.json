@@ -278,5 +278,12 @@
     "table-header-2": "变动前",
     "table-header-3": "金额",
     "table-header-4": "变动后"
+  },
+  "gift": {
+    "title": "领取红包",
+    "code-label": "红包码",
+    "code-max": "最大只能输入10位",
+    "code-regex": "无效的红包码, 只能输入数字+字母",
+    "code-placeholder": "请输入红包码"
   }
 }
