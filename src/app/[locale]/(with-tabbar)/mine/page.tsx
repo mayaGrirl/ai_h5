@@ -277,139 +277,140 @@ export default function Mine() {
             </div>
 
             {/* 今日首充返利 标题 */}
-            <div className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
+            <Link href={'/mine/rebate'}
+                  className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <span>今日首充返利</span>
               <span className="text-sm">首充返利记录 &gt;</span>
-            </div>
+            </Link>
 
             {/* 今日首充返利 表格 */}
-            <div className="overflow-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="px-4 py-2">流水</th>
-                  <th className="px-4 py-2">返利</th>
-                  <th className="px-4 py-2">进度</th>
-                  <th className="px-4 py-2 text-right">差值</th>
-                </tr>
-                </thead>
-                <tbody className="bg-white text-gray-800">
-                <tr className="border-b border-gray-100">
-                  <td className="px-4 py-2">8倍</td>
-                  <td className="px-4 py-2">3%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        13%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="px-4 py-2">15倍</td>
-                  <td className="px-4 py-2">6%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        100%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-2">23倍</td>
-                  <td className="px-4 py-2">10%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        0%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
+            {/*<div className="overflow-auto">*/}
+            {/*  <table className="w-full text-sm text-left">*/}
+            {/*    <thead className="bg-gray-100 text-gray-700">*/}
+            {/*    <tr>*/}
+            {/*      <th className="px-4 py-2">流水</th>*/}
+            {/*      <th className="px-4 py-2">返利</th>*/}
+            {/*      <th className="px-4 py-2">进度</th>*/}
+            {/*      <th className="px-4 py-2 text-right">差值</th>*/}
+            {/*    </tr>*/}
+            {/*    </thead>*/}
+            {/*    <tbody className="bg-white text-gray-800">*/}
+            {/*    <tr className="border-b border-gray-100">*/}
+            {/*      <td className="px-4 py-2">8倍</td>*/}
+            {/*      <td className="px-4 py-2">3%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            13%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    <tr className="border-b border-gray-100">*/}
+            {/*      <td className="px-4 py-2">15倍</td>*/}
+            {/*      <td className="px-4 py-2">6%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            100%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    <tr className="">*/}
+            {/*      <td className="px-4 py-2">23倍</td>*/}
+            {/*      <td className="px-4 py-2">10%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            0%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    </tbody>*/}
+            {/*  </table>*/}
+            {/*</div>*/}
 
             {/* 今日亏损返利 标题 */}
-            <div className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white">
-              <span>今日亏损返利</span>
-              <span className="text-sm">亏损返利记录 &gt;</span>
-            </div>
+            {/*<div className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white">*/}
+            {/*  <span>今日亏损返利</span>*/}
+            {/*  <span className="text-sm">亏损返利记录 &gt;</span>*/}
+            {/*</div>*/}
 
             {/* 今日亏损返利 表格 */}
-            <div className="overflow-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="px-4 py-2">流水</th>
-                  <th className="px-4 py-2">返利</th>
-                  <th className="px-4 py-2">进度</th>
-                  <th className="px-4 py-2 text-right">差值</th>
-                </tr>
-                </thead>
-                <tbody className="bg-white text-gray-800">
-                <tr className="border-b border-gray-100">
-                  <td className="px-4 py-2">4倍</td>
-                  <td className="px-4 py-2">2%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        100%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="px-4 py-2">8倍</td>
-                  <td className="px-4 py-2">3%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        13%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="px-4 py-2">15倍</td>
-                  <td className="px-4 py-2">4%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        100%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-2">20倍</td>
-                  <td className="px-4 py-2">5%</td>
-                  <td className="px-4 py-2">
-                    <div className="relative w-24 h-4 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">
-                        0%
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-right text-red-500">0</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
+            {/*<div className="overflow-auto">*/}
+            {/*  <table className="w-full text-sm text-left">*/}
+            {/*    <thead className="bg-gray-100 text-gray-700">*/}
+            {/*    <tr>*/}
+            {/*      <th className="px-4 py-2">流水</th>*/}
+            {/*      <th className="px-4 py-2">返利</th>*/}
+            {/*      <th className="px-4 py-2">进度</th>*/}
+            {/*      <th className="px-4 py-2 text-right">差值</th>*/}
+            {/*    </tr>*/}
+            {/*    </thead>*/}
+            {/*    <tbody className="bg-white text-gray-800">*/}
+            {/*    <tr className="border-b border-gray-100">*/}
+            {/*      <td className="px-4 py-2">4倍</td>*/}
+            {/*      <td className="px-4 py-2">2%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            100%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    <tr className="border-b border-gray-100">*/}
+            {/*      <td className="px-4 py-2">8倍</td>*/}
+            {/*      <td className="px-4 py-2">3%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-13 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            13%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    <tr className="border-b border-gray-100">*/}
+            {/*      <td className="px-4 py-2">15倍</td>*/}
+            {/*      <td className="px-4 py-2">4%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-24 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            100%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    <tr className="">*/}
+            {/*      <td className="px-4 py-2">20倍</td>*/}
+            {/*      <td className="px-4 py-2">5%</td>*/}
+            {/*      <td className="px-4 py-2">*/}
+            {/*        <div className="relative w-24 h-4 bg-gray-200 rounded-full">*/}
+            {/*          <div*/}
+            {/*            className="absolute left-0 top-0 h-4 w-8 bg-red-500 rounded-full text-white text-xs text-center leading-4">*/}
+            {/*            0%*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*      </td>*/}
+            {/*      <td className="px-4 py-2 text-right text-red-500">0</td>*/}
+            {/*    </tr>*/}
+            {/*    </tbody>*/}
+            {/*  </table>*/}
+            {/*</div>*/}
           </section>
 
           {/* 底部占位（给 TabBar 留空间） */}

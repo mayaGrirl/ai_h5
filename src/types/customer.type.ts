@@ -1,4 +1,4 @@
-import {packExchange} from "@/api/customer";
+import {packExchange, wagesCzRecords} from "@/api/customer";
 
 /**
  * 更新昵称
@@ -262,4 +262,20 @@ export interface DepositRecordField {
   deleted_at?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+}
+
+// 充值返利
+export interface WagesCzRecordField {
+  id?: number;
+  uid?: number;
+  wpoints?: number;
+  type?: number;
+  total?: number;
+  cz?: number;
+  lv?: string | null;
+  hdpoints?: number;
+  addtime?: number;
+  gettime?: number;
+  state?: number;
+  state_label?: string | null;
 }

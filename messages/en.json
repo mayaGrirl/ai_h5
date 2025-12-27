@@ -285,5 +285,16 @@
     "code-max": "Maximum of 10 characters",
     "code-regex": "Invalid red packet code. Only letters and numbers are allowed",
     "code-placeholder": "Please enter the red packet code"
+  },
+  "rebate": {
+    "header-title": "Rebate",
+    "tab-1": "Recharge",
+    "tab-2": "Loss",
+    "recharge-table-header-1": "Date",
+    "recharge-table-header-2": "Valid Turnover",
+    "recharge-table-header-3": "Recharge",
+    "recharge-table-header-4": "Rebate",
+    "recharge-table-header-5": "Status",
+    "recharge-receive-btn": "Claim Rebate"
   }
 }

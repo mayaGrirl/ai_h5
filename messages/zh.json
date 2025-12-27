@@ -285,5 +285,16 @@
     "code-max": "最大只能输入10位",
     "code-regex": "无效的红包码, 只能输入数字+字母",
     "code-placeholder": "请输入红包码"
+  },
+  "rebate": {
+    "header-title": "Rebate",
+    "tab-1": "充值",
+    "tab-2": "亏损",
+    "recharge-table-header-1": "日期",
+    "recharge-table-header-2": "有效流水",
+    "recharge-table-header-3": "充值",
+    "recharge-table-header-4": "返利",
+    "recharge-table-header-5": "状态",
+    "recharge-receive-btn": "领取返利"
   }
 }

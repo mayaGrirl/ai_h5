@@ -18,7 +18,7 @@ import {
   UpdateNicknameDto,
   UpdatePasswordDto,
   UpdateProfileDto,
-  ViewCardVerifyTypeDto
+  ViewCardVerifyTypeDto, WagesCzRecordField
 } from "@/types/customer.type";
 
 /**
@@ -211,4 +211,19 @@ export const depositRecords = (data: PageRequest): Promise<HttpRes<DepositRecord
  */
 export const packExchange = (data: PackExchangeDto): Promise<HttpRes<unknown>> => {
   return http.post<HttpRes<unknown>>(`/api/app/v1/pack/exchange`, data);
+};
+
+/**
+ * 每日首次充值返利记录
+ */
+export const wagesCzRecords = (data: PageRequest): Promise<HttpRes<WagesCzRecordField[]>> => {
+  return http.post('/api/app/v1/wages-cz/records', data);
+};
+
+/**
+ * 领取首次充值奖励
+ * @param id
+ */
+export const receiveWagesCz = (id: number): Promise<HttpRes<WagesCzRecordField>> => {
+  return http.post(`/api/app/v1/wages-cz/receive/${id}`, {});
 };

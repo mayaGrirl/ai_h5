@@ -106,7 +106,7 @@ export default function AllPage() {
           className={`mb-1 h-9 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
           font-medium transition active:scale-95 ${receivingLevel ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
         >
-          {receivingLevel ? _t("common.loading") : _t("recommend.record-receive-btn-1")}
+          {receivingLevel ? _t("common.form.button.submitting") : _t("recommend.record-receive-btn-1")}
         </button>
 
         <button
@@ -115,7 +115,7 @@ export default function AllPage() {
           className={`mb-1 h-9 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
           font-medium transition active:scale-95 ${receivingBet ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
         >
-          {receivingBet ? _t("common.loading") : _t("recommend.record-receive-btn-2")}
+          {receivingBet ? _t("common.form.button.submitting") : _t("recommend.record-receive-btn-2")}
         </button>
       </div>
 
