@@ -5,7 +5,7 @@ import * as React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import styles from "./page.module.css"
-import {CalendarCheck, Flag, MapPin, Settings, User} from "lucide-react";
+import {CalendarCheck, ChevronRight, Flag, MapPin, Settings, User} from "lucide-react";
 import Link from "next/link";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
@@ -260,9 +260,10 @@ export default function Mine() {
           {/* 昨日亏损 + 今日首充返利 + 今日亏损返利 区域 */}
           <section className="mt-3">
             {/* 昨日亏损 */}
-            <div className="mt-1 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
+            <Link href={'/mine/rebate?tab=loss'}
+                  className="mt-1 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <div>
-                <span>昨日亏损</span>
+                <span>昨日亏损</span>999
                 <Image
                   className="inline-block ml-1 w-[13px] h-[13px]"
                   src="/ranking/coin.png"
@@ -271,16 +272,14 @@ export default function Mine() {
                   height={13}
                 />
               </div>
-              <span className="text-sm">
-              领取亏损奖励 &gt;
-            </span>
-            </div>
+              <span className="flex justify-center items-center text-sm">领取亏损奖励 <ChevronRight /></span>
+            </Link>
 
             {/* 今日首充返利 标题 */}
-            <Link href={'/mine/rebate'}
+            <Link href={'/mine/rebate?tab=recharge'}
                   className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <span>今日首充返利</span>
-              <span className="text-sm">首充返利记录 &gt;</span>
+              <span className="flex justify-center items-center text-sm">首充返利记录 <ChevronRight /></span>
             </Link>
 
             {/* 今日首充返利 表格 */}

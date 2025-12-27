@@ -295,6 +295,11 @@
     "recharge-table-header-3": "Recharge",
     "recharge-table-header-4": "Rebate",
     "recharge-table-header-5": "Status",
-    "recharge-receive-btn": "Claim Rebate"
+    "recharge-receive-btn": "Claim Rebate",
+    "loss-table-header-1": "Date",
+    "loss-table-header-2": "Loss",
+    "loss-table-header-3": "Recharge",
+    "loss-table-header-4": "Rebate",
+    "loss-table-header-5": "Status"
   }
 }

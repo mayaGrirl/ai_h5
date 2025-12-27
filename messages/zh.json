@@ -287,7 +287,7 @@
     "code-placeholder": "请输入红包码"
   },
   "rebate": {
-    "header-title": "Rebate",
+    "header-title": "领取奖励",
     "tab-1": "充值",
     "tab-2": "亏损",
     "recharge-table-header-1": "日期",
@@ -295,6 +295,11 @@
     "recharge-table-header-3": "充值",
     "recharge-table-header-4": "返利",
     "recharge-table-header-5": "状态",
-    "recharge-receive-btn": "领取返利"
+    "recharge-receive-btn": "领取返利",
+    "loss-table-header-1": "日期",
+    "loss-table-header-2": "亏损",
+    "loss-table-header-3": "充值",
+    "loss-table-header-4": "返利",
+    "loss-table-header-5": "状态"
   }
 }

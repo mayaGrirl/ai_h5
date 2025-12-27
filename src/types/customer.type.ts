@@ -279,3 +279,18 @@ export interface WagesCzRecordField {
   state?: number;
   state_label?: string | null;
 }
+
+// 亏损返利奖励
+export interface WagesRecordField {
+  id?: number;
+  uid?: number;
+  points?: number;
+  wpoints?: number;
+  cz?: number;
+  lv?: string | null;
+  hdpoints?: number;
+  addtime?: number;
+  gettime?: number;
+  state?: number;
+  state_label?: string | null;
+}

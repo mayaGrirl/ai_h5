@@ -23,7 +23,7 @@ export default function AllPage() {
   const fetchData = async (pageNo: number) => {
     setLoading(true);
 
-    // 模拟接口
+    // 接口
     const {code, data, message} = await recommendCustomers({
       pagination: {
         page: pageNo,
@@ -36,6 +36,9 @@ export default function AllPage() {
       if (data.length < 20) {
         setHasMore(false); // 模拟 5 页结束
       }
+      if (pageNo == 1) {
+        setList([]);
+      }
       setList((prev) => [...prev, ...data]);
     } else {
       toast.error(message);
@@ -43,7 +46,10 @@ export default function AllPage() {
   };
 
   useEffect(() => {
-    fetchData(1).then(() => {});
+    const init = async () => {
+      await fetchData(1);
+    }
+    void init();
   }, []);
 
   useEffect(() => {
@@ -54,8 +60,7 @@ export default function AllPage() {
         if (entry.isIntersecting && !loading) {
           const nextPage = page + 1;
           setPage(nextPage);
-          fetchData(nextPage).then(() => {
-          });
+          void fetchData(nextPage);
         }
       },
       {threshold: 1}

@@ -18,7 +18,6 @@ export default function RechargePage() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const [receiving, setReceiving] = useState<number | null>(null);
   const [receivingSet, setReceivingSet] = useState<Set<number>>(new Set());
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -125,7 +124,7 @@ export default function RechargePage() {
         >
           {/* 日期 */}
           <div className="text-center">
-            <div className="text-foreground">{dayjs.unix(item?.addtime || 0).format("YYYY-MM-DD HH:mm:ss")}</div>
+            <div className="text-foreground">{dayjs.unix(item?.addtime || 0).format("YYYY-MM-DD HH:mm")}</div>
           </div>
 
           {/* 有效流水 */}
