@@ -12,11 +12,11 @@ import {useRequireLogin} from "@/hooks/useRequireLogin";
 import SettingDrawer from "./setting.drawer";
 import {useFormatter, useTranslations} from "use-intl";
 import {toast} from "sonner";
-import {CustomerField, CustomerProfile, MemberCapital, MemberField} from "@/types/customer.type";
+import {CustomerField, MemberCapital, MemberField} from "@/types/customer.type";
 import {useAuthStore} from "@/utils/storage/auth";
 import {useEffect, useState} from "react";
-import {customerProfile} from "@/api/customer";
-import {number} from "zod";
+import {customerProfile, vipReceiveWelfare} from "@/api/customer";
+import dayjs from "@/lib/dayjs";
 
 export default function Mine() {
   // 页面需要登陆Hook
@@ -74,6 +74,27 @@ export default function Mine() {
       setMemberCapital(data.member_capital);
     }).finally();
   }, []);
+
+  const [receiveWelfare, setReceiveWelfare] = useState(false);
+  /**
+   * VIP 领取福利
+   */
+  const handleReceiveWelfare = async () => {
+    setReceiveWelfare(true);
+    try {
+      const {code, message} = await vipReceiveWelfare();
+      if (code === 200) {
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : _t('common.catch-error');
+      toast.error(msg);
+    } finally {
+      setReceiveWelfare(false);
+    }
+  };
 
   return (
     <>
@@ -163,10 +184,16 @@ export default function Mine() {
                       toast.info('新人任务即将上线');
                     }}
             >
-              <Flag width={17} height={17}/> 新人任务
+              <span className="flex items-center gap-1 leading-none">
+                <Flag width={17} height={17} />
+                {_t('mine.btn-tasks')}
+              </span>
             </button>
             <button className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
-              <CalendarCheck width={17} height={17}/> 签到
+              <span className="flex items-center gap-1 leading-none">
+                <CalendarCheck width={17} height={17} />
+                {_t('mine.btn-sign_in')}
+              </span>
             </button>
           </section>
 
@@ -189,8 +216,15 @@ export default function Mine() {
             </div>
             <div className="rounded-b-md bg-gradient-to-r from-[#ff8e4a] to-[#ff3a00] px-4 py-3 text-center  text-white">
               <div className={"min-h-6"}>{member?.vip ? member?.vip_label : member?.gid_label}</div>
-              <div className="mt-1 text-[14px] opacity-90">
-                注册新用户充值领取会员卡 →
+              <div className={"h-12"}>
+                {(member && member?.vip > 0) && (
+                  <button className={`mt-2 h-12 w-1/5 rounded-2xl bg-[#ffffff] text-black
+                  font-medium tracking-wide transition transform active:scale-95
+                  ${receiveWelfare ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
+                  } onClick={() => handleReceiveWelfare()}>
+                    {receiveWelfare ? _t("common.form.button.submitting") : _t('mine.vip-btn-receive')}
+                  </button>
+                )}
               </div>
             </div>
           </section>
@@ -200,7 +234,13 @@ export default function Mine() {
             <div
               className="w-full rounded-lg border border-[#c7e6ff] bg-[#f4fbff] px-3 py-2 text-[12px] text-[#4b84b6] flex items-center">
               <MapPin className="w-3 h-3 mr-1 text-[#4b84b6]"/>
-              <span> 最后一次在象牙海岸 阿比让 ORANGE-COTE-IVOIRE (2025-12-04 22:49:19) 登录</span>
+              {currentCustomer && (
+                <span>
+                  {_t('mine.last-login-msg-1')}
+                  {currentCustomer?.last_login_address} ({dayjs.unix(currentCustomer?.last_login_time || 0).format('YYYY-MM-DD HH:mm:ss')})
+                  {_t('mine.last-login-msg-2')}
+              </span>
+              )}
             </div>
           </section>
 
@@ -208,7 +248,7 @@ export default function Mine() {
           <section className="mt-3 px-3">
             <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
               <Link className="flex flex-col cursor-pointer" href={`/mine/receipt-text`}>
-                <div className="text-gray-500">金币</div>
+                <div className="text-gray-500">{_t('mine.account-points')}</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>{format.number(memberCapital?.points ?? 0)}</span>
                   <Image
@@ -221,7 +261,7 @@ export default function Mine() {
                 </div>
               </Link>
               <Link className="flex flex-col border-x border-gray-200 cursor-pointer" href={"/mine/customer-transfer"}>
-                <div className="text-gray-500">存款</div>
+                <div className="text-gray-500">{_t('mine.account-bank-points')}</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>{format.number(memberCapital?.bankpoints ?? 0)}</span>
                   <Image
@@ -234,7 +274,7 @@ export default function Mine() {
                 </div>
               </Link>
               <div className="flex flex-col">
-                <div className=" text-gray-500">生态值</div>
+                <div className=" text-gray-500">{_t('mine.account-experience')}</div>
                 <div className="mt-1 text-[13px] font-semibold text-gray-800">
                   {memberCapital?.experience ?? 0}
                 </div>
@@ -243,16 +283,16 @@ export default function Mine() {
 
             <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
               <div className="flex flex-col">
-                <div className=" text-gray-500">今日排名</div>
+                <div className=" text-gray-500">{_t('mine.account-rank')}</div>
                 <div className="mt-1 text-[13px] font-semibold">500以外</div>
               </div>
               <div className="flex flex-col border-x border-gray-200">
-                <div className=" text-gray-500">积分</div>
+                <div className=" text-gray-500">{_t('mine.account-blessing')}</div>
                 <div className="mt-1 text-[13px] font-semibold text-gray-800">{memberCapital?.blessing ?? 0}</div>
               </div>
               <div className="flex flex-col">
-                <div className=" text-gray-500">本周工资</div>
-                <div className="mt-1 text-[13px] font-semibold text-gray-800">0</div>
+                <div className=" text-gray-500">{_t('mine.account-freeze')}</div>
+                <div className="mt-1 text-[13px] font-semibold text-[#ff3a00]">{format.number(memberCapital?.frozen ?? 0)}</div>
               </div>
             </div>
           </section>
@@ -263,23 +303,27 @@ export default function Mine() {
             <Link href={'/mine/rebate?tab=loss'}
                   className="mt-1 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <div>
-                <span>昨日亏损</span>999
-                <Image
-                  className="inline-block ml-1 w-[13px] h-[13px]"
-                  src="/ranking/coin.png"
-                  alt="gold"
-                  width={13}
-                  height={13}
-                />
+                <span>{_t('mine.yesterday_loss')}</span>
+                {/*<Image*/}
+                {/*  className="inline-block ml-1 w-[13px] h-[13px]"*/}
+                {/*  src="/ranking/coin.png"*/}
+                {/*  alt="gold"*/}
+                {/*  width={13}*/}
+                {/*  height={13}*/}
+                {/*/>*/}
               </div>
-              <span className="flex justify-center items-center text-sm">领取亏损奖励 <ChevronRight /></span>
+              <span className="flex justify-center items-center text-sm">
+                {_t('mine.yesterday_loss_btn')} <ChevronRight />
+              </span>
             </Link>
 
             {/* 今日首充返利 标题 */}
             <Link href={'/mine/rebate?tab=recharge'}
                   className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
-              <span>今日首充返利</span>
-              <span className="flex justify-center items-center text-sm">首充返利记录 <ChevronRight /></span>
+              <span>{_t('mine.recharge_rebate')}</span>
+              <span className="flex justify-center items-center text-sm">
+                {_t('mine.recharge_rebate_btn')} <ChevronRight />
+              </span>
             </Link>
 
             {/* 今日首充返利 表格 */}

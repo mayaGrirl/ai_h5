@@ -26,6 +26,7 @@ npm run dev
 * Shadcn/ui: https://ui.shadcn.com/docs
 * Icon: https://lucide.dev/icons/categories
 * 国际化: https://next-intl.dev/docs
+* 日期时间：https://day.js.org
 
 ### 项目结构
 ```

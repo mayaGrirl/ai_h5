@@ -242,3 +242,11 @@ export const wagesRecords = (data: PageRequest): Promise<HttpRes<WagesRecordFiel
 export const receiveWages = (id: number): Promise<HttpRes<WagesRecordField>> => {
   return http.post(`/api/app/v1/wages/receive/${id}`, {});
 };
+
+
+/**
+ * VIP会员领取福利
+ */
+export const vipReceiveWelfare = (): Promise<HttpRes<unknown>> => {
+  return http.post(`/api/app/v1/vip/receive-welfare`, {});
+};

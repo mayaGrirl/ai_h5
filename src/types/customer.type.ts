@@ -137,7 +137,7 @@ export interface MemberCapital {
   blessing?: number;
   bill?: string | null;
   bond?: string | null;
-  frozen?: string | null;
+  frozen?: number | null;
   signin?: number;
   signins?: number;
   experience?: number;
@@ -164,7 +164,7 @@ export interface CustomerField {
   gid_label?: string | null;
   level?: number;
   nw?: number;
-  vip?: number;
+  vip: number;
   vip_label?: string | null;
   vipStime?: number;
   vipEtime?: number;
