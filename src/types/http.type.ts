@@ -24,3 +24,10 @@ export interface PageRequest {
     size: number;
   };
 }
+
+// SSE 推送
+export interface SSEStreamRes<T> {
+  data?: T;
+  event?: string;
+  ts?: string;
+}
