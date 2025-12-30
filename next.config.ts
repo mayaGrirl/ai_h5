@@ -22,11 +22,6 @@ const nextConfig: NextConfig = {
   // 配置代理解决跨域问题
   async rewrites() {
     return [
-      // 匹配带语言前缀的路径: /zh/api/xxx, /en/api/xxx
-      {
-        source: "/:locale(zh|en)/api/:path*",
-        destination: `${API_URL}/api/:path*`,
-      },
       // 匹配不带语言前缀的路径: /api/xxx
       {
         source: "/api/:path*",

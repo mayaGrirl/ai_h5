@@ -10,13 +10,14 @@ export const routing = defineRouting({
   /**
    * URL 国际化
    * 适合需要 SEO 国际化的网站
+   * api 接口无需国际化
    */
-  // pathnames: {
-  //   '/': '/',
-  //   '/pathnames': {
-  //     zh: '/pfadnamen'
-  //   }
-  // }
+  pathnames: {
+    '/api/:path*': '/api/:path*',
+    // '/pathnames': {
+    //   zh: '/pfadnamen'
+    // }
+  }
 });
 
 /**
