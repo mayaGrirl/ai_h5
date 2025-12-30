@@ -3,7 +3,8 @@ import {CryptoUtils} from '@/utils/crypto';
 import {accessToken} from '@/utils/storage/token';
 import {getLocale} from "@/i18n/routing";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+// 使用相对路径，通过 Next.js rewrites 代理转发请求，解决跨域问题
+const BASE_URL = "";
 
 /**
  * 请求拦截器
@@ -19,7 +20,6 @@ export const requestDefaultInterceptors = async (
   config.headers['Accept-Language'] = getLocale(url);
 
   // 签名
-  config.baseURL = BASE_URL;
   const {
     timestamp: _timestamp,
     nonce: _nonce,
