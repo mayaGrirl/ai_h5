@@ -43,7 +43,7 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
     {label: _t("mine.setting.repeat"), href: "/mine/repeat", icon: Repeat},
     {label: _t("mine.setting.salary"), href: "/mine/salary", icon: Banknote},
     {label: _t("mine.setting.hand-coins"), href: "/mine/hand-coins", icon: HandCoins},
-    {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
+    // {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
     {label: _t("mine.setting.security-settings"), href: "/mine/security-settings", icon: ShieldPlus},
     // {label: _t("mine.setting.edit-password"), href: "/mine/security-settings/password", icon: ShieldEllipsis},
     {label: _t("mine.setting.edit-nickname"), href: "/mine/edit-nickname", icon: PencilLine},

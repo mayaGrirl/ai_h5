@@ -11,7 +11,7 @@ const service = axios.create({
   timeout: 3000,
   headers: {
     'Accept': 'application/json',
-    'x-requested-with': 'XMLHttpRequest',
+    'X-Requested-With': 'XMLHttpRequest',
   },
 });
 
