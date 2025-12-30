@@ -3,11 +3,17 @@
 import Image from "next/image";
 import {useEffect, useRef, useState} from "react";
 import {useTranslations} from "use-intl";
+import {receiveSalaryZ, salaryZRecords} from "@/api/customer";
+import {toast} from "sonner";
+import {SalaryZRecordField} from "@/types/customer.type";
+import dayjs from "@/lib/dayjs";
+import * as React from "react";
+import {cn} from "@/lib/utils";
 
-export default function AllPage() {
+export default function ReceivePage() {
   const _t = useTranslations();
 
-  const [list, setList] = useState<unknown[]>([]);
+  const [list, setList] = useState<SalaryZRecordField[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -17,27 +23,35 @@ export default function AllPage() {
   const fetchData = async (pageNo: number) => {
     setLoading(true);
 
-    // 模拟接口
-    await new Promise((r) => setTimeout(r, 1000));
-
-    const newData = Array.from({length: 20}).map((_, i) => ({
-      id: `${pageNo}-${i}`,
-      title: "银行存储",
-      time: "12-15 16:07:12",
-      amount: 1000,
-      balance: 20000,
-    }));
-
-    setList((prev) => [...prev, ...newData]);
-    setHasMore(pageNo < 5); // 模拟 5 页结束
-    setLoading(false);
+    // 请求接口
+    const {code, data, message} = await salaryZRecords({
+      pagination: {
+        page: pageNo,
+        size: 20,
+      }
+    })
+    await new Promise((r) => setTimeout(r, 700));
+    if (code === 200) {
+      setLoading(false);
+      if (data.length < 20) {
+        setHasMore(false);
+      }
+      if (pageNo == 1) {
+        setList([]);
+      }
+      setList((prev) => [...prev, ...data]);
+    } else {
+      toast.error(message);
+    }
   };
-
+  // 默认加载第一页数据
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchData(1).then(() => {});
+    const initList = async () => {
+      await fetchData(1);
+    }
+    void initList();
   }, []);
-
+  // 加载更多
   useEffect(() => {
     if (!loadMoreRef.current || !hasMore) return;
 
@@ -46,7 +60,7 @@ export default function AllPage() {
         if (entry.isIntersecting && !loading) {
           const nextPage = page + 1;
           setPage(nextPage);
-          fetchData(nextPage).then(() => {});
+          void fetchData(nextPage);
         }
       },
       {threshold: 1}
@@ -57,6 +71,42 @@ export default function AllPage() {
     return () => observer.disconnect();
   }, [page, hasMore, loading]);
 
+
+  const [receivingSet, setReceivingSet] = useState<Set<number>>(new Set());
+  /**
+   * 领取工资
+   * @param t
+   */
+  const handleReceive = async (
+    t: number
+  ) => {
+    // 已经在领取中，直接拦截
+    if (receivingSet.has(t)) return;
+
+    // 标记该行正在领取
+    setReceivingSet((prev) => new Set(prev).add(t));
+
+    try {
+      const {code, data, message} = await receiveSalaryZ(t);
+      if (code === 200) {
+        toast.success(message);
+        // 局部更新行状态
+        setList(prev => prev.map(item => item.id === t ? data : item))
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : _t('common.catch-error');
+      toast.error(msg);
+    } finally {
+      // 移除 loading 标记
+      setReceivingSet((prev) => {
+        const next = new Set(prev);
+        next.delete(t);
+        return next;
+      });
+    }
+  };
   return (
     <>
       {list.map((item, index) => (
@@ -66,10 +116,10 @@ export default function AllPage() {
         >
           <div className="leading-tight">
             <div className=" text-muted-foreground">
-              {_t('mine.salary.receive-grid-1', {start: '2025-12-14', end: '2025-12-20'})}
+              {_t('mine.salary.receive-grid-1', {start: dayjs.unix(item?.ctdateA || 0).format("YYYY-MM-DD"), end: dayjs.unix(item?.ctdateB || 0).format("YYYY-MM-DD")})}
             </div>
             <div className="mt-0.5 text-foreground">
-              {_t('mine.salary.receive-grid-2')} <span className="text-red-500 font-semibold ml-1">49</span>
+              {_t('mine.salary.receive-grid-2')} <span className="text-red-500 font-semibold ml-1">{item.coin}</span>
               <Image
                 className="inline-block w-[13px] h-[13px]"
                 src="/ranking/coin.png"
@@ -80,7 +130,27 @@ export default function AllPage() {
             </div>
           </div>
 
-          <div className="flex justify-end items-center gap-1 text-red-500 font-medium cursor-pointer">{_t('mine.salary.receive-grid-btn')}</div>
+          <div className={"flex justify-end items-center gap-1 font-medium"}>
+            {item.status === 0 && (
+              <button
+                className={cn(
+                  "px-2 py-1 text-xs rounded",
+                  receivingSet.has(item.id || 0)
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-red-500 text-white cursor-pointer"
+                )}
+                onClick={() => handleReceive(item.id || 0)}
+              >
+                {receivingSet.has(item.id || 0) ? _t("common.form.button.submitting") : _t("mine.salary.receive-grid-btn")}
+              </button>
+            )}
+            {item.status !== 0 && (
+              <div className={"grid justify-items-end"}>
+                {item.status_label}
+                <div>({dayjs.unix(item?.gettime || 0).format("YYYY-MM-DD HH:mm")})</div>
+              </div>
+            )}
+          </div>
         </div>
       ))}
 

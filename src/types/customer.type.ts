@@ -294,3 +294,27 @@ export interface WagesRecordField {
   state?: number;
   state_label?: string | null;
 }
+
+// 工资领取
+export interface SalaryZRecordField {
+  id?: number;
+  uid?: number;
+  ctdateA?: number;
+  ctdateB?: number;
+  coin?: number;
+  status?: number;
+  addtime?: number;
+  gettime?: number;
+  status_label?: string | null;
+}
+// 工资记录
+export interface SalaryRecordField {
+  id?: number;
+  uid?: number;
+  basecoin?: number;
+  coin?: number;
+  typestr?: string | null;
+  addtime?: number;
+  status?: number;
+  status_label?: string | null;
+}
