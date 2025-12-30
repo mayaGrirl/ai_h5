@@ -247,7 +247,7 @@ export default function Mine() {
           {/* 账户信息：金币 / 存款 / 生态值 */}
           <section className="mt-3 px-3">
             <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
-              <Link className="flex flex-col cursor-pointer" href={`/mine/receipt-text`}>
+              <Link className="flex flex-col cursor-pointer" href={`/${locale}/mine/receipt-text`}>
                 <div className="text-gray-500">{_t('mine.account-points')}</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>{format.number(memberCapital?.points ?? 0)}</span>
@@ -260,7 +260,7 @@ export default function Mine() {
                   />
                 </div>
               </Link>
-              <Link className="flex flex-col border-x border-gray-200 cursor-pointer" href={"/mine/customer-transfer"}>
+              <Link className="flex flex-col border-x border-gray-200 cursor-pointer" href={`/${locale}/mine/customer-transfer`}>
                 <div className="text-gray-500">{_t('mine.account-bank-points')}</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>{format.number(memberCapital?.bankpoints ?? 0)}</span>
@@ -300,7 +300,7 @@ export default function Mine() {
           {/* 昨日亏损 + 今日首充返利 + 今日亏损返利 区域 */}
           <section className="mt-3">
             {/* 昨日亏损 */}
-            <Link href={'/mine/rebate?tab=loss'}
+            <Link href={`/${locale}/mine/rebate?tab=loss`}
                   className="mt-1 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <div>
                 <span>{_t('mine.yesterday_loss')}</span>
@@ -318,7 +318,7 @@ export default function Mine() {
             </Link>
 
             {/* 今日首充返利 标题 */}
-            <Link href={'/mine/rebate?tab=recharge'}
+            <Link href={`/${locale}/mine/rebate?tab=recharge`}
                   className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <span>{_t('mine.recharge_rebate')}</span>
               <span className="flex justify-center items-center text-sm">

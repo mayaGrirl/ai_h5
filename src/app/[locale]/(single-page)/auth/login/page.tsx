@@ -9,7 +9,7 @@ import {login} from '@/api/auth';
 import {HttpRes} from "@/types/http.type";
 import {LoginReq} from "@/types/login.type";
 import {toast} from "sonner";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useAuthStore} from "@/utils/storage/auth";
 import Link from "next/link";
 import {useTranslations} from "use-intl";
@@ -20,6 +20,8 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   // 原样保留
   const queryString = searchParams.toString();
+  const params = useParams();
+  const locale = params.locale as string;
 
   const schema = z.object({
     mobile: z.string().min(1, _t('register.mobile-placeholder')).max(50),
@@ -116,12 +118,12 @@ export default function LoginPage() {
             </button>
           </form>
           <Link
-            href={`/auth/register?${queryString}`}
+            href={`/${locale}/auth/register?${queryString}`}
             className="mt-3 h-12 w-full flex items-center justify-center rounded-full bg-[#0d6efd] text-white font-medium tracking-wide transition transform active:scale-95">
             {_t('login.register-btn')}
           </Link>
 
-          <Link href={`/auth/forgot-password?${queryString}`}
+          <Link href={`/${locale}/auth/forgot-password?${queryString}`}
                 className={"flex justify-center items-center mt-6 text-[rgb(0,0,238)]"}
           >{_t('login.forgot-password-btn')}</Link>
         </main>

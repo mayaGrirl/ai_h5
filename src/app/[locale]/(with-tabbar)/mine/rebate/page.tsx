@@ -50,7 +50,7 @@ export default function ReceiptTextPage() {
                 return (
                   <Link
                     key={item.key}
-                    href={`/mine/rebate?tab=${item.key}`}
+                    href={`/${locale}/mine/rebate?tab=${item.key}`}
                     className={`py-3 text-center ${
                       active ? "text-red-500 font-bold border-b-2 border-red-500" : "text-gray-500"
                     }`}

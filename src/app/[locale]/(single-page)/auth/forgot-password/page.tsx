@@ -6,7 +6,7 @@ import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "sonner";
-import {useRouter} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {cn} from "@/lib/utils";
 import Image from "next/image";
 import {useTranslations} from "use-intl";
@@ -17,6 +17,8 @@ const STORAGE_KEY = "sms_countdown_end_at_find_password";
 export default function FindPasswordPage() {
   const _t = useTranslations();
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
 
   // step: 1=短信验证 2=重置密码
   const [step, setStep] = useState<1 | 2>(1);
@@ -151,7 +153,7 @@ export default function FindPasswordPage() {
 
       if (code == 200) {
         toast.success(message);
-        router.replace(`/auth/login`);
+        router.replace(`/${locale}/auth/login`);
       } else {
         toast.error(message);
       }

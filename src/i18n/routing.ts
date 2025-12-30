@@ -32,7 +32,7 @@ export function getLocale(url: string): string {
  * 从URL解析语言code
  * @param url
  */
-function getLocaleFromUrl(url: string): string {
+export function getLocaleFromUrl(url: string): string {
   if (!url) return routing.defaultLocale;
 
   const match = url.match(/^\/(zh|en|fr)(\/|$)/);

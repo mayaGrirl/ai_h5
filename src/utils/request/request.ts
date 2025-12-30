@@ -4,6 +4,7 @@ import {
   responseDefaultInterceptors,
 } from './interceptors';
 import {accessToken} from "@/utils/storage/token";
+import {getLocaleFromUrl} from "@/i18n/routing";
 
 // 初始化实例
 const service = axios.create({
@@ -46,7 +47,8 @@ service.interceptors.response.use(
 
       if (typeof window !== "undefined") {
         const pathname = window.location.pathname;
-        window.location.href = `/auth/login?redirect=${pathname}`;
+        const locale = getLocaleFromUrl(pathname);
+        window.location.href = `${locale}/auth/login?redirect=${pathname}`;
       }
     }
     return Promise.reject(response);

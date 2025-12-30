@@ -7,7 +7,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {registration, sendSmsToMobile} from '@/api/auth';
 import {toast} from "sonner";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useParams, useRouter, useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {useTranslations} from "use-intl";
 import {cn} from "@/lib/utils";
@@ -18,6 +18,8 @@ const STORAGE_KEY = "sms_countdown_end_at_register";
 export default function RegisterPage() {
   const _t = useTranslations();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const locale = params.locale as string;
   // 原样保留
   const queryString = searchParams.toString();
 
@@ -134,7 +136,7 @@ export default function RegisterPage() {
 
       // 跳转到指定页面
       const urlParams = new URL(window.location.href).searchParams;
-      router.replace(urlParams.get('redirect') || '/auth/login');
+      router.replace(urlParams.get('redirect') || `${locale}/auth/login`);
     }
   });
 
@@ -249,7 +251,7 @@ export default function RegisterPage() {
               {isSubmitting ? _t("common.form.button.submitting") : _t('register.form-submit-button')}
             </button>
           </form>
-          <Link href={`/auth/login?${queryString}`}
+          <Link href={`/${locale}/auth/login?${queryString}`}
                 className={"flex justify-center items-center mt-6 text-[rgb(0,0,238)]"}
           >{_t('register.back-login')}</Link>
         </main>

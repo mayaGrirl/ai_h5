@@ -1,7 +1,7 @@
 import {AxiosError, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
 import {CryptoUtils} from '@/utils/crypto';
 import {accessToken} from '@/utils/storage/token';
-import {getLocale} from "@/i18n/routing";
+import {getLocale, getLocaleFromUrl} from "@/i18n/routing";
 
 // 使用相对路径，通过 Next.js rewrites 代理转发请求，解决跨域问题
 const BASE_URL = "";
@@ -51,6 +51,8 @@ export const responseDefaultInterceptors = {
       // tip('网络请求超时');
       return Promise.reject(error);
     }
+    const url = window.location.pathname;
+    const locale = getLocaleFromUrl(url);
     // 这里只会捕获http请求失败的状态码3x、4x、5x等
     switch (error?.response?.status) {
       // 未登录
@@ -60,7 +62,7 @@ export const responseDefaultInterceptors = {
         accessToken.remove();
         if (typeof window !== "undefined") {
           const pathname = window.location.pathname;
-          window.location.href = `/auth/login?redirect=${pathname}`;
+          window.location.href = `/${locale}/auth/login?redirect=${pathname}`;
         }
         break;
       // 网络请求不存在

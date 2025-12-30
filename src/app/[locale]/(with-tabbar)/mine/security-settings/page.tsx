@@ -8,10 +8,13 @@ import {ChevronRight} from "lucide-react";
 import Link from "next/link";
 import {useAuthStore} from "@/utils/storage/auth";
 import {isEmpty} from "@/utils/utils";
+import {useParams} from "next/navigation";
 
 export default function SecuritySettingsPage() {
   // 页面需要登陆Hook
   useRequireLogin();
+  const params = useParams();
+  const locale = params.locale as string;
   const _t = useTranslations("mine");
 
   const { currentCustomer } = useAuthStore();
@@ -32,17 +35,17 @@ export default function SecuritySettingsPage() {
                   {_t("security-settings.group-account.title")}
                 </div>
                 <div className="space-y-3">
-                  <Link href={"/mine/security-settings/password"}
+                  <Link href={`/${locale}/mine/security-settings/password`}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-account.login")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
                   </Link>
-                  <Link href={"/mine/security-settings/login-address"}
+                  <Link href={`/${locale}/mine/security-settings/login-address`}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-account.address")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
                   </Link>
-                  <Link href={"/mine/security-settings/login-sms"}
+                  <Link href={`/${locale}/mine/security-settings/login-sms`}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-account.sms")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
@@ -57,13 +60,13 @@ export default function SecuritySettingsPage() {
                   {_t("security-settings.group-pay.title")}
                 </div>
                 <div className="space-y-3">
-                  <Link href={"/mine/security-settings/pay-password"}
+                  <Link href={`/${locale}/mine/security-settings/pay-password`}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-pay.pay")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
                   </Link>
                   {isEmpty(currentCustomer?.securitypass) && (
-                    <Link href={"/mine/security-settings/question"}
+                    <Link href={`/${locale}/mine/security-settings/question`}
                           className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                       <span className="text-gray-800 text-sm">{_t("security-settings.group-pay.security")}</span>
                       <span className="text-red-600 text-lg"><ChevronRight/></span>
@@ -79,12 +82,12 @@ export default function SecuritySettingsPage() {
                   {_t("security-settings.group-other.title")}
                 </div>
                 <div className="space-y-3">
-                  <Link href={"/mine/security-settings/redeem"}
+                  <Link href={`/${locale}/mine/security-settings/redeem`}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-other.redeem")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
                   </Link>
-                  <Link href={"/mine/security-settings/card"}
+                  <Link href={`/${locale}/mine/security-settings/card`}
                         className="flex items-center justify-between bg-white rounded-xl px-4 py-4 shadow-sm cursor-pointer">
                     <span className="text-gray-800 text-sm">{_t("security-settings.group-other.card")}</span>
                     <span className="text-red-600 text-lg"><ChevronRight/></span>
