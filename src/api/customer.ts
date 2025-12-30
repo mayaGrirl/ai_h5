@@ -11,7 +11,7 @@ import {
   RecommendCustomer,
   RecommendLinkKey,
   RedeemGiftVerifyTypeDto,
-  ReliefResponse,
+  ReliefResponse, SalaryRecordField, SalaryZRecordField,
   SetSecurityPassDto,
   SettingLoginAddressDto,
   SettingLoginSmsDto,
@@ -243,10 +243,31 @@ export const receiveWages = (id: number): Promise<HttpRes<WagesRecordField>> => 
   return http.post(`/api/app/v1/wages/receive/${id}`, {});
 };
 
-
 /**
  * VIP会员领取福利
  */
 export const vipReceiveWelfare = (): Promise<HttpRes<unknown>> => {
   return http.post(`/api/app/v1/vip/receive-welfare`, {});
+};
+
+/**
+ * 工资日记录
+ */
+export const salaryRecords = (data: PageRequest): Promise<HttpRes<SalaryRecordField[]>> => {
+  return http.post('/api/app/v1/salary/records', data);
+};
+
+/**
+ * 工资领取记录
+ */
+export const salaryZRecords = (data: PageRequest): Promise<HttpRes<SalaryZRecordField[]>> => {
+  return http.post('/api/app/v1/salary-z/records', data);
+};
+
+/**
+ * 领取工资
+ * @param id
+ */
+export const receiveSalaryZ = (id: number): Promise<HttpRes<SalaryZRecordField>> => {
+  return http.post(`/api/app/v1/salary-z/receive/${id}`, {});
 };
