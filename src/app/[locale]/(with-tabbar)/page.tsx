@@ -97,7 +97,7 @@ export default function HomePage() {
   const quickActions = [
     { name: _t("home.announcement"), href: "index/announce", color: "bg-[#ffb84d]", icon: Bell, count: announcements.length },
     { name: _t("home.events"), href: "index/activities", color: "bg-[#b47cff]", icon: Star, count: activities.length },
-    { name: _t("home.rewards"), href: "index/rewards", color: "bg-[#ff6b6b]", icon: Gift, count: 0 },
+    { name: _t("home.rewards"), href: "/mine/relief", color: "bg-[#ff6b6b]", icon: Gift, count: 0 },
     { name: _t("home.partners"), href: "index/partners", color: "bg-[#4ec5ff]", icon: UsersRound, count: partners.length },
   ];
 
