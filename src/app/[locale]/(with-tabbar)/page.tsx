@@ -13,12 +13,13 @@ import styles from "./page.module.css";
 import { useParams } from "next/navigation";
 import {
   getBanners,
-  getAnnouncements,
+  /*getAnnouncements,
   getActivities,
-  getPartners,
+  getPartners,*/
   getHomePopup,
+  indexGameHotNew,
 } from "@/api/home";
-import { IndexDataItem } from "@/types/index.type";
+import {IndexDataItem, IndexGameItem} from "@/types/index.type";
 
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "";
 const getImageUrl = (pic: string) => {
@@ -40,6 +41,7 @@ export default function HomePage() {
   const locale = params.locale as string;
   const _t = useTranslations();
 
+  const [gameHotNew, setGameHotNew] = useState<IndexGameItem>();
   // 轮播图 (type=1)
   const [banners, setBanners] = useState<IndexDataItem[]>([]);
   const [bannersLoading, setBannersLoading] = useState(true);
@@ -54,13 +56,18 @@ export default function HomePage() {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
+    //首页热门游戏
+    indexGameHotNew({limit: 6}).then(({ code, data }) => {
+      if (code === 200 && data) setGameHotNew(data);
+    });
+
     // type=1 轮播图
     getBanners()
       .then(({ code, data }) => {
         if (code === 200 && data) setBanners(data);
       })
       .finally(() => setBannersLoading(false));
-    // type=2 公告
+    /*// type=2 公告
     getAnnouncements().then(({ code, data }) => {
       if (code === 200 && data) setAnnouncements(data);
     });
@@ -71,7 +78,7 @@ export default function HomePage() {
     // type=4 合作商家
     getPartners().then(({ code, data }) => {
       if (code === 200 && data) setPartners(data);
-    });
+    });*/
     // type=5 弹框公告 (使用 sessionStorage，每次会话显示一次)
     getHomePopup().then(({ code, data }) => {
       if (code === 200 && data && data.length > 0) {
@@ -88,10 +95,10 @@ export default function HomePage() {
   }, []);
 
   const quickActions = [
-    { name: _t("home.announcement"), href: "", color: "bg-[#ffb84d]", icon: Bell, count: announcements.length },
-    { name: _t("home.events"), href: "", color: "bg-[#b47cff]", icon: Star, count: activities.length },
-    { name: _t("home.rewards"), href: "", color: "bg-[#ff6b6b]", icon: Gift, count: 0 },
-    { name: _t("home.partners"), href: "", color: "bg-[#4ec5ff]", icon: UsersRound, count: partners.length },
+    { name: _t("home.announcement"), href: "index/announce", color: "bg-[#ffb84d]", icon: Bell, count: announcements.length },
+    { name: _t("home.events"), href: "index/activities", color: "bg-[#b47cff]", icon: Star, count: activities.length },
+    { name: _t("home.rewards"), href: "index/rewards", color: "bg-[#ff6b6b]", icon: Gift, count: 0 },
+    { name: _t("home.partners"), href: "index/partners", color: "bg-[#4ec5ff]", icon: UsersRound, count: partners.length },
   ];
 
   const defaultSlides: DefaultSlide[] = [
@@ -110,6 +117,8 @@ export default function HomePage() {
     { name: "韩国28", src: "/home/hot-games/5.png", href: "" },
     { name: "加拿大10", src: "/home/hot-games/6.png", href: "" },
   ];
+
+  // const hotApiGames = gameHotNew.length > 0 ? gameHotNew : hotGames;
 
   const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ playOnInit: true, delay: 2000 })]);
   const closePopup = () => setShowPopup(false);
@@ -172,7 +181,7 @@ export default function HomePage() {
           </section>
 
           {/* 滚动公告 (type=2) */}
-          {announcements.length > 0 && (
+          {/*{announcements.length > 0 && (
             <section className="mb-3 bg-white rounded-lg px-3 py-2 flex items-center gap-2">
               <Bell className="h-4 w-4 text-[#ff3a00] flex-shrink-0" />
               <div className="overflow-hidden flex-1">
@@ -185,10 +194,10 @@ export default function HomePage() {
                 </div>
               </div>
             </section>
-          )}
+          )}*/}
 
           {/* 活动列表 (type=3) */}
-          {activities.length > 0 && (
+          {/*{activities.length > 0 && (
             <section className="mb-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-black font-medium text-[13px]">热门活动</span>
@@ -207,7 +216,7 @@ export default function HomePage() {
                 ))}
               </div>
             </section>
-          )}
+          )}*/}
 
           {/* 热门游戏 */}
           <section className="mb-2 flex items-center justify-between text-[13px]">
@@ -215,15 +224,26 @@ export default function HomePage() {
             <button className="text-xs text-blue-600">网络检测</button>
           </section>
           <section className="mb-4 grid grid-cols-3 gap-2">
-            {hotGames.map(({ name, src, href }, index) => (
-              <Link key={"hot-games" + index} href={`/${locale}/${href}`} className="block">
-                <Image src={src} alt={name} width={300} height={200} className="w-full rounded-md" />
+            {gameHotNew?.hot && gameHotNew?.hot.map((item, index) => (
+              <Link key={"hot-games" + index} href={`/${locale}/${item.id}`} className="block">
+                <Image src={item.logo || ''} alt={item.name || ''} width={300} height={200} className="w-full rounded-md" />
+              </Link>
+            ))}
+          </section>
+
+          <section className="mb-2 flex items-center justify-between text-[13px]">
+            <span className="text-black font-medium">{_t("home.new-games")}</span>
+          </section>
+          <section className="mb-4 grid grid-cols-3 gap-2">
+            {gameHotNew?.new && gameHotNew?.new.map((item, index) => (
+              <Link key={"hot-games" + index} href={`/${locale}/${item.id}`} className="block">
+                <Image src={item.logo || ''} alt={item.name || ''} width={300} height={200} className="w-full rounded-md" />
               </Link>
             ))}
           </section>
 
           {/* 合作商家 (type=4) */}
-          {partners.length > 0 && (
+          {/*{partners.length > 0 && (
             <section className="mb-4">
               <span className="text-black font-medium text-[13px]">合作伙伴</span>
               <div className="flex gap-3 overflow-x-auto pb-2 mt-2">
@@ -237,7 +257,7 @@ export default function HomePage() {
                 ))}
               </div>
             </section>
-          )}
+          )}*/}
 
           {/* 底部按钮 */}
           <section className="space-y-3">
