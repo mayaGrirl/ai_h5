@@ -1,6 +1,14 @@
 import http from "@/utils/request";
 import { HttpRes } from "@/types/http.type";
-import {IndexType, IndexInfoDto, IndexDataItem, IndexGameDto, IndexGameItem, IndexDetailDto} from "@/types/index.type";
+import {
+  IndexType,
+  IndexInfoDto,
+  IndexDataItem,
+  IndexGameDto,
+  IndexGameItem,
+  IndexDetailDto,
+  webConfig
+} from "@/types/index.type";
 
 export { IndexType } from "@/types/index.type";
 
@@ -59,6 +67,8 @@ export const indexHotNew = () => getIndex({ type: IndexType.MINE_AD });
 
 // ==================== 系统配置 ====================
 
-export const getConfig = (): Promise<HttpRes<unknown>> => {
-  return http.post("/api/app/v1/sysConfig", {});
+export const getWebConfig = (): Promise<HttpRes<webConfig>> => {
+  return http.get<HttpRes<webConfig>>("/api/app/v1/sysConfig", {});
 };
+
+

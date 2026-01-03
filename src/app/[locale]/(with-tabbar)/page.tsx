@@ -17,9 +17,10 @@ import {
   getActivities,
   getPartners,*/
   getHomePopup,
+  getWebConfig,
   indexGameHotNew,
 } from "@/api/home";
-import {IndexDataItem, IndexGameItem} from "@/types/index.type";
+import {IndexDataItem, IndexGameItem, webConfig} from "@/types/index.type";
 
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "";
 const getImageUrl = (pic: string) => {
@@ -46,20 +47,29 @@ export default function HomePage() {
   const [banners, setBanners] = useState<IndexDataItem[]>([]);
   const [bannersLoading, setBannersLoading] = useState(true);
   // 公告 (type=2)
-  const [announcements, setAnnouncements] = useState<IndexDataItem[]>([]);
+  /*const [announcements, setAnnouncements] = useState<IndexDataItem[]>([]);
   // 活动 (type=3)
   const [activities, setActivities] = useState<IndexDataItem[]>([]);
   // 合作商家 (type=4)
-  const [partners, setPartners] = useState<IndexDataItem[]>([]);
+  const [partners, setPartners] = useState<IndexDataItem[]>([]);*/
   // 首页弹框公告 (type=5)
   const [popupAnnouncement, setPopupAnnouncement] = useState<IndexDataItem | null>(null);
   const [showPopup, setShowPopup] = useState(false);
 
+  const [getConfig, setGetConfig] = useState<webConfig|null>(null);
+
   useEffect(() => {
+
+    getWebConfig().then(({ code, data }) => {
+      if (code === 200 && data) setGetConfig(data);
+    });
+
     //首页热门游戏
     indexGameHotNew({limit: 6}).then(({ code, data }) => {
       if (code === 200 && data) setGameHotNew(data);
     });
+
+
 
     // type=1 轮播图
     getBanners()
@@ -67,18 +77,7 @@ export default function HomePage() {
         if (code === 200 && data) setBanners(data);
       })
       .finally(() => setBannersLoading(false));
-    /*// type=2 公告
-    getAnnouncements().then(({ code, data }) => {
-      if (code === 200 && data) setAnnouncements(data);
-    });
-    // type=3 活动
-    getActivities().then(({ code, data }) => {
-      if (code === 200 && data) setActivities(data);
-    });
-    // type=4 合作商家
-    getPartners().then(({ code, data }) => {
-      if (code === 200 && data) setPartners(data);
-    });*/
+
     // type=5 弹框公告 (使用 sessionStorage，每次会话显示一次)
     getHomePopup().then(({ code, data }) => {
       if (code === 200 && data && data.length > 0) {
@@ -95,10 +94,10 @@ export default function HomePage() {
   }, []);
 
   const quickActions = [
-    { name: _t("home.announcement"), href: "index/announce", color: "bg-[#ffb84d]", icon: Bell, count: announcements.length },
-    { name: _t("home.events"), href: "index/activities", color: "bg-[#b47cff]", icon: Star, count: activities.length },
+    { name: _t("home.announcement"), href: "index/announce", color: "bg-[#ffb84d]", icon: Bell, count: 0 },
+    { name: _t("home.events"), href: "index/activities", color: "bg-[#b47cff]", icon: Star, count:0 },
     { name: _t("home.rewards"), href: "/mine/relief", color: "bg-[#ff6b6b]", icon: Gift, count: 0 },
-    { name: _t("home.partners"), href: "index/partners", color: "bg-[#4ec5ff]", icon: UsersRound, count: partners.length },
+    { name: _t("home.partners"), href: "index/partners", color: "bg-[#4ec5ff]", icon: UsersRound, count: 0 },
   ];
 
   const defaultSlides: DefaultSlide[] = [
@@ -180,48 +179,11 @@ export default function HomePage() {
             )}
           </section>
 
-          {/* 滚动公告 (type=2) */}
-          {/*{announcements.length > 0 && (
-            <section className="mb-3 bg-white rounded-lg px-3 py-2 flex items-center gap-2">
-              <Bell className="h-4 w-4 text-[#ff3a00] flex-shrink-0" />
-              <div className="overflow-hidden flex-1">
-                <div className="whitespace-nowrap overflow-hidden text-ellipsis">
-                  {announcements.slice(0, 3).map((item, idx) => (
-                    <span key={item.id} className="text-sm text-gray-600">
-                      {item.title}{idx < Math.min(announcements.length, 3) - 1 ? " | " : ""}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}*/}
-
-          {/* 活动列表 (type=3) */}
-          {/*{activities.length > 0 && (
-            <section className="mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-black font-medium text-[13px]">热门活动</span>
-                <Link href={`/${locale}/activities`} className="text-xs text-blue-600">查看全部</Link>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {activities.slice(0, 4).map((activity) => (
-                  <Link key={activity.id} href={activity.jump_url || "#"} className="bg-white rounded-lg overflow-hidden shadow-sm">
-                    <div className="relative h-20">
-                      <Image src={getImageUrl(activity.pic)} alt={activity.title} fill className="object-cover" />
-                    </div>
-                    <div className="p-2">
-                      <p className="text-xs text-gray-800 truncate">{activity.title}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}*/}
 
           {/* 热门游戏 */}
           <section className="mb-2 flex items-center justify-between text-[13px]">
             <span className="text-black font-medium">{_t("home.hot-games")}</span>
-            <button className="text-xs text-blue-600">网络检测</button>
+            {/*<button className="text-xs text-blue-600">网络检测</button>*/}
           </section>
           <section className="mb-4 grid grid-cols-3 gap-2">
             {gameHotNew?.hot && gameHotNew?.hot.map((item, index) => (
@@ -242,28 +204,22 @@ export default function HomePage() {
             ))}
           </section>
 
-          {/* 合作商家 (type=4) */}
-          {/*{partners.length > 0 && (
-            <section className="mb-4">
-              <span className="text-black font-medium text-[13px]">合作伙伴</span>
-              <div className="flex gap-3 overflow-x-auto pb-2 mt-2">
-                {partners.map((partner) => (
-                  <Link key={partner.id} href={partner.jump_url || "#"} className="flex-shrink-0 w-16 flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-full bg-white shadow-sm overflow-hidden relative">
-                      <Image src={getImageUrl(partner.pic)} alt={partner.title} fill className="object-cover" />
-                    </div>
-                    <span className="text-[10px] text-gray-600 mt-1 truncate w-full text-center">{partner.title}</span>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}*/}
+
 
           {/* 底部按钮 */}
-          <section className="space-y-3">
-            <button className="flex h-11 w-full items-center justify-center rounded-full bg-[#ff3a00] text-[14px] font-medium text-white shadow">电脑版</button>
-            <button className="flex h-11 w-full items-center justify-center rounded-full bg-[#ff3a00] text-[14px] font-medium text-white shadow">联系客服</button>
-          </section>
+          {getConfig && (
+            <section className="space-y-3">
+              <Link href={getConfig.pc_url} className="block">
+                <button className="flex h-11 w-full items-center justify-center rounded-full bg-[#ff3a00] text-[14px] font-medium text-white shadow">电脑版</button>
+              </Link>
+              <Link href={getConfig.customer_link} className="block">
+                <button className="flex h-11 w-full items-center justify-center rounded-full bg-[#ff3a00] text-[14px] font-medium text-white shadow">
+                  联系客服
+                </button>
+              </Link>
+            </section>
+          )}
+
         </main>
       </div>
 
