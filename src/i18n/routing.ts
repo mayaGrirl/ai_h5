@@ -13,7 +13,6 @@ export const routing = defineRouting({
    * api 接口无需国际化
    */
   pathnames: {
-    '/api/:path*': '/api/:path*',
     // '/pathnames': {
     //   zh: '/pfadnamen'
     // }
