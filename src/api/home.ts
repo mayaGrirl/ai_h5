@@ -1,6 +1,6 @@
 import http from "@/utils/request";
 import { HttpRes } from "@/types/http.type";
-import { IndexType, IndexInfoDto, IndexDataItem } from "@/types/index.type";
+import {IndexType, IndexInfoDto, IndexDataItem, IndexGameDto, IndexGameItem, IndexDetailDto} from "@/types/index.type";
 
 export { IndexType } from "@/types/index.type";
 
@@ -8,9 +8,19 @@ export { IndexType } from "@/types/index.type";
  * 获取首页数据 - 通用方法
  * 返回格式: { code: 200, data: IndexDataItem[] }
  */
-export const getIndex = (data: IndexInfoDto): Promise<HttpRes<IndexDataItem[]>> => {
+  export const getIndex = (data: IndexInfoDto): Promise<HttpRes<IndexDataItem[]>> => {
   return http.post<HttpRes<IndexDataItem[]>, IndexInfoDto>("/api/app/v1/index", data);
 };
+
+export const getIndexDetail = (id: number): Promise<HttpRes<IndexDataItem>> => {
+  return http.post<HttpRes<IndexDataItem>, IndexDetailDto>("/api/app/v1/index/detail", {id});
+};
+
+export const indexGameHotNew = (data: IndexGameDto): Promise<HttpRes<IndexGameItem>> => {
+  return http.post<HttpRes<IndexGameItem>, IndexGameDto>("/api/app/v1/game/newHot", data);
+};
+
+
 
 // ==================== 首页使用 ====================
 
@@ -42,6 +52,10 @@ export const getLoginBanner = () => getIndex({ type: IndexType.LOGIN_BANNER });
 
 /** 获取我的页广告 (type=9) */
 export const getMineAd = () => getIndex({ type: IndexType.MINE_AD });
+
+//获取首页热门游戏
+export const indexHotNew = () => getIndex({ type: IndexType.MINE_AD });
+
 
 // ==================== 系统配置 ====================
 

@@ -25,6 +25,15 @@ export interface IndexInfoDto {
   is_expired?: string;
 }
 
+export interface IndexGameDto {
+  limit: number;
+}
+
+export interface IndexDetailDto {
+  id: number;
+}
+
+
 /**
  * 首页数据项 - 后端实际返回的数据格式
  */
@@ -48,6 +57,26 @@ export interface IndexDataItem {
   deleted_at?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface gameItem {
+  id: number,
+  name?: string,
+  logo?: string,
+  lang_name?: [],
+  game_class?: number,
+  is_hot?: number,
+  is_show?: number,
+  info?: string,
+  lang_info?: [],
+}
+
+/**
+ * 首页游戏数据
+ */
+export interface IndexGameItem {
+  hot?: gameItem[];
+  new?: gameItem[];
 }
 
 /**
