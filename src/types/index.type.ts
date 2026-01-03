@@ -79,6 +79,15 @@ export interface IndexGameItem {
   new?: gameItem[];
 }
 
+export interface webConfig {
+  app_logo: string;
+  app_name: string;
+  customer_link:string;
+  h5_url:string;
+  pc_url:string;
+  pic_url:string;
+}
+
 /**
  * ITradePasswordDto
  */
