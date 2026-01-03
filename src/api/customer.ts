@@ -1,7 +1,7 @@
 import {HttpRes, PageRequest} from "@/types/http.type";
 import http from "@/utils/request";
 import {
-  BindEmailDto,
+  BindEmailDto, CheckSecurityPass,
   CustomerProfile,
   CustomerTransferDto, DepositRecordField,
   MemberCapital,
@@ -37,6 +37,15 @@ export const updateNickname = (data: UpdateNicknameDto): Promise<HttpRes<unknown
  */
 export const bindEmail = (data: BindEmailDto): Promise<HttpRes<unknown>> => {
   return http.put<HttpRes<unknown>>(`/api/app/v1/customer/bind-email`, data);
+};
+
+/**
+ * 验证密保问题
+ * @param data
+ * @returns
+ */
+export const checkSecurityPass = (data: SetSecurityPassDto): Promise<HttpRes<CheckSecurityPass>> => {
+  return http.post<HttpRes<CheckSecurityPass>>(`/api/app/v1/customer/check/security-pass`, data);
 };
 
 /**

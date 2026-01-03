@@ -10,9 +10,11 @@ type HeaderProps = {
   className?: string;
   /** 指定返回地址，不传则返回上一页 */
   cBack?: string;
+  /** 是否显示返回按钮 */
+  isShowBack?: boolean;
 };
 
-export function PageHeader({ title, className, cBack }: HeaderProps) {
+export function PageHeader({ title, className, cBack, isShowBack = true }: HeaderProps) {
   const router = useRouter();
   const _t = useTranslations();
   const handleBack = () => {
@@ -30,13 +32,15 @@ export function PageHeader({ title, className, cBack }: HeaderProps) {
       )}
     >
       {/* 左侧返回 */}
-      <button
-        onClick={handleBack}
-        className="absolute left-2 flex items-center gap-1 text-white hover:bg-white/10 cursor-pointer"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        <span className="text-sm">{_t("common.header.back")}</span>
-      </button>
+      {isShowBack && (
+        <button
+          onClick={handleBack}
+          className="absolute left-2 flex items-center gap-1 text-white hover:bg-white/10 cursor-pointer"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="text-sm">{_t("common.header.back")}</span>
+        </button>
+      )}
 
       {/* 中间标题（真正居中） */}
       <h1 className="mx-auto font-medium">
