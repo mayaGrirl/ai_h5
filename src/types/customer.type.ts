@@ -97,6 +97,14 @@ export interface PackExchangeDto {
   code: string,
 }
 
+/**
+ * 验证密保返回到key
+ */
+export interface CheckSecurityPass {
+  key: string;
+  time: number;
+}
+
 export interface RecommendLinkKey {
   key: string;
 }

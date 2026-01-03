@@ -89,6 +89,17 @@
       "alert": "Changing a nickname costs 200"
     },
     "toolcase": {
+      "record-grid-1": "Card Number",
+      "record-grid-2": "Password",
+      "record-grid-3": "Coins",
+      "record-grid-4": "Received Time",
+      "record-grid-5": "Action",
+      "record-title": "Card Code List",
+      "record-copied": "Copied",
+      "record-copy-all": "Copy All",
+      "record-copy-one": "Copy",
+      "record-refresh-pending": "Refreshing...",
+      "record-refresh": "Refresh",
       "form-label": {
         "question": "Safety Question",
         "answer": "Answer"
@@ -235,7 +246,8 @@
     "sms-verify_code-max": "Invalid verification code",
     "sms-verify_code-send-failed": "Failed to send. Please try again later",
     "sms-verify_code-sending": "Sending...",
-    "sms-verify_code-send-btn": "Send SMS Code"
+    "sms-verify_code-send-btn": "Send SMS Code",
+    "confirm": "Confirm"
   },
   "actions": {
     "pc": "PC Version",
@@ -316,5 +328,22 @@
     "loss-table-header-3": "Recharge",
     "loss-table-header-4": "Rebate",
     "loss-table-header-5": "Status"
+  },
+  "shop": {
+    "tab-1": "Redemption Records",
+    "tab-2": "My Card Codes",
+    "items-1": "Bank Balance",
+    "items-2": "Deposit Now",
+    "items-3": "Equivalent",
+    "items-4": "My Coins",
+    "items-5": "Turnover in the Last 7 Days",
+    "form-label-1": "Redemption Amount",
+    "form-placeholder-1": "Please enter a multiple of 100",
+    "form-amount-verify-max": "The redemption amount cannot exceed the bank balance",
+    "form-label-2": "Handling Fee",
+    "verify-is-allowed-exchange": "You are {text} and are not allowed to redeem",
+    "record-grid-1": "Redemption Time",
+    "record-grid-2": "Coins Deducted",
+    "record-grid-3": "Bank Balance"
   }
 }

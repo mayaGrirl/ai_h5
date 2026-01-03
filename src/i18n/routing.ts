@@ -53,3 +53,14 @@ function normalizeLocale(locale: string) {
       return "zh-CN";
   }
 }
+
+/**
+ * locale → currency 映射关系
+ * 格式化金额转换成带币种符号。
+ * eg: ¥100 $100 ...
+ */
+export const LOCALE_CURRENCY_MAP: Record<string, string> = {
+  'zh': 'CNY',
+  'en': 'USD',
+  'fr': 'EUR',
+};

@@ -90,6 +90,17 @@
       "alert": "修改昵称需要花费 200"
     },
     "toolcase": {
+      "record-grid-1": "卡号",
+      "record-grid-2": "密码",
+      "record-grid-3": "金豆",
+      "record-grid-4": "获得时间",
+      "record-grid-5": "操作",
+      "record-title": "卡密列表",
+      "record-copied": "已复制",
+      "record-copy-all": "复制所有",
+      "record-copy-one": "复制",
+      "record-refresh-pending": "刷新中...",
+      "record-refresh": "刷新",
       "form-label": {
         "question": "安全问题",
         "answer": "答案"
@@ -236,7 +247,8 @@
     "sms-verify_code-max": "无效的验证码",
     "sms-verify_code-send-failed": "发送失败，请稍后再试",
     "sms-verify_code-sending": "发送中...",
-    "sms-verify_code-send-btn": "发送验证码"
+    "sms-verify_code-send-btn": "发送验证码",
+    "confirm": "确定"
   },
   "actions": {
     "pc": "电脑版",
@@ -317,5 +329,22 @@
     "loss-table-header-3": "充值",
     "loss-table-header-4": "返利",
     "loss-table-header-5": "状态"
+  },
+  "shop": {
+    "tab-1": "兑换记录",
+    "tab-2": "我的卡密",
+    "items-1": "银行余额",
+    "items-2": "去存入",
+    "items-3": "折合",
+    "items-4": "我的金豆",
+    "items-5": "近7日流水",
+    "form-label-1": "兑换金额",
+    "form-placeholder-1": "请输入100的整数倍",
+    "form-amount-verify-max": "兑换金额不能超过银行余额",
+    "form-label-2": "手续费",
+    "verify-is-allowed-exchange": "您是{text}不允许兑换",
+    "record-grid-1": "兑换时间",
+    "record-grid-2": "扣除金豆",
+    "record-grid-3": "银行余额"
   }
 }

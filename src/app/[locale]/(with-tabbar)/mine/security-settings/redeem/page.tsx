@@ -17,7 +17,7 @@ import {cn} from "@/lib/utils";
 // 选项
 const RadioOptions = [
   {value: "safeQuestion", i18nKey: "mine.security-settings.group-account.redeem.option-2"},
-  {value: "emailVerify", i18nKey: "mine.security-settings.group-account.redeem.option-3"},
+  // {value: "emailVerify", i18nKey: "mine.security-settings.group-account.redeem.option-3"},
 ];
 
 export default function RedeemPage() {
