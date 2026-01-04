@@ -316,8 +316,8 @@ export default function ShopPage() {
           <button
             disabled={isSubmitting || isSubmit}
             className={`h-12 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
-                  font-medium tracking-wide transition transform active:scale-95
-                  ${(isSubmitting || isSubmit) ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
+                  font-medium tracking-wide
+                  ${(isSubmitting || isSubmit) ? "opacity-60 cursor-not-allowed" : "cursor-pointer transition transform active:scale-95"}`
             }
           >
             {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}

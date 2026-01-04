@@ -19,7 +19,7 @@ export default function ToolCasePage() {
 
   const _t = useTranslations();
   // 验证状态
-  const [verified, setVerified] = useState<boolean>(false);
+  const [verified, setVerified] = useState<boolean|null>(null);
 
   useEffect(() => {
     const levelOptions = async () => {
@@ -63,6 +63,7 @@ export default function ToolCasePage() {
     }
   }
 
+  if (verified == null) return;
   return (
     <>
       <div className="flex min-h-screen justify-center bg-[#eef3f8]">

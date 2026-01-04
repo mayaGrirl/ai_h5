@@ -8,8 +8,7 @@ import {getLocaleFromUrl} from "@/i18n/routing";
 
 // 初始化实例
 const service = axios.create({
-  baseURL: '',
-  timeout: 3000,
+  timeout: 300000,
   headers: {
     'Accept': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
