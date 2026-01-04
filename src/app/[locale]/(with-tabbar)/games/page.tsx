@@ -1,7 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRequireLogin } from "@/hooks/useRequireLogin";
+import React, {useState, useEffect} from "react";
+import {useRequireLogin} from "@/hooks/useRequireLogin";
+
+export interface Game {
+  id: string;
+  name: string;
+}
+
+export interface GameSeries {
+  id: string;
+  name: string;
+  games: Game[];
+}
 
 // 系列数据
 const GAME_SERIES = [
@@ -9,44 +20,44 @@ const GAME_SERIES = [
     id: "lucky",
     name: "幸运系列",
     games: [
-      { id: "lucky28", name: "幸运28" },
-      { id: "lucky16", name: "幸运16" },
-      { id: "lucky11", name: "幸运11" },
-      { id: "lucky36", name: "幸运36" },
-      { id: "lucky10", name: "幸运10" },
-      { id: "lucky22", name: "幸运22" },
-      { id: "lucky_gp", name: "幸运冠亚军" },
+      {id: "lucky28", name: "幸运28"},
+      {id: "lucky16", name: "幸运16"},
+      {id: "lucky11", name: "幸运11"},
+      {id: "lucky36", name: "幸运36"},
+      {id: "lucky10", name: "幸运10"},
+      {id: "lucky22", name: "幸运22"},
+      {id: "lucky_gp", name: "幸运冠亚军"},
     ],
   },
   {
     id: "ca",
     name: "加拿大系列",
     games: [
-      { id: "ca28", name: "加拿大28" },
-      { id: "ca16", name: "加拿大16" },
-      { id: "ca11", name: "加拿大11" },
-      { id: "ca10", name: "加拿大10" },
-      { id: "ca36", name: "加拿大36" },
+      {id: "ca28", name: "加拿大28"},
+      {id: "ca16", name: "加拿大16"},
+      {id: "ca11", name: "加拿大11"},
+      {id: "ca10", name: "加拿大10"},
+      {id: "ca36", name: "加拿大36"},
     ],
   },
   {
     id: "us",
     name: "美国系列",
     games: [
-      { id: "us28", name: "美国28" },
-      { id: "us16", name: "美国16" },
-      { id: "us11", name: "美国11" },
-      { id: "us36", name: "美国36" },
+      {id: "us28", name: "美国28"},
+      {id: "us16", name: "美国16"},
+      {id: "us11", name: "美国11"},
+      {id: "us36", name: "美国36"},
     ],
   },
   {
     id: "ko",
     name: "韩国系列",
     games: [
-      { id: "us28", name: "美国28" },
-      { id: "us16", name: "美国16" },
-      { id: "us11", name: "美国11" },
-      { id: "us36", name: "美国36" },
+      {id: "us28", name: "美国28"},
+      {id: "us16", name: "美国16"},
+      {id: "us11", name: "美国11"},
+      {id: "us36", name: "美国36"},
     ],
   },
 
@@ -54,10 +65,10 @@ const GAME_SERIES = [
     id: "bingo",
     name: "宾果系列",
     games: [
-      { id: "us28", name: "美国28" },
-      { id: "us16", name: "美国16" },
-      { id: "us11", name: "美国11" },
-      { id: "us36", name: "美国36" },
+      {id: "us28", name: "美国28"},
+      {id: "us16", name: "美国16"},
+      {id: "us11", name: "美国11"},
+      {id: "us36", name: "美国36"},
     ],
   },
 
@@ -65,10 +76,10 @@ const GAME_SERIES = [
     id: "egg",
     name: "蛋蛋系列",
     games: [
-      { id: "us28", name: "美国28" },
-      { id: "us16", name: "美国16" },
-      { id: "us11", name: "美国11" },
-      { id: "us36", name: "美国36" },
+      {id: "us28", name: "美国28"},
+      {id: "us16", name: "美国16"},
+      {id: "us11", name: "美国11"},
+      {id: "us36", name: "美国36"},
     ],
   },
 ];
@@ -84,19 +95,26 @@ const PLAY_METHODS = {
 export default function Games() {
   useRequireLogin();
 
-  const [activeSeries, setActiveSeries] = useState(GAME_SERIES[0]);
-  const [activeGame, setActiveGame] = useState(activeSeries.games[0]);
+  const [activeSeries, setActiveSeries] = useState<GameSeries>();
+  const [activeGame, setActiveGame] = useState<Game>();
   const [playMethods, setPlayMethods] = useState<string[]>([]);
 
   useEffect(() => {
-    const firstGame = activeSeries.games[0];
-    setActiveGame(firstGame);
-    setPlayMethods(PLAY_METHODS[firstGame.id] || []);
-  }, [activeSeries]);
+    const init = async () => {
+      const firstGame = GAME_SERIES[0];
+      setActiveSeries(firstGame);
+      setActiveGame(firstGame.games[0]);
+      setPlayMethods(PLAY_METHODS.lucky28);
+    }
+    void init();
+  }, []);
 
-  const handleGameChange = (game: any) => {
+  const handleGameChange = (game: Game) => {
     setActiveGame(game);
-    setPlayMethods(PLAY_METHODS[game.id] || []);
+    const key: string = game.id;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    setPlayMethods(PLAY_METHODS[key] || []);
   };
 
   return (
@@ -104,11 +122,11 @@ export default function Games() {
       <main className="w-full max-w-3xl bg-white dark:bg-black">
 
         {/* ============= 顶部红色游戏大厅 ============= */}
-        <div className="relative bg-red-600 text-white py-5 flex items-center justify-center">
+        <header className="h-16 relative bg-red-600 text-white py-5 flex items-center justify-center">
           <span className="absolute left-4 text-lg font-bold">🔔</span>
           <h1 className="text-xl font-bold text-center">游戏大厅</h1>
           <span className="absolute right-4 text-lg font-bold">11,855,200🔥</span>
-        </div>
+        </header>
 
         {/* 红包提示 */}
         <div className="bg-yellow-100 text-yellow-800 px-4 py-2 text-sm flex justify-between items-center">
@@ -124,7 +142,7 @@ export default function Games() {
                 key={series.id}
                 onClick={() => setActiveSeries(series)}
                 className={`px-4 py-2 rounded-full text-sm
-                  ${activeSeries.id === series.id
+                  ${activeSeries?.id === series.id
                   ? "bg-red-600 text-white"
                   : "bg-white text-red-600 border border-red-600"
                 }
@@ -141,12 +159,12 @@ export default function Games() {
 
           {/* 左侧彩种列表 */}
           <div className="w-28 border-r p-3 flex flex-col gap-3 bg-gray-50 min-h-[70vh]">
-            {activeSeries.games.map((game) => (
+            {activeSeries?.games.map((game: Game) => (
               <button
                 key={game.id}
                 onClick={() => handleGameChange(game)}
                 className={`text-sm p-2 rounded
-                  ${activeGame.id === game.id
+                  ${activeGame?.id === game.id
                   ? "bg-blue-600 text-white"
                   : "bg-blue-50 text-blue-600"
                 }
@@ -160,14 +178,14 @@ export default function Games() {
           {/* 右侧玩法列表 */}
           <div className="flex-1 p-4">
             <h2 className="text-lg font-bold mb-3">
-              {activeGame.name} - 玩法列表
+              {activeGame?.name} - 玩法列表
             </h2>
 
             <div className="grid grid-cols-2 gap-3">
               {playMethods.map((method) => (
                 <a
                   key={method}
-                  href={`/games/${activeGame.id}/${method.replace(/[\s]/g, "").toLowerCase()}`}
+                  href={`/games/${activeGame?.id}/${method.replace(/\s/g, "").toLowerCase()}`}
                   className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg
                              text-center text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                 >
@@ -176,7 +194,6 @@ export default function Games() {
               ))}
             </div>
           </div>
-
         </div>
       </main>
     </div>

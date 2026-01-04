@@ -125,7 +125,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-screen justify-center bg-[#eef3f8]">
       <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-        <header className="h-16 bg-[#ff3a00] flex items-center justify-center">
+        <header className="h-16 bg-red-600 flex items-center justify-center">
           <span className="text-white text-2xl font-black tracking-wide">鼎丰28</span>
         </header>
 

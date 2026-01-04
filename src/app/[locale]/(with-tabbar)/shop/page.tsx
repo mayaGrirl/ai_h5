@@ -142,7 +142,9 @@ export default function ShopPage() {
     <div className="flex min-h-screen justify-center bg-[#eef3f8]">
       {/* 中间内容区域，控制最大宽度模拟手机界面 */}
       <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-        <PageHeader title={'商城'} isShowBack={false}/>
+        <header className="h-16 flex items-center justify-center bg-red-600 text-white">
+          <span className="text-white text-2xl font-black tracking-wide">商城</span>
+        </header>
 
         {/* tabs */}
         <div className="grid grid-cols-2 gap-2 px-3 pt-3">
