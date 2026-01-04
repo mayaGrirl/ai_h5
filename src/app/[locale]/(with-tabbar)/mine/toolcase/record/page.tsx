@@ -71,7 +71,8 @@ export default function CardRecordPage() {
       setOpen(true)
     } else {
       setHasMore(false);
-      toast.error(message);
+      setAlertDialogContent(message);
+      setOpen(true)
     }
     setLoading(false);
   };
@@ -100,17 +101,12 @@ export default function CardRecordPage() {
   };
 
   // 单个复制
-  const [copiedSet, setCopiedSet] = useState<Set<number>>(new Set());
   const handleCopy = async (n: string, p: string, i: number) => {
-    // 已经在领取中，直接拦截
-    if (copiedSet.has(i)) return;
-
-    const copiedText = n + ' ' + p;
+    const copiedText = `${n} ${p}`;
     try {
       // 现代浏览器
       await navigator.clipboard.writeText(copiedText);
-      // 标记该行已复制
-      setCopiedSet((prev) => new Set(prev).add(i));
+      toast.success(_t('mine.toolcase.record-copied'));
     } catch {
       // 兼容旧浏览器
       const textarea = document.createElement("textarea");
@@ -121,22 +117,12 @@ export default function CardRecordPage() {
       textarea.select();
       const success = document.execCommand("copy");
       document.body.removeChild(textarea);
-      // 标记该行已复制
-      setCopiedSet((prev) => new Set(prev).add(i));
+      toast.success(_t('mine.toolcase.record-copied'));
       return success;
     }
-    setTimeout(() => {
-      // 移除 loading 标记
-      setCopiedSet((prev) => {
-        const next = new Set(prev);
-        next.delete(i);
-        return next;
-      });
-    }, 1500);
   };
 
   // 复制所有
-  const [copied, setCopied] = useState(false);
   const handleCopyAll = async () => {
     const text = list.filter(item => item.state === 0)
       .map(item => `${item.no} ${item.pwd}`).join("\n");
@@ -144,7 +130,7 @@ export default function CardRecordPage() {
     try {
       // 现代浏览器
       await navigator.clipboard.writeText(text);
-      setCopied(true);
+      toast.success(_t('mine.toolcase.record-copied'));
     } catch {
       // 兼容旧浏览器
       const textarea = document.createElement("textarea");
@@ -155,10 +141,9 @@ export default function CardRecordPage() {
       textarea.select();
       const success = document.execCommand("copy");
       document.body.removeChild(textarea);
-      setCopied(true);
+      toast.success(_t('mine.toolcase.record-copied'));
       return success;
     }
-    setTimeout(() => setCopied(false), 1500);
   };
 
   return (
@@ -168,8 +153,8 @@ export default function CardRecordPage() {
 
         <button
           onClick={() => handleCopyAll()}
-          className={`text-xs  ${copied ? "text-green-500" : "text-blue-600"}`}>
-          {copied ? _t('mine.toolcase.record-copied') : _t('mine.toolcase.record-copy-all')}
+          className={`text-xs text-blue-600`}>
+          {_t('mine.toolcase.record-copy-all')}
         </button>
 
         <button
@@ -194,7 +179,7 @@ export default function CardRecordPage() {
       </AlertDialog>
 
       {/* 子页面渲染区域 */}
-      <div className="p-2">
+      <div className="p-1">
         {/* 表头 */}
         <div className="grid grid-cols-[0.5fr_0.5fr_1fr_0.7fr_0.4fr] py-2 text-xs text-muted-foreground border-b bg-white">
           <div>{_t('mine.toolcase.record-grid-1')}</div>
@@ -247,7 +232,7 @@ export default function CardRecordPage() {
                 <button
                   onClick={() => handleCopy(item.no || '', item.pwd || '', item.id || 0)}
                   className="px-0.5 bg-red-700 cursor-pointer rounded whitespace-nowrap transition">
-                  {copiedSet.has(item.id || 0) ? _t('mine.toolcase.record-copied') : _t('mine.toolcase.record-copy-one')}
+                  {_t('mine.toolcase.record-copy-one')}
                 </button>
               )}
               {item.state != 0 && (

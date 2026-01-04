@@ -16,7 +16,7 @@ export function isEmpty(v: unknown): boolean {
  * @param end
  * @param mask
  */
-export function maskString(str: string, start = 2, end = 2, mask = "***") {
+export function maskString(str: string, start = 2, end = 2, mask = "**") {
   if (str.length <= start + end) return str;
   return `${str.slice(0, start)}${mask}${str.slice(-end)}`;
 }

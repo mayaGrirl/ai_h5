@@ -178,20 +178,20 @@ export default function RegisterPage() {
               {/* 验证码 */}
               <div className="flex justify-center items-center border-b border-gray-200">
                 <label className="w-1/4 text-gray-700" htmlFor={'verify_code'}>{_t('common.sms-verify_code-label')}</label>
-                <div className="flex w-3/4 items-center gap-2">
+                <div className="flex w-3/4 items-center gap-2 flex-wrap sm:flex-nowrap">
                   <input
                     id="verify_code"
                     type="text"
                     placeholder={_t('common.sms-verify_code-placeholder')}
                     {...register("verify_code")}
-                    className="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
+                    className="flex-1 min-w-0 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
                   <button
                     type="button"
                     disabled={countdown > 0 || isSending || isDisable}
                     onClick={sendSms}
                     className={cn(
-                      "h-8 px-3 rounded text-xs whitespace-nowrap transition",
+                      "shrink-0 h-8 px-3 rounded text-xs whitespace-nowrap transition",
                       countdown > 0 || isSending || isDisable
                         ? "bg-gray-600 text-white cursor-not-allowed"
                         : "bg-blue-600 text-white active:scale-95 cursor-pointer"
