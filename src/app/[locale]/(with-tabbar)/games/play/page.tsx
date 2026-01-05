@@ -223,7 +223,7 @@ export default function BetPage() {
         return prev - 1;
       });
       setRemainingClose((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [lottery_id, group_id]);
