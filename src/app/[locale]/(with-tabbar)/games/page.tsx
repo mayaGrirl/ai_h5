@@ -250,7 +250,7 @@ export default function Games() {
           {/* 玩法分组 */}
           <div className="flex-1 p-4">
             <h2 className="text-lg font-bold mb-3">
-              {activeGame.name} - 玩法分组
+              {activeGame.name}
             </h2>
 
             {isLoadingPlays ? (
