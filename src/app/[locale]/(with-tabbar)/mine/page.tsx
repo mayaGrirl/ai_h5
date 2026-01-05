@@ -189,12 +189,12 @@ export default function Mine() {
                 {_t('mine.btn-tasks')}
               </span>
             </button>
-            <button className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
+            <Link href={`/${locale}/mine/sign?tab=in`} className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
               <span className="flex items-center gap-1 leading-none">
                 <CalendarCheck width={17} height={17} />
                 {_t('mine.btn-sign_in')}
               </span>
-            </button>
+            </Link>
           </section>
 
           {/* 六个功能入口 */}

@@ -220,6 +220,23 @@
       "amount-verify-gt0": "金额必须大于 0",
       "amount-verify-max": "金额超出限制",
       "pay_password-verify-out": "取款时必须输入二级密码"
+    },
+    "sign-in": {
+      "sign-stat-1": "今日签到 <win>{count}</win> 人, 累计送出 <win>{points}</win> 积分, <coin>{beans}</coin> 金豆",
+      "sign-stat-2": "您连续签到 <win>{day1}</win> 天, 累计签到 <win>{day2}</win> 天",
+      "sign-btn-1": "马上签到",
+      "sign-btn-2": "已签到",
+      "tab-1": "我要签到",
+      "tab-2": "签到规则",
+      "tab-3": "签到记录",
+      "intro-table-header-1": "生态值等级",
+      "intro-table-header-2": "签到奖励",
+      "intro-table-desc-1": "签到可获得",
+      "intro-table-desc-2": "开箱积分: {points} * 连续签到天数",
+      "intro-table-desc-3": "金豆: {points} * 连续签到天数",
+      "record-table-header-1": "金豆",
+      "record-table-header-2": "积分",
+      "record-table-header-3": "签到日期"
     }
   },
   "common": {

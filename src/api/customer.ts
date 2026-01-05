@@ -14,7 +14,7 @@ import {
   ReliefResponse, SalaryRecordField, SalaryZRecordField,
   SetSecurityPassDto,
   SettingLoginAddressDto,
-  SettingLoginSmsDto,
+  SettingLoginSmsDto, SignInRecord, SignInStatisticsField,
   UpdateNicknameDto,
   UpdatePasswordDto,
   UpdateProfileDto,
@@ -279,4 +279,25 @@ export const salaryZRecords = (data: PageRequest): Promise<HttpRes<SalaryZRecord
  */
 export const receiveSalaryZ = (id: number): Promise<HttpRes<SalaryZRecordField>> => {
   return http.post(`/api/app/v1/salary-z/receive/${id}`, {});
+};
+
+/**
+ * 签到统计
+ */
+export const signStat = (): Promise<HttpRes<SignInStatisticsField>> => {
+  return http.get('/api/app/v1/customer/sign/stat', {});
+};
+
+/**
+ * 签到记录
+ */
+export const signRecords = (data: PageRequest): Promise<HttpRes<SignInRecord[]>> => {
+  return http.post('/api/app/v1/customer/sign/records', data);
+};
+
+/**
+ * 签到
+ */
+export const signIn = (): Promise<HttpRes<SignInStatisticsField>> => {
+  return http.post('/api/app/v1/customer/sign-in', {});
 };

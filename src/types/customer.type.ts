@@ -1,5 +1,3 @@
-import {packExchange, wagesCzRecords} from "@/api/customer";
-
 /**
  * 更新昵称
  */
@@ -325,4 +323,24 @@ export interface SalaryRecordField {
   addtime?: number;
   status?: number;
   status_label?: string | null;
+}
+
+// 签到统计
+export interface SignInStatisticsField {
+  total_people: number;
+  total_points: number;
+  total_base_coin: number;
+  continue_days: number;
+  total_days: number;
+  is_sign: boolean;
+}
+
+// 签到记录
+export interface SignInRecord {
+  id: number;
+  member_id: number;
+  sign_date: string;
+  reward_points: number;
+  reward_base_coin: number;
+  created_at: string;
 }
