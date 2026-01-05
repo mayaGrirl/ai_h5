@@ -32,7 +32,6 @@ export default function Ranking() {
   const tabs = [
     {key: "today", name: "今日榜"},
     {key: "yesterday", name: "昨日榜"},
-    {key: "activity", name: "活动榜"},
     {key: "last-week", name: "上周榜"}
   ];
 
@@ -41,14 +40,13 @@ export default function Ranking() {
       {/* 中间内容区域，控制最大宽度模拟手机界面 */}
       <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
         {/* 顶部 LOGO 区域 */}
-        <header className="h-16 bg-[#ff3a00] flex items-center justify-center">
-          {/* 你可以用 Image 换成真实 logo */}
-          <Image src="/ranking/header.png" alt="logo" width={140} height={40} className={"w-[140px] h-[40px]"} priority />
+        <header className="h-16 bg-red-600 flex items-center justify-center">
+          <span className="text-white text-2xl font-black tracking-wide">排行榜</span>
         </header>
 
         {/* 内容滚动区，底部预留给 TabBar */}
         <main className="">
-          <div className="grid grid-cols-4 text-center text-sm bg-white">
+          <div className="grid grid-cols-3 text-center text-sm bg-white">
             {tabs.map((item) => {
               const active = item.key === current;
               return (

@@ -1,10 +1,18 @@
 import {HttpRes} from "@/types/http.type";
 import {BlockField} from "@/types/customer.type";
 import http from "@/utils/request";
+import {CustomerLevelField} from "@/types/common.type";
 
 /**
  * 获取Block数据
  */
 export const getBlockByIdentifier = (identifier:string): Promise<HttpRes<BlockField>> => {
   return http.get(`/api/app/v1/block/identifier/${identifier}`, {});
+};
+
+/**
+ * 获取会员等级选项
+ */
+export const getCustomerLevelOptions = (): Promise<HttpRes<CustomerLevelField[]>> => {
+  return http.get(`/api/app/v1/customer-level/options`, {});
 };

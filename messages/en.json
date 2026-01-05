@@ -220,6 +220,23 @@
       "amount-verify-gt0": "Amount must be greater than 0",
       "amount-verify-max": "Amount exceeds the limit",
       "pay_password-verify-out": "A secondary password is required for withdrawals"
+    },
+    "sign-in": {
+      "sign-stat-1": "Checked in today: <win>{count}</win> users, total <win>{points}</win> points given, <coin>{beans}</coin> coins",
+      "sign-stat-2": "You have checked in for <win>{day1}</win> consecutive days, total check-ins: <win>{day2}</win> days",
+      "sign-btn-1": "Check In Now",
+      "sign-btn-2": "Checked In",
+      "tab-1": "Check In",
+      "tab-2": "Check-In Rules",
+      "tab-3": "Check-In Records",
+      "intro-table-header-1": "Ecosystem Level",
+      "intro-table-header-2": "Check-In Rewards",
+      "intro-table-desc-1": "Check in to receive",
+      "intro-table-desc-2": "Chest Points: {points} × consecutive check-in days",
+      "intro-table-desc-3": "Coins: {points} × consecutive check-in days",
+      "record-table-header-1": "Coins",
+      "record-table-header-2": "Points",
+      "record-table-header-3": "Check-In Date"
     }
   },
   "common": {
