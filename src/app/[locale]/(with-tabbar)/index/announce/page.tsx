@@ -5,10 +5,12 @@ import { useState, useEffect } from "react";
 import { getAnnouncements } from "@/api/home";
 import { IndexDataItem } from "@/types/index.type";
 import Link from "next/link";
-import {useLocale} from "use-intl";
+import {useLocale, useTranslations} from "use-intl";
+import {PageHeader} from "@/components/page-header";
 
 
 export default function AnnouncementListPage() {
+  const _t = useTranslations();
   const [announcements, setAnnouncements] = useState<IndexDataItem[]>([]);
 
   const locale = useLocale();
@@ -24,9 +26,7 @@ export default function AnnouncementListPage() {
       <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
 
         {/* 顶部标题 */}
-        <header className="h-10 bg-[#ff3a00] flex items-center justify-center">
-          <span className="text-white text-xl font-black tracking-wide">近期公告</span>
-        </header>
+        <PageHeader title={_t("近期公告")}/>
 
         <main className="px-3 pb-20 pt-3">
 

@@ -202,6 +202,7 @@ export interface CustomerField {
   scf?: number;
   ksf?: number;
   xm?: number;
+  points?: number;
 }
 
 // 获取救济数据

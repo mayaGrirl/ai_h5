@@ -2,14 +2,16 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
 import { IndexDataItem } from "@/types/index.type";
 import { getIndexDetail } from "@/api/home";
 import { useParams, useRouter } from "next/navigation";
+import {PageHeader} from "@/components/page-header";
+import {useTranslations} from "use-intl";
 
 export default function AnnouncementDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const _t = useTranslations();
 
   const [detail, setDetail] = useState<IndexDataItem | null>(null);
 
@@ -33,10 +35,7 @@ export default function AnnouncementDetailPage() {
       <div className="w-full max-w-xl mx-auto bg-[#f5f7fb] shadow-sm">
 
         {/* 顶部导航 */}
-        <header className="h-8 bg-[#ff3a00] flex items-center px-3 sticky top-0 z-10">
-          <ArrowLeft className="w-6 h-3 text-white cursor-pointer" onClick={() => router.back()} />
-          <span className="text-white text-xl font-black tracking-wide ml-3">活动详情</span>
-        </header>
+        <PageHeader title={_t("活动详情")}/>
 
         <main className="px-4 py-5 pb-20">
           <div className="text-xs text-gray-500">发布于 {detail.created_at}</div>

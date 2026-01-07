@@ -43,10 +43,6 @@ export interface GameTypeMapItem {
   children: Game[];  // 包含完整的游戏对象
 }
 
-// 旧的映射类型，保留以兼容
-export interface GameTypeMap {
-  [typeId: string]: number[];
-}
 
 // 游戏玩法列表响应
 export interface gamePlayAll {
@@ -64,8 +60,10 @@ export interface GamePlay {
   group_id?: number;    // 所属玩法分组ID（实际字段：played_group）
   multiple?: number;    // 赔率原始值
   odds?: string | number;  // 赔率（已处理）
-  min_bet?: number;     // 最小下注（实际字段：min_bet_gold）
-  max_bet?: number;     // 最大下注（实际字段：max_bet_gold）
+  min_bet?: number;     // 最小下注
+  min_bet_gold?: number; // 最小下注金额
+  max_bet?: number;     // 最大下注
+  max_bet_gold?: number; // 最大下注金额
   info?: string;        // 玩法说明
   lang_info?: Record<string, string> | null;
   unique_played_method?: string;  // 唯一玩法标识
@@ -105,10 +103,6 @@ export interface GamePlayMapItem {
   children: GamePlay[];  // 包含完整的玩法对象
 }
 
-// 旧的映射类型，保留以兼容
-export interface GamePlayMap {
-  [groupId: string]: number[];
-}
 
 // 获取玩法列表请求参数
 export interface gamePlayAllDto {

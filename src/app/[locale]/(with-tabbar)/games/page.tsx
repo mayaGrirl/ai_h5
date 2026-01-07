@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 import { toast } from "sonner";
@@ -43,7 +43,14 @@ export default function Games() {
   const [isLoadingGames, setIsLoadingGames] = useState(true);
   const [isLoadingPlays, setIsLoadingPlays] = useState(false);
 
+  // 防止重复请求
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
+    // 防止 React StrictMode 下重复请求
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+
     fetchGameAll();
   }, []);
 
@@ -200,7 +207,7 @@ export default function Games() {
         <div className="relative bg-red-600 text-white py-5 flex items-center justify-center">
           <span className="absolute left-4 text-lg font-bold">🔔</span>
           <h1 className="text-xl font-bold text-center">游戏大厅</h1>
-          <span className="absolute right-4 text-lg font-bold">11,855,200🔥</span>
+          <span className="absolute right-4 text-lg font-bold">🔥</span>
         </div>
 
         <div className="bg-yellow-100 text-yellow-800 px-4 py-2 text-sm flex justify-between items-center">

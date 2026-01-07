@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronLeft, Bell, Video, RefreshCcw, CheckCircle } from "lucide-react";
+import { ChevronLeft, Bell, Video, RefreshCcw, CheckCircle, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn, parseErrorMessage, parseAxiosError } from "@/lib/utils";
 import { playAll, betGame, fetchExpectInfo as fetchExpectInfoAPI, gameAll } from "@/api/game";
+import { currentCustomer as fetchCurrentCustomer } from "@/api/auth";
 import { toast } from "sonner";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import {
@@ -16,11 +17,15 @@ import {
   Game,
   GameTypeMapItem
 } from "@/types/game.type";
+import {useAuthStore} from "@/utils/storage/auth";
+import Image from "next/image";
+import {useFormatter} from "use-intl";
 
 interface PlayItem {
   id: number;
   name: string;
   odds: number;  // 赔率，显示时要除以1000
+  minBetGold: number;  // 最小投注金额
 }
 
 interface PlayGroup {
@@ -31,6 +36,8 @@ interface PlayGroup {
 
 export default function BetPage() {
   useRequireLogin();
+  // 格式化金额
+  const format = useFormatter();
   const router = useRouter();
   const searchParams = useSearchParams();
   const lottery_id = searchParams.get("lottery_id") || "";
@@ -45,7 +52,10 @@ export default function BetPage() {
   const [groups, setGroups] = useState<PlayGroup[]>([]);
   const [isLoadingPlays, setIsLoadingPlays] = useState(true);
 
-  const quickSelect = ["大", "小", "单", "双", "极大", "极小"];
+  // 支持快捷选择的玩法分组ID
+  const quickSelectGroupIds = [1, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
+  // 快捷选择按钮列表
+  const quickSelectButtons = ["全包", "反选", "大", "小", "中", "边", "单", "双", "极大", "极小"];
 
   const [activeGroup, setActiveGroup] = useState<PlayGroup | null>(null);
   const [selectedPlays, setSelectedPlays] = useState<string[]>([]);
@@ -58,6 +68,9 @@ export default function BetPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const currScrollRef = useRef<HTMLDivElement>(null);
   const shouldStopFetchingRef = useRef(false);
+  const isFetchingRef = useRef(false); // 防止重复请求
+  const remainingOpenRef = useRef(0); // 用于轮询定时器访问最新的倒计时值
+  const previousExpectNoRef = useRef<string>(""); // 用于跟踪上一个期号
 
   const [currExpect, setCurrExpect] = useState<ExpectInfo | null>(null);
   const [lastExpect, setLastExpect] = useState<ExpectInfo | null>(null);
@@ -65,6 +78,21 @@ export default function BetPage() {
   const [remainingClose, setRemainingClose] = useState(0);
   const [statusCode, setStatusCode] = useState<number>(200);
   const [previousExpectNo, setPreviousExpectNo] = useState<string>("");
+
+  const setCurrentCustomer = useAuthStore((s) => s.setCurrentCustomer);
+  const currentCustomer = useAuthStore((s) => s.currentCustomer);
+
+  // ====================== 刷新用户金豆 ======================
+  const refreshUserPoints = async () => {
+    try {
+      const res = await fetchCurrentCustomer();
+      if (res.code === 200 && res.data) {
+        setCurrentCustomer(res.data);
+      }
+    } catch (error) {
+      console.error("刷新用户金豆失败", error);
+    }
+  };
 
   // ====================== 获取游戏名称 ======================
   const fetchGameName = async () => {
@@ -129,6 +157,7 @@ export default function BetPage() {
               id: play.id,
               name: play.name,
               odds: play.multiple || 0,  // multiple 字段作为赔率
+              minBetGold: play.min_bet_gold || 0,  // 最小投注金额
             })),
           }))
           .filter((g: PlayGroup) => g.plays.length > 0);
@@ -172,22 +201,48 @@ export default function BetPage() {
       if (res.code === 200 && res.data) {
         const newExpectNo = res.data.currExpectInfo?.expect_no;
 
-        // 检查是否获取到新期号
-        if (newExpectNo && newExpectNo !== previousExpectNo) {
+        // 检查是否获取到新期号（开奖完成，进入新一期）
+        if (newExpectNo && newExpectNo !== previousExpectNoRef.current) {
+          // 开奖完成后刷新用户金豆（可能中奖）- 排除首次加载
+          if (previousExpectNoRef.current) {
+            refreshUserPoints();
+          }
+          // 更新 ref 和 state
+          previousExpectNoRef.current = newExpectNo;
           setPreviousExpectNo(newExpectNo);
         }
 
+        // 先更新开奖信息，再更新倒计时（确保显示同步）
         setCurrExpect(res.data.currExpectInfo || null);
         setLastExpect(res.data.lastExpectInfo || null);
-        setRemainingOpen(res.data.currExpectInfo?.open_countdown || 0);
+
+        const newOpenCountdown = res.data.currExpectInfo?.open_countdown || 0;
+        remainingOpenRef.current = newOpenCountdown; // 同步更新 ref
+        setRemainingOpen(newOpenCountdown);
         setRemainingClose(res.data.currExpectInfo?.close_countdown || 0);
 
         // 成功获取数据，重置停止标志
         shouldStopFetchingRef.current = false;
-      } else if (res.code === 3001) {
-        // 封盘状态，不停止请求
-        toast.error(parseErrorMessage(res, res.message || "封盘中..."));
-        shouldStopFetchingRef.current = true;
+      } else if (res.code === 3001 && res.data) {
+        // 封盘状态，解析并保存倒计时数据
+        const currInfo = res.data.currExpectInfo;
+        const lastInfo = res.data.lastExpectInfo;
+
+        if (currInfo) {
+          setCurrExpect(currInfo);
+
+          const newOpenCountdown = currInfo.open_countdown || 0;
+          remainingOpenRef.current = newOpenCountdown; // 同步更新 ref
+          setRemainingOpen(newOpenCountdown);
+          setRemainingClose(currInfo.close_countdown || 0);
+        }
+
+        if (lastInfo) {
+          setLastExpect(lastInfo);
+        }
+
+        // 封盘期间继续倒计时轮询，当开奖倒计时结束后刷新
+        shouldStopFetchingRef.current = false;
       } else {
         // 其他错误状态码，停止请求
         shouldStopFetchingRef.current = true;
@@ -205,27 +260,39 @@ export default function BetPage() {
   useEffect(() => {
     // 重置状态（游戏或分组切换时）
     shouldStopFetchingRef.current = false;
+    isFetchingRef.current = false;
+    remainingOpenRef.current = 0;
+    previousExpectNoRef.current = ""; // 重置期号 ref
     setPreviousExpectNo("");
 
     fetchGameName();
     fetchPlayMethods();
     fetchExpectInfo();
 
-    const timer = setInterval(() => {
+    // 倒计时定时器 - 每秒更新倒计时显示
+    const countdownTimer = setInterval(() => {
       setRemainingOpen((prev) => {
-        if (prev <= 1) {
-          // 当前期倒计时结束自动刷新下一期，但需要检查是否应该停止请求
-          if (!shouldStopFetchingRef.current) {
-            fetchExpectInfo();
-          }
-          return 0;
-        }
-        return prev - 1;
+        const newVal = prev > 0 ? prev - 1 : 0;
+        remainingOpenRef.current = newVal; // 同步更新 ref
+        return newVal;
       });
       setRemainingClose((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
-    return () => clearInterval(timer);
+    // 轮询定时器 - 每2秒检查一次，如果倒计时结束则请求开奖接口
+    const pollTimer = setInterval(() => {
+      if (remainingOpenRef.current <= 0 && !shouldStopFetchingRef.current && !isFetchingRef.current) {
+        isFetchingRef.current = true;
+        fetchExpectInfo().finally(() => {
+          isFetchingRef.current = false;
+        });
+      }
+    }, 2000);
+
+    return () => {
+      clearInterval(countdownTimer);
+      clearInterval(pollTimer);
+    };
   }, [lottery_id, group_id]);
 
   const formatTime = (sec: number) => {
@@ -238,6 +305,12 @@ export default function BetPage() {
   // ====================== 切换彩种 ======================
   const handleGameSwitch = (gameId: number) => {
     setShowGameSelector(false);
+    // 重置选中状态
+    setSelectedPlays([]);
+    setPlayAmounts({});
+    setActiveQuick(null);
+    // 跳转到新的游戏页面，不保留group_id，让新游戏使用默认分组
+    //const newUrl = `/games/play?lottery_id=${gameId}`;
     // 跳转到新的游戏页面，保持当前的group_id或使用默认值
     const newUrl = `/games/play?lottery_id=${gameId}${group_id ? `&group_id=${group_id}` : ''}`;
     router.push(newUrl);
@@ -274,26 +347,135 @@ export default function BetPage() {
     setPlayAmounts((prev) => ({ ...prev, [play]: value }));
   };
 
+  // ====================== 从Dialog中删除玩法 ======================
+  const removeFromSelectedPlays = (playName: string) => {
+    setSelectedPlays((prev) => prev.filter((p) => p !== playName));
+    const newAmounts = { ...playAmounts };
+    delete newAmounts[playName];
+    setPlayAmounts(newAmounts);
+  };
+
+  // ====================== 打开批量下注弹框 ======================
+  const handleOpenBatchModal = () => {
+
+    if (!activeGroup) return;
+
+    // 为没有设置金额的玩法设置默认最小金额
+    const newAmounts = { ...playAmounts };
+    selectedPlays.forEach((playName) => {
+      if (!newAmounts[playName]) {
+        const playItem = activeGroup.plays.find((p) => p.name === playName);
+        if (playItem && playItem.minBetGold > 0) {
+          newAmounts[playName] = String(playItem.minBetGold);
+        }
+      }
+    });
+    setPlayAmounts(newAmounts);
+    setShowBatchModal(true);
+  };
+
   // ====================== 快速选择 ======================
   const handleQuickSelect = (type: string) => {
     if (!activeGroup) return;
-    // 只对包含数字的玩法分组启用快速选择
-    const firstPlay = activeGroup.plays[0];
-    if (!firstPlay || isNaN(parseInt(firstPlay.name))) return;
 
-    const newSelected: string[] = [];
-    activeGroup.plays.forEach((playItem) => {
-      const num = parseInt(playItem.name, 10);
-      if (isNaN(num)) return;
-      switch (type) {
-        case "大": if (num > 14) newSelected.push(playItem.name); break;
-        case "小": if (num <= 14) newSelected.push(playItem.name); break;
-        case "单": if (num % 2 === 1) newSelected.push(playItem.name); break;
-        case "双": if (num % 2 === 0) newSelected.push(playItem.name); break;
-        case "极大": if (num >= 22) newSelected.push(playItem.name); break;
-        case "极小": if (num <= 7) newSelected.push(playItem.name); break;
-      }
-    });
+    const groupId = Number(activeGroup.id);
+    let newSelected: string[] = [];
+
+    // 获取所有数字玩法并按数字排序
+    const numericPlays = activeGroup.plays
+      .filter((p) => !isNaN(parseInt(p.name, 10)))
+      .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10));
+
+    switch (type) {
+      case "全包":
+        // 全选所有玩法
+        newSelected = activeGroup.plays.map((p) => p.name);
+        break;
+
+      case "反选":
+        // 选中当前未选中的，取消当前选中的
+        newSelected = activeGroup.plays
+          .filter((p) => !selectedPlays.includes(p.name))
+          .map((p) => p.name);
+        break;
+
+      case "单":
+        // 奇数：除以2不能整除
+        numericPlays.forEach((p) => {
+          const num = parseInt(p.name, 10);
+          if (num % 2 === 1) newSelected.push(p.name);
+        });
+        break;
+
+      case "双":
+        // 偶数：除以2可以整除
+        numericPlays.forEach((p) => {
+          const num = parseInt(p.name, 10);
+          if (num % 2 === 0) newSelected.push(p.name);
+        });
+        break;
+
+      case "极大":
+        // 前三个数（最大的三个）
+        if (numericPlays.length >= 3) {
+          const top3 = numericPlays.slice(-3);
+          newSelected = top3.map((p) => p.name);
+        }
+        break;
+
+      case "极小":
+        // 后三个数（最小的三个）
+        if (numericPlays.length >= 3) {
+          const bottom3 = numericPlays.slice(0, 3);
+          newSelected = bottom3.map((p) => p.name);
+        }
+        break;
+
+      case "大":
+      case "小":
+      case "中":
+      case "边":
+        // 根据分组ID判断
+        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
+          // id为1,3,10,14,18,22时
+          numericPlays.forEach((p) => {
+            const num = parseInt(p.name, 10);
+            if (type === "大" && num >= 14) newSelected.push(p.name);
+            if (type === "小" && num <= 13) newSelected.push(p.name);
+            if (type === "中" && num >= 10 && num <= 17) newSelected.push(p.name);
+            if (type === "边" && ((num >= 0 && num <= 3) || (num >= 24 && num <= 27))) newSelected.push(p.name);
+          });
+        } else if ([4, 26].includes(groupId)) {
+          // id为4,26时
+          numericPlays.forEach((p) => {
+            const num = parseInt(p.name, 10);
+            if (type === "大" && num >= 6) newSelected.push(p.name);
+            if (type === "小" && num <= 5) newSelected.push(p.name);
+            if (type === "中" && num >= 4 && num <= 7) newSelected.push(p.name);
+            if (type === "边" && ((num >= 0 && num <= 3) || (num >= 8 && num <= 10))) newSelected.push(p.name);
+          });
+        } else if ([5, 16, 23].includes(groupId)) {
+          // id为5,16,23时
+          numericPlays.forEach((p) => {
+            const num = parseInt(p.name, 10);
+            if (type === "大" && num >= 7) newSelected.push(p.name);
+            if (type === "小" && num <= 6) newSelected.push(p.name);
+            if (type === "中" && num >= 5 && num <= 9) newSelected.push(p.name);
+            if (type === "边" && ((num >= 2 && num <= 4) || (num >= 10 && num <= 12))) newSelected.push(p.name);
+          });
+        } else if ([6, 15, 24].includes(groupId)) {
+          // id为6,15,24时
+          numericPlays.forEach((p) => {
+            const num = parseInt(p.name, 10);
+            if (type === "大" && num >= 11) newSelected.push(p.name);
+            if (type === "小" && num <= 10) newSelected.push(p.name);
+            if (type === "中" && num >= 8 && num <= 13) newSelected.push(p.name);
+            if (type === "边" && ((num >= 3 && num <= 7) || (num >= 14 && num <= 18))) newSelected.push(p.name);
+          });
+        }
+        break;
+    }
+
     setSelectedPlays(newSelected);
     setActiveQuick(type);
   };
@@ -321,7 +503,11 @@ export default function BetPage() {
     const game_group_id = activeGroup.id;
     const bet_no = selectedPlays.join(",");
     const bet_gold = selectedPlays.map((p) => playAmounts[p] || "0").join(",");
-    const lottery_played_id = selectedPlays.map((p, idx) => `${idx + 1}`).join(",");
+    // 获取选中玩法的真实ID，与bet_no一一对应
+    const lottery_played_id = selectedPlays.map((playName) => {
+      const playItem = activeGroup.plays.find((item) => item.name === playName);
+      return playItem ? playItem.id : "";
+    }).filter(id => id !== "").join(",");
     const total_gold = selectedPlays.reduce((sum, p) => sum + (parseInt(playAmounts[p] || "0", 10) || 0), 0);
 
     // 验证
@@ -345,6 +531,8 @@ export default function BetPage() {
         setSelectedPlays([]);
         setPlayAmounts({});
         setActiveQuick(null);
+        // 刷新用户金豆
+        refreshUserPoints();
       } else if (res.code !== 3001) {
         // 统一处理非200和3001的状态码
         toast.error(parseErrorMessage(res, "投注失败，请稍后重试"));
@@ -383,7 +571,22 @@ export default function BetPage() {
         >
           {gameName} ▼
         </h1>
-        <div className="flex space-x-3 items-center"><Bell /><Video /><span className="font-bold text-sm">11,855,200🔥</span></div>
+        <div
+          className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => router.push("/mine/receipt-text?tab=points")}
+        >
+          {/*<Bell /><Video />*/}
+          <span className="font-bold text-sm">
+            {format.number(currentCustomer?.points ?? 0)}
+          </span>
+          <Image
+            alt="coin"
+            className="inline-block w-[13px] h-[13px]"
+            src="/ranking/coin.png"
+            width={13}
+            height={13}
+          />
+        </div>
       </div>
 
       {/* Tabs */}
@@ -430,12 +633,22 @@ export default function BetPage() {
               </div>
 
               <>
-                <div><span className="font-bold">封盘截止：</span>{formatTime(remainingClose)}</div>
-                <div><span className="font-bold">开奖截止：</span>{formatTime(remainingOpen)}</div>
+                {/* 封盘期间显示不同的倒计时标签 */}
+                {statusCode === 3001 ? (
+                  <>
+                    <div><span className="font-bold">封盘剩余：</span><span className="text-red-600">{formatTime(remainingClose)}</span></div>
+                    <div><span className="font-bold">开奖倒计时：</span><span className="text-orange-600">{formatTime(remainingOpen)}</span></div>
+                  </>
+                ) : (
+                  <>
+                    <div><span className="font-bold">封盘截止：</span>{formatTime(remainingClose)}</div>
+                    <div><span className="font-bold">开奖截止：</span>{formatTime(remainingOpen)}</div>
+                  </>
+                )}
 
                 {/* 状态提示 - 按优先级显示 */}
                 {statusCode === 3001 ? (
-                  <div className="text-red-600 font-bold">封盘中...</div>
+                  <div className="text-red-600 font-bold animate-pulse">🔒 封盘中，暂停投注</div>
                 ) : remainingOpen === 0 && currExpect && currExpect.expect_no === previousExpectNo ? (
                   <div className="text-blue-600 font-bold">正在开奖中...</div>
                 ) : remainingClose === 0 ? (
@@ -452,11 +665,11 @@ export default function BetPage() {
             </div>
           </div>
 
-          {/* 快速选择 */}
-          {activeGroup && activeGroup.plays.length > 0 && !isNaN(parseInt(activeGroup.plays[0].name)) && (
+          {/* 快速选择 - 只有特定分组ID才显示 */}
+          {activeGroup && quickSelectGroupIds.includes(Number(activeGroup.id)) && (
             <div className="px-3 mb-2">
               <div className="flex flex-wrap gap-2">
-                {quickSelect.map((btn) => {
+                {quickSelectButtons.map((btn) => {
                   const isActive = activeQuick === btn;
                   return (
                     <button
@@ -529,10 +742,18 @@ export default function BetPage() {
           {selectedPlays.length > 0 && (
             <div className="pb-16 p-3">
               <button
-                onClick={() => setShowBatchModal(true)}
-                className="w-full bg-red-600 text-white py-2 rounded-lg font-bold text-sm"
+                onClick={handleOpenBatchModal}
+                disabled={statusCode === 3001}
+                className={cn(
+                  "w-full py-2 rounded-lg font-bold text-sm",
+                  statusCode === 3001
+                    ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    : "bg-red-600 text-white"
+                )}
               >
-                立即下注（已选 {selectedPlays.length} 项）
+                {statusCode === 3001
+                  ? `封盘中，请等待 ${formatTime(remainingClose)}`
+                  : `立即下注（已选 ${selectedPlays.length} 项）`}
               </button>
             </div>
           )}
@@ -542,15 +763,45 @@ export default function BetPage() {
       {/* 批量下注 Dialog */}
       <Dialog open={showBatchModal} onOpenChange={setShowBatchModal}>
         <DialogContent className="max-w-sm p-0 flex flex-col h-[55vh] md:h-[50vh] transition-all duration-300 ease-in-out">
-          <DialogHeader className="p-3"><DialogTitle>批量下注</DialogTitle></DialogHeader>
+          <DialogHeader className="p-3 border-b">
+            <DialogTitle className="flex flex-col gap-1">
+              <div className="flex justify-between items-center">
+                <span>批量下注（{selectedPlays.length}项）</span>
+                <span className="text-sm font-normal text-gray-600">
+                  累计：<span className="text-red-600 font-bold">
+                    {format.number(selectedPlays.reduce((sum, p) => sum + (parseInt(playAmounts[p] || "0", 10) || 0), 0))}
+                  </span>
+                  <Image
+                    alt="coin"
+                    className="inline-block w-[13px] h-[13px]"
+                    src="/ranking/coin.png"
+                    width={13}
+                    height={13}
+                  />
+                </span>
+                <span></span>
+              </div>
+              {selectedPlays.reduce((sum, p) => sum + (parseInt(playAmounts[p] || "0", 10) || 0), 0) > (currentCustomer?.points ?? 0) && (
+                <div className="text-xs text-red-500 font-normal">
+                  金豆不足！当前余额：{format.number(currentCustomer?.points ?? 0)}
+                </div>
+              )}
+            </DialogTitle>
+          </DialogHeader>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 space-y-3 scroll-smooth">
             {selectedPlays.map((play, idx) => (
-              <div key={play} className="flex justify-between items-center border p-2 rounded-lg">
-                <span className="font-bold text-gray-800 text-sm w-1/2 text-center">{play}</span>
+              <div key={play} className="flex items-center border p-2 rounded-lg gap-2">
+                <button
+                  onClick={() => removeFromSelectedPlays(play)}
+                  className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+                <span className="font-bold text-gray-800 text-sm flex-1 text-center">{play}</span>
                 <input
                   type="number"
-                  className="h-10 w-20 rounded-md border px-2 text-center text-sm"
+                  className="h-10 w-24 rounded-md border px-2 text-center text-sm flex-shrink-0"
                   placeholder="金额"
                   value={playAmounts[play] || ""}
                   onChange={(e) => updatePlayAmount(play, e.target.value)}
@@ -559,9 +810,19 @@ export default function BetPage() {
               </div>
             ))}
 
+            {selectedPlays.length === 0 && (
+              <div className="text-center py-8 text-gray-500">暂无选中玩法</div>
+            )}
+
             <div className="flex justify-between mt-2 pb-3">
               <Button variant="secondary" onClick={() => setShowBatchModal(false)}>取消</Button>
-              <Button className="bg-red-600 text-white" onClick={handleSubmit}>确认提交</Button>
+              <Button
+                className="bg-red-600 text-white"
+                onClick={handleSubmit}
+                disabled={selectedPlays.length === 0}
+              >
+                确认提交
+              </Button>
             </div>
           </div>
         </DialogContent>
