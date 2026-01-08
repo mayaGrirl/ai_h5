@@ -26,3 +26,10 @@ export function getSecureToken() {
 
   return data.token
 }
+
+/**
+ * 删除验证token
+ */
+export function clearSecureToken() {
+  localStorage.removeItem('secure_verify_token')
+}

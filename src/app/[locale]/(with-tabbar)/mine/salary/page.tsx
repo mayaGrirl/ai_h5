@@ -11,6 +11,13 @@ import Intro from "./intro/page";
 import Receive from "./receive/page";
 import Record from "./record/page";
 
+// ------------- Tabs 定义 ----------------
+const tabs = [
+  {key: "intro", i18Key: "mine.salary.tab-1"},
+  {key: "receive", i18Key: "mine.salary.tab-2"},
+  {key: "record", i18Key: "mine.salary.tab-3"}
+];
+
 export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
@@ -26,13 +33,6 @@ export default function Mine() {
   if (!current) {
     redirect(`/${locale}/mine/salary?tab=intro`);
   }
-
-  // ------------- Tabs 定义 ----------------
-  const tabs = [
-    {key: "intro", i18Key: "mine.salary.tab-1"},
-    {key: "receive", i18Key: "mine.salary.tab-2"},
-    {key: "record", i18Key: "mine.salary.tab-3"}
-  ];
 
   return (
     <>

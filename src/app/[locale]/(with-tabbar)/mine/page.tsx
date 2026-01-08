@@ -18,6 +18,16 @@ import {useEffect, useState} from "react";
 import {customerProfile, vipReceiveWelfare} from "@/api/customer";
 import dayjs from "@/lib/dayjs";
 
+// 6个快捷入口
+const quickAccess = [
+  {i18nKey: "mine.quick.mail", href: "mine/message"},
+  {i18nKey: "mine.setting.toolcase", href: "mine/toolcase"},
+  {i18nKey: "mine.quick.challenge", href: "mine/challenge"},
+  {i18nKey: "mine.quick.relief", href: "mine/relief"},
+  {i18nKey: "mine.quick.salary", href: "mine/salary"},
+  {i18nKey: "mine.quick.commission", href: "mine/spread"},
+];
+
 export default function Mine() {
   // 页面需要登陆Hook
   useRequireLogin();
@@ -42,15 +52,6 @@ export default function Mine() {
     {name: "04", src: "/mine/slide/01.png", href: ""}
   ];
   const [emblaRef] = useEmblaCarousel({loop: true}, [Autoplay({playOnInit: true, delay: 2000})])
-  // 6个快捷入口
-  const quickAccess = [
-    {label: _t("mine.quick.mail"), href: "/mine/message"},
-    {label: _t("mine.setting.toolcase"), href: "/mine/toolcase"},
-    {label: _t("mine.quick.challenge"), href: "/mine/challenge"},
-    {label: _t("mine.quick.relief"), href: "/mine/relief"},
-    {label: _t("mine.quick.salary"), href: "/mine/salary"},
-    {label: _t("mine.quick.commission"), href: "/mine/spread"},
-  ];
 
   // 设置弹框状态
   // 从设置抽屉进入页面之后返回到首页默认打开抽屉
@@ -102,8 +103,8 @@ export default function Mine() {
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
           {/* 顶部账号栏 */}
-          <header className="bg-[#ff3a00] px-3 pt-3 pb-2 text-white">
-            <div className="flex items-center justify-between">
+          <header className="bg-red-600 px-3 text-white">
+            <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-2">
                 {/* 头像 */}
                 <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
@@ -199,12 +200,12 @@ export default function Mine() {
 
           {/* 六个功能入口 */}
           <section className="mt-2 grid grid-cols-3 gap-2 px-3">
-            {quickAccess.map(({label, href}, index) => (
+            {quickAccess.map(({i18nKey, href}, index) => (
               <Link className="rounded-md bg-white py-3 text-center shadow-sm"
                     key={`quick-key-${index}`}
                     href={`/${locale}/${href}`}
               >
-                {label}
+                {_t(i18nKey)}
               </Link>
             ))}
           </section>

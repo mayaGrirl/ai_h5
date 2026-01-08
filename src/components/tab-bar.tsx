@@ -34,11 +34,11 @@ export default function TabBar({locale}: Props) {
   const cleanPath = stripLocale(pathname);
 
   const tabs = [
-    { name: t("home"), href: "/", icon: Home, auth: false },
-    { name: t("shop"), href: "/shop", icon: ShoppingBag, auth: true },
-    { name: t("games"), href: "/games", icon: Gamepad2, auth: true },
-    { name: t("ranking"), href: "/ranking", icon: Trophy, auth: true },
-    { name: t("mine"), href: "/mine", icon: User, auth: true }
+    { name: t("home"), href: "", icon: Home, auth: false },
+    { name: t("shop"), href: "shop", icon: ShoppingBag, auth: true },
+    { name: t("games"), href: "games", icon: Gamepad2, auth: true },
+    { name: t("ranking"), href: "ranking", icon: Trophy, auth: true },
+    { name: t("mine"), href: "mine", icon: User, auth: true }
   ];
 
   const isActive = (href: string) => {

@@ -3,17 +3,12 @@ import {CryptoUtils} from '@/utils/crypto';
 import {accessToken} from '@/utils/storage/token';
 import {getLocale, getLocaleFromUrl} from "@/i18n/routing";
 
-// 使用相对路径，通过 Next.js rewrites 代理转发请求，解决跨域问题
-const BASE_URL = "";
-
 /**
  * 请求拦截器
  */
 export const requestDefaultInterceptors = async (
   config: InternalAxiosRequestConfig,
 ) => {
-  config.baseURL = BASE_URL;
-
   const body = config.headers['Content-Type'] === 'multipart/form-data' ? {} : config.data;
 
   const url = window.location.pathname;

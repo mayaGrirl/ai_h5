@@ -363,5 +363,67 @@
     "record-grid-1": "兑换时间",
     "record-grid-2": "扣除金豆",
     "record-grid-3": "银行余额"
+  },
+  "agent": {
+    "quick-menu-1": "代理资料",
+    "quick-menu-2": "代理充值",
+    "quick-menu-3": "回收体验卡",
+    "quick-menu-4": "额度转换",
+    "quick-menu-5": "操作日志",
+    "quick-menu-6": "统计信息",
+    "quick-menu-7": "退出",
+    "profile": {
+      "label-1": "代理ID",
+      "label-2": "代理名称",
+      "label-3": "进卡折扣",
+      "label-4": "收卡折扣",
+      "label-5": "收卡利润",
+      "label-6": "铺货分",
+      "label-7": "状态"
+    },
+    "recharge": {
+      "form-check-hit": "ID: {aid}, 昵称: {nickname}, 收款人: {realname}",
+      "form-uid-label": "用户ID",
+      "form-uid-check-btn": "检测账号",
+      "form-uid-placeholder": "请输入用户ID",
+      "form-amount-label": "充值金额",
+      "form-amount-placeholder": "请输入充值金额",
+      "form-amount-min": "余额不足，无法充值",
+      "head-bank-point": "银行余额",
+      "head-rate": "折扣",
+      "head-rate-unit": "折",
+      "record-title": "充值记录",
+      "record-grid-1": "时间",
+      "record-grid-2": "金豆",
+      "record-grid-3": "操作内容"
+    },
+    "log": {
+      "grid-1": "操作类型",
+      "grid-2": "金豆",
+      "grid-3": "金豆余额",
+      "grid-4": "操作时间",
+      "grid-5": "内容"
+    },
+    "conversion": {
+      "form-uid-label": "转换代理",
+      "form-uid-placeholder": "请选择转换代理",
+      "form-amount-label": "转换金额",
+      "form-amount-placeholder": "请输入转换金额",
+      "form-amount-min": "金额不足，不能转换"
+    },
+    "recycle": {
+      "head-rate": "收卡折扣",
+      "form-card-label": "卡密",
+      "form-card-placeholder": "请输入卡密",
+      "form-btn-1": "检测是否可用",
+      "form-btn-2": "回收记录",
+      "form-btn-3": "确定回收",
+      "form-btn-4": "取消",
+      "check-result-title": "检测结果",
+      "result-grid-1": "卡号",
+      "result-grid-2": "金豆",
+      "result-grid-3": "状态",
+      "result-grid-4": "备注"
+    }
   }
 }
