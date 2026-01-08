@@ -4,6 +4,7 @@ export interface HttpRes<T> {
   message: string;
   data: T;
   request_id: string;
+  errors?: Record<string, string[]>;  // 字段错误信息
   [key: string]: unknown;
 }
 

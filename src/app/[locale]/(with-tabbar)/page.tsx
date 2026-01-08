@@ -13,6 +13,7 @@ import styles from "./page.module.css";
 import { useParams } from "next/navigation";
 import {
   getBanners,
+  testData,
   /*getAnnouncements,
   getActivities,
   getPartners,*/
@@ -57,12 +58,17 @@ export default function HomePage() {
   const [showPopup, setShowPopup] = useState(false);
 
   const [getConfig, setGetConfig] = useState<webConfig|null>(null);
+  const [getTestData, setGetTestData] = useState<webConfig|null>(null);
 
   useEffect(() => {
 
     getWebConfig().then(({ code, data }) => {
       if (code === 200 && data) setGetConfig(data);
     });
+
+    // testData({lottery_id:1}).then(({ code, data }) => {
+    //   if (code === 200 && data) setGetTestData(data);
+    // });
 
     //首页热门游戏
     indexGameHotNew({limit: 6}).then(({ code, data }) => {
@@ -187,7 +193,7 @@ export default function HomePage() {
           </section>
           <section className="mb-4 grid grid-cols-3 gap-2">
             {gameHotNew?.hot && gameHotNew?.hot.map((item, index) => (
-              <Link key={"hot-games" + index} href={`/${locale}/${item.id}`} className="block">
+              <Link key={"hot-games" + index} href={`/${locale}/games?lottery_id=${item.id}`} className="block">
                 <Image src={item.logo || ''} alt={item.name || ''} width={300} height={200} className="w-full rounded-md" />
               </Link>
             ))}
@@ -198,7 +204,7 @@ export default function HomePage() {
           </section>
           <section className="mb-4 grid grid-cols-3 gap-2">
             {gameHotNew?.new && gameHotNew?.new.map((item, index) => (
-              <Link key={"hot-games" + index} href={`/${locale}/${item.id}`} className="block">
+              <Link key={"hot-games" + index} href={`/${locale}/games?lottery_id=${item.id}`} className="block">
                 <Image src={item.logo || ''} alt={item.name || ''} width={300} height={200} className="w-full rounded-md" />
               </Link>
             ))}

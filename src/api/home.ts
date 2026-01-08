@@ -7,7 +7,7 @@ import {
   IndexGameDto,
   IndexGameItem,
   IndexDetailDto,
-  webConfig
+  webConfig, testDataRes, testDataDto
 } from "@/types/index.type";
 
 export { IndexType } from "@/types/index.type";
@@ -70,5 +70,13 @@ export const indexHotNew = () => getIndex({ type: IndexType.MINE_AD });
 export const getWebConfig = (): Promise<HttpRes<webConfig>> => {
   return http.get<HttpRes<webConfig>>("/api/app/v1/sysConfig", {});
 };
+
+//===================测试
+
+export const testData = (data: testDataDto): Promise<HttpRes<testDataRes>> => {
+  return http.post<HttpRes<testDataRes>, testDataDto>("/api/app/v1/game/expectInfo", data);
+};
+
+
 
 

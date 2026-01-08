@@ -99,3 +99,11 @@ export interface ITradePasswordDto {
   verify_code: string;
   [property: string]: unknown;
 }
+
+export interface testDataDto {
+  lottery_id: number;
+}
+export interface testDataRes {
+  currExpectInfo?: gameItem[];
+  lastExpectInfo?: gameItem[];
+}

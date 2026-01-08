@@ -5,9 +5,11 @@ import { useState, useEffect } from "react";
 import { getPartners } from "@/api/home";
 import { IndexDataItem } from "@/types/index.type";
 import Link from "next/link";
-import { useLocale } from "use-intl";
+import {useLocale, useTranslations} from "use-intl";
+import {PageHeader} from "@/components/page-header";
 
 export default function PartnersPage() {
+  const _t = useTranslations();
   const [partners, setPartners] = useState<IndexDataItem[]>([]);
   const locale = useLocale();
 
@@ -22,11 +24,7 @@ export default function PartnersPage() {
       <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
 
         {/* 顶部标题 */}
-        <header className="h-12 bg-[#ff3a00] flex items-center justify-center sticky top-0 z-10">
-          <span className="text-white text-xl font-black tracking-wide">
-            合作商家
-          </span>
-        </header>
+        <PageHeader title={_t("合作商家")}/>
 
         <main className="px-2 pb-24 pt-2">
 
