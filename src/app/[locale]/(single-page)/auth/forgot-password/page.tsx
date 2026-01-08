@@ -6,19 +6,22 @@ import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "sonner";
-import {useParams, useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {cn} from "@/lib/utils";
 import Image from "next/image";
-import {useTranslations} from "use-intl";
+import {useLocale, useTranslations} from "use-intl";
 import {forgetPasswordReset, forgotPasswordSendSms, forgotPasswordVerifyCode} from "@/api/auth";
+import Link from "next/link";
 
 const STORAGE_KEY = "sms_countdown_end_at_find_password";
 
 export default function FindPasswordPage() {
   const _t = useTranslations();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
+  // 原样保留
+  const queryString = searchParams.toString();
 
   // step: 1=短信验证 2=重置密码
   const [step, setStep] = useState<1 | 2>(1);
@@ -322,26 +325,13 @@ export default function FindPasswordPage() {
               </button>
             </form>
           )}
+          <Link href={`/${locale}/auth/login?${queryString}`}
+                className={"flex justify-center items-center mt-6 text-[rgb(0,0,238)]"}
+          >{_t('common.header.back')}</Link>
         </main>
 
         <div className="h-14"/>
       </div>
-    </div>
-  );
-}
-
-function StepDot({active, text}: { active: boolean; text: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={cn(
-          "h-2.5 w-2.5 rounded-full",
-          active ? "bg-red-600" : "bg-gray-300"
-        )}
-      />
-      <span className={cn(active ? "text-gray-900 font-medium" : "text-gray-500")}>
-        {text}
-      </span>
     </div>
   );
 }
