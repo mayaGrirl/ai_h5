@@ -74,7 +74,7 @@ export const getWebConfig = (): Promise<HttpRes<webConfig>> => {
 //===================测试
 
 export const testData = (data: testDataDto): Promise<HttpRes<testDataRes>> => {
-  return http.post<HttpRes<testDataRes>, testDataDto>("/api/app/v1/game/expectInfo", data);
+  return http.post<HttpRes<testDataRes>, testDataDto>("/api/app/v1/game/lotteryList", data);
 };
 
 

@@ -66,9 +66,9 @@ export default function HomePage() {
       if (code === 200 && data) setGetConfig(data);
     });
 
-    // testData({lottery_id:1}).then(({ code, data }) => {
-    //   if (code === 200 && data) setGetTestData(data);
-    // });
+    /*testData({lottery_id:1, game_group_id:1, page:1, pageSize:30}).then(({ code, data }) => {
+      if (code === 200 && data) setGetTestData(data);
+    });*/
 
     //首页热门游戏
     indexGameHotNew({limit: 6}).then(({ code, data }) => {

@@ -131,13 +131,19 @@ export interface ExpectInfo {
   close_timestamp?: number;
   open_countdown?: number;
   close_countdown?: number;
-  finalRes?: {
-    sum?: string | number;
-    shape?: string;
-    lungFuPao?: string;
-    [key: string]: any;
-  };
+  finalRes?: ExpectFinalRes;
   action_no_sort?: string | number;
+}
+
+// 期号开奖结果
+export interface ExpectFinalRes {
+  expect_no?: string;
+  nums?: string | string[] | Record<string, string>;
+  sum?: string | number;
+  bigSmall?: string;
+  oddEven?: string;
+  shape?: string;
+  lungFuPao?: string;
 }
 
 // 获取期号信息请求参数
@@ -154,9 +160,114 @@ export interface ExpectInfoRes {
 
 // 投注响应
 export interface BetGameRes {
-  // 根据实际API返回定义，暂时留空
-  [key: string]: any;
+  success?: boolean;
+  message?: string;
+  order_id?: string | number;
 }
+
+export interface LotteryDataDto {
+  lottery_id: number;
+  game_group_id:number;
+  page:number;
+  pageSize:number;
+}
+
+export interface BetDataDto {
+  page:number;
+  pageSize:number;
+  lottery_id: number;
+  game_group_id:number;
+}
+
+// 开奖记录响应
+export interface LotteryListRes {
+  list: LotteryResultItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+}
+
+// 开奖记录项
+export interface LotteryResultItem {
+  id?: number;
+  expect_no?: string;
+  action_no?: string;
+  action_no_num?: string | string[] | Record<string, string>;
+  open_time?: string;
+  close_time?: string;
+  created_at?: string;
+  final_res?: LotteryFinalRes;
+  memberBet?: MemberBetItem[] | MemberBetItem;  // 可能是数组或单个对象
+}
+
+// 开奖结果详情
+export interface LotteryFinalRes {
+  expect_no?: string;
+  nums?: string | string[] | Record<string, string>;  // 可能是字符串、数组或对象
+  sum?: number | string;
+  bigSmall?: string;  // 大/小
+  oddEven?: string;   // 单/双
+  shape?: string;     // 形态：豹子/顺子/对子/杂六等
+  lungFuPao?: string;
+}
+
+// 用户在该期的投注记录
+export interface MemberBetItem {
+  id?: number;
+  expect_no?: string;
+  game_type_id?: number;   // 游戏类型ID
+  game_group_id?: number;  // 玩法分组ID
+  bet_gold?: number;       // 投注金豆
+  win_gold?: number;       // 赢得金豆
+  profit?: number;         // 盈亏
+  status?: number;         // 状态
+  created_at?: string;
+}
+
+// 投注记录响应
+export interface BetRecordRes {
+  list: BetRecordItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+}
+
+// 投注记录项
+export interface BetRecordItem {
+  id?: number;
+  member_id?: number;
+  game_type_id?: number;
+  game_group_id?: number;
+  expect_no?: string;
+  bet_no?: BetNoItem[] | Record<string, BetNoItem>;  // 可能是数组或对象
+  bet_gold?: number;
+  bet_num?: number;
+  win_gold?: number;
+  water_gold?: number;
+  bet_time?: string;
+  is_opened?: number;    // 0: 未开奖, 1: 已开奖
+  is_win?: number;       // 0: 待开奖, 2: 中奖, 3: 未中奖
+  is_robot?: number;
+  is_auto?: number;
+  status?: string;       // "00": 待开奖, "01": 已开奖
+  deleted_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  win_loss?: number;     // 盈亏
+  game_type_name?: string;
+  member_name?: string;
+}
+
+// 投注号码详情
+export interface BetNoItem {
+  bet_no?: string;
+  bet_gold?: number;
+  bet_play?: string;
+  multiple?: number;
+  win_gold?: number;
+  unique_played_method?: string;
+}
+
 
 
 
