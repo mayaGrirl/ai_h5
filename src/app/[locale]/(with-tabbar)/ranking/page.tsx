@@ -30,9 +30,9 @@ export default function Ranking() {
 
   // ------------- Tabs 定义 ----------------
   const tabs = [
-    {key: "today", name: "今日榜"},
-    {key: "yesterday", name: "昨日榜"},
-    {key: "last-week", name: "上周榜"}
+    {key: "today", i18Key: 'rank.tab-1'},
+    {key: "yesterday", i18Key: 'rank.tab-2'},
+    {key: "last-week", i18Key: 'rank.tab-3'}
   ];
 
   return (
@@ -41,7 +41,7 @@ export default function Ranking() {
       <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
         {/* 顶部 LOGO 区域 */}
         <header className="h-16 bg-red-600 flex items-center justify-center">
-          <span className="text-white text-2xl font-black tracking-wide">排行榜</span>
+          <span className="text-white text-2xl font-black tracking-wide">{_t('tab.ranking')}</span>
         </header>
 
         {/* 内容滚动区，底部预留给 TabBar */}
@@ -57,7 +57,7 @@ export default function Ranking() {
                     active ? "text-red-500 font-bold border-b-2 border-red-500" : "text-gray-500"
                   }`}
                 >
-                  {item.name}
+                  {_t(item.i18Key)}
                 </Link>
               )
             })}
@@ -68,7 +68,6 @@ export default function Ranking() {
             {/* 注意：这里根据 tab 动态加载子页面模块 */}
             {current === "today" && <Today />}
             {current === "yesterday" && <Yesterday />}
-            {current === "activity" && <Activity />}
             {current === "last-week" && <LastWeek />}
           </div>
         </main>

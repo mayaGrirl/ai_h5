@@ -56,7 +56,7 @@ export default function AgentRechargePage() {
     if (max !== undefined && ca > max) {
       ctx.addIssue({
         path: ["amount"],
-        message: _t('agent.recharge.form-uid-min'),
+        message: _t('agent.recharge.form-amount-min'),
         code: "custom",
       });
     }
@@ -166,103 +166,93 @@ export default function AgentRechargePage() {
         {/* 中间内容区域，控制最大宽度模拟手机界面 */}
         <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
           <PageHeader title={_t("agent.quick-menu-2")}/>
-          <main className="px-2">
-            <div className="flex items-center justify-end">
-              <Link
-                key='recharge-record-key'
-                href={`/${locale}/agent/recharge/record`}
-                className={`flex py-2 text-[#0000EE] font-bold`}
-              >
-                {_t('agent.recharge.record-title')}<ChevronRight/>
-              </Link>
-            </div>
 
-            <div className="">
-              {/* 余额 */}
-              <div className="w-full bg-gray-100">
-                <div className="bg-white rounded-lg mb-3 overflow-hidden">
-                  {/* 银行余额 */}
-                  <div className="flex items-center px-3 py-3 bg-white rounded-lg">
-                    <div className="w-1/4">{_t('agent.recharge.head-bank-point')}</div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-1 text-red-500 font-semibold">
-                        {format.number(profile?.bankpoints || 0)}
-                        <Image
-                          alt="coin"
-                          className="inline-block w-[13px] h-[13px]"
-                          src="/ranking/coin.png"
-                          width={13}
-                          height={13}
-                        />
-                      </div>
-                      <div className="text-sm">
-                        {format.number((profile?.bankpoints || 0) / 1000, {
-                          style: 'currency',
-                          currency: currency
-                        })}
-                      </div>
+          <main className="px-2 mt-2">
+            {/* 余额 */}
+            <div className="w-full bg-gray-100">
+              <div className="bg-white rounded-lg mb-3 overflow-hidden">
+                {/* 银行余额 */}
+                <div className="flex items-center px-3 py-3 bg-white rounded-lg">
+                  <div className="w-1/4">{_t('agent.recharge.head-bank-point')}</div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1 text-red-500 font-semibold">
+                      {format.number(profile?.bankpoints || 0)}
+                      <Image
+                        alt="coin"
+                        className="inline-block w-[13px] h-[13px]"
+                        src="/ranking/coin.png"
+                        width={13}
+                        height={13}
+                      />
                     </div>
-                  </div>
-                  {/* 金豆余额 */}
-                  <div className="flex px-3 py-3 bg-white rounded-lg">
-                    <div className="w-1/4">{_t('agent.recharge.head-rate')}</div>
-                    <div className="">{(profile?.buycard_rate || 0) * 10} {_t('agent.recharge.head-rate-unit')}</div>
+                    <div className="text-sm">
+                      {format.number((profile?.bankpoints || 0) / 1000, {
+                        style: 'currency',
+                        currency: currency
+                      })}
+                    </div>
                   </div>
                 </div>
+                {/* 金豆余额 */}
+                <div className="flex px-3 py-3 bg-white rounded-lg">
+                  <div className="w-1/4">{_t('agent.recharge.head-rate')}</div>
+                  <div className="">{(profile?.buycard_rate || 0) * 10} {_t('agent.recharge.head-rate-unit')}</div>
+                </div>
               </div>
+            </div>
 
-              <form onSubmit={onSubmit} key={formKey} className="w-full bg-gray-100 pb-8">
-                <div className="bg-white rounded-lg mb-3 overflow-hidden">
+            <form onSubmit={onSubmit} key={formKey} className="w-full bg-gray-100 pb-8">
+              <div className="bg-white rounded-lg mb-3 overflow-hidden">
 
-                  {/* 用户ID */}
-                  <div className="flex items-center px-4 mt-3">
-                    <label className="w-2/7 text-gray-700" htmlFor={'uid'}>{_t('agent.recharge.form-uid-label')}</label>
-                    <div className="flex w-5/7 items-center gap-2 flex-wrap sm:flex-nowrap">
-                      <input id="uid" type="text"
-                        pattern="[0-9]*"
-                        inputMode="numeric"
-                        placeholder={_t('agent.recharge.form-uid-placeholder')}
-                        {...register("uid", {
-                          valueAsNumber: true,
-                        })}
-                        onChange={(e) => {
-                          if (e.target.value) {
-                            // 只保留数字
-                            const _v = Number(e.target.value.replace(/[^\d]/g, ""));
-                            setValue("uid", _v);
-                            clearErrors('uid')
-                          }
-                        }}
-                        className="flex-1 min-w-0 text-gray-800 placeholder-gray-400 focus:outline-none h-10 border"
-                      />
-                      <button
-                        type="button"
-                        disabled={isSending}
-                        onClick={checkCustomer}
-                        className={cn(
-                          "shrink-0 h-8 px-3 rounded whitespace-nowrap transition",
-                          isSending
-                            ? "bg-gray-600 text-white cursor-not-allowed"
-                            : "bg-blue-600 text-white active:scale-95 cursor-pointer"
-                        )}
-                      >
-                        {isSending ? _t('common.form.button.submitting') : _t('agent.recharge.form-uid-check-btn')}
-                      </button>
-                    </div>
+                {/* 用户ID */}
+                <div className="flex items-center px-4 mt-3">
+                  <label className="w-2/7 text-gray-700" htmlFor={'uid'}>{_t('agent.recharge.form-uid-label')}</label>
+                  <div className="flex w-5/7 items-center gap-2 flex-wrap sm:flex-nowrap">
+                    <input id="uid" type="text"
+                           pattern="[0-9]*"
+                           inputMode="numeric"
+                           placeholder={_t('agent.recharge.form-uid-placeholder')}
+                           {...register("uid", {
+                             valueAsNumber: true,
+                           })}
+                           onChange={(e) => {
+                             if (e.target.value) {
+                               // 只保留数字
+                               const _v = Number(e.target.value.replace(/[^\d]/g, ""));
+                               setValue("uid", _v);
+                               clearErrors('uid')
+                             }
+                           }}
+                           className="flex-1 min-w-0 text-gray-800 placeholder-gray-400 focus:outline-none h-10 border"
+                    />
+                    <button
+                      type="button"
+                      disabled={isSending}
+                      onClick={checkCustomer}
+                      className={cn(
+                        "shrink-0 h-8 px-3 rounded whitespace-nowrap transition",
+                        isSending
+                          ? "bg-gray-600 text-white cursor-not-allowed"
+                          : "bg-blue-600 text-white active:scale-95 cursor-pointer"
+                      )}
+                    >
+                      {isSending ? _t('common.form.button.submitting') : _t('agent.recharge.form-uid-check-btn')}
+                    </button>
                   </div>
-                  <div className="px-4"><p className="ml-[calc(2/7*100%)] text-xs">{checkData}</p></div>
-                  {errors.uid && (
-                    <p className="mt-1 text-xs text-red-500">{errors.uid.message}</p>
-                  )}
+                </div>
+                <div className="px-4"><p className="ml-[calc(2/7*100%)] text-xs">{checkData}</p></div>
+                {errors.uid && (
+                  <p className="mt-1 text-xs text-red-500">{errors.uid.message}</p>
+                )}
 
-                  {/* 金额 */}
-                  <div className="flex items-center px-4 py-3">
-                    <div className="w-2/7 text-gray-700">{_t('agent.recharge.form-amount-label')}</div>
-                    <div className="flex flex-wrap gap-2 justify-start w-5/7" onClick={fastAmountClick}>
-                      {fastAmount.map((v) => (
-                        <span key={`span-key-${v}`}
-                              data-val={v}
-                              className="shrink-0 h-8 px-3 py-1 rounded whitespace-nowrap transition bg-blue-600
+                {/* 金额 */}
+                <div className="flex items-center px-4 py-3">
+                  <div className="w-2/7 text-gray-700">{_t('agent.recharge.form-amount-label')}</div>
+                  <div className="flex flex-wrap gap-2 justify-start w-5/7" onClick={fastAmountClick}>
+                    {fastAmount.map((v) => (
+                      <span key={`span-key-${v}`}
+                            data-val={v}
+                            className="shrink-0 h-8 px-3 py-1 rounded whitespace-nowrap transition bg-blue-600
                               text-white active:scale-95 cursor-pointer">
                           {format.number(v, {
                             style: "currency",
@@ -271,49 +261,56 @@ export default function AgentRechargePage() {
                             maximumFractionDigits: 0,
                           })}
                         </span>
-                      ))}
-                    </div>
+                    ))}
                   </div>
-                  <div className="flex items-center px-4 pb-3">
-                    <label className="w-2/7 text-gray-700" htmlFor="amount"></label>
-                    <input type="text" id="amount"
-                           pattern="[0-9]*"
-                           inputMode="numeric"
-                           {...register("amount", {
-                             valueAsNumber: true,
-                           })}
-                           placeholder={_t('agent.recharge.form-amount-placeholder')}
-                           className="text-gray-600 w-5/7 placeholder-gray-400 focus:outline-none h-10 border"
-                           onChange={(e) => {
-                             if (e.target.value) {
-                               // 只保留数字
-                               const _v = Number(e.target.value.replace(/[^\d]/g, ""));
-                               setValue("amount", _v);
-                             }
-                           }}
-                           autoComplete="off"
-                           autoCorrect="off"
-                           spellCheck={false}
-                    />
-                  </div>
-                  {errors.amount && (
-                    <p className="mt-1 text-xs text-red-500">{errors.amount.message}</p>
-                  )}
-
                 </div>
+                <div className="flex items-center px-4 pb-3">
+                  <label className="w-2/7 text-gray-700" htmlFor="amount"></label>
+                  <input type="text" id="amount"
+                         pattern="[0-9]*"
+                         inputMode="numeric"
+                         {...register("amount", {
+                           valueAsNumber: true,
+                         })}
+                         placeholder={_t('agent.recharge.form-amount-placeholder')}
+                         className="text-gray-600 w-5/7 placeholder-gray-400 focus:outline-none h-10 border"
+                         onChange={(e) => {
+                           if (e.target.value) {
+                             // 只保留数字
+                             const _v = Number(e.target.value.replace(/[^\d]/g, ""));
+                             setValue("amount", _v);
+                           }
+                         }}
+                         autoComplete="off"
+                         autoCorrect="off"
+                         spellCheck={false}
+                  />
+                </div>
+                {errors.amount && (
+                  <p className="mt-1 text-xs text-red-500">{errors.amount.message}</p>
+                )}
 
-                {/* 确认按钮 */}
-                <button
-                  disabled={isSubmitting}
-                  className={`h-12 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
+              </div>
+
+              {/* 确认按钮 */}
+              <button
+                disabled={isSubmitting}
+                className={`h-12 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
                   font-medium tracking-wide
                   ${(isSubmitting) ? "opacity-60 cursor-not-allowed" : "cursor-pointer transition transform active:scale-95"}`
-                  }
-                >
-                  {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
-                </button>
-              </form>
-            </div>
+                }
+              >
+                {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
+              </button>
+            </form>
+
+            <Link key='recharge-record-key'
+                  href={`/${locale}/agent/recharge/record`}
+                  className="flex justify-center items-center text-[rgb(0,0,238)]">
+              <span className="flex justify-center items-center border-b border-[rgb(0,0,238)]">
+                {_t('agent.recharge.record-title')}<ChevronRight className="h-5 w-5"/>
+              </span>
+            </Link>
           </main>
 
           {/* 底部占位（给 TabBar 留空间） */}

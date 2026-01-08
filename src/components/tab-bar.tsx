@@ -42,8 +42,8 @@ export default function TabBar({locale}: Props) {
   ];
 
   const isActive = (href: string) => {
-    if (href === "/") return cleanPath === "/" || cleanPath === "";
-    return cleanPath.startsWith(href);
+    if (href === "") return cleanPath === "/" || cleanPath === "";
+    return cleanPath.startsWith(`/${href}`);
   };
 
   return (
