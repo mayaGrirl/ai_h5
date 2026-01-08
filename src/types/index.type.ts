@@ -102,6 +102,9 @@ export interface ITradePasswordDto {
 
 export interface testDataDto {
   lottery_id: number;
+  game_group_id:number;
+  page:number;
+  pageSize:number;
 }
 export interface testDataRes {
   currExpectInfo?: gameItem[];

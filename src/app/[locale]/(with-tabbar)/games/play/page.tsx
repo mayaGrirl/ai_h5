@@ -42,12 +42,26 @@ export default function BetPage() {
   const searchParams = useSearchParams();
   const lottery_id = searchParams.get("lottery_id") || "";
   const group_id = searchParams.get("group_id") || "";
+  const refreshTs = searchParams.get("t") || ""; // 用于强制刷新的时间戳
 
   const [gameName, setGameName] = useState("加载中...");
   const [allGames, setAllGames] = useState<Game[]>([]);
   const [showGameSelector, setShowGameSelector] = useState(false);
   const tabs = ["投注", "开奖记录", "投注记录", "模式", "自动", "走势", "盈亏"];
   const [activeTab, setActiveTab] = useState("投注");
+
+  // Tab切换处理 - 切换到开奖记录/投注记录时默认全部分组
+  const handleTabClick = (tab: string) => {
+    if (tab === "开奖记录") {
+      router.push(`/games/open?lottery_id=${lottery_id}`);
+      return;
+    }
+    if (tab === "投注记录") {
+      router.push(`/games/record?lottery_id=${lottery_id}`);
+      return;
+    }
+    setActiveTab(tab);
+  };
 
   const [groups, setGroups] = useState<PlayGroup[]>([]);
   const [isLoadingPlays, setIsLoadingPlays] = useState(true);
@@ -135,9 +149,11 @@ export default function BetPage() {
 
   // ====================== 获取玩法列表 ======================
   const fetchPlayMethods = async () => {
-    if (!lottery_id) {
-      toast.error("缺少游戏ID参数");
-      setIsLoadingPlays(false);
+    if (!lottery_id) {//跳转到游戏大厅
+      //toast.error("缺少游戏ID参数");
+      //setIsLoadingPlays(false);
+      const newUrl = `/games`;
+      router.push(newUrl);
       return;
     }
 
@@ -293,7 +309,7 @@ export default function BetPage() {
       clearInterval(countdownTimer);
       clearInterval(pollTimer);
     };
-  }, [lottery_id, group_id]);
+  }, [lottery_id, group_id, refreshTs]);
 
   const formatTime = (sec: number) => {
     const h = Math.floor(sec / 3600);
@@ -595,7 +611,7 @@ export default function BetPage() {
           {tabs.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabClick(tab)}
               className={cn(
                 "px-4 py-2 text-xs whitespace-nowrap",
                 activeTab === tab ? "text-red-600 border-b-2 border-red-600 font-bold" : "text-gray-700"
