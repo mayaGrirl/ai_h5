@@ -363,5 +363,67 @@
     "record-grid-1": "Redemption Time",
     "record-grid-2": "Coins Deducted",
     "record-grid-3": "Bank Balance"
+  },
+  "agent": {
+    "quick-menu-1": "Agent Profile",
+    "quick-menu-2": "Agent Recharge",
+    "quick-menu-3": "Recycle Trial Cards",
+    "quick-menu-4": "Balance Transfer",
+    "quick-menu-5": "Operation Logs",
+    "quick-menu-6": "Statistics",
+    "quick-menu-7": "Logout",
+    "profile": {
+      "label-1": "Agent ID",
+      "label-2": "Agent Name",
+      "label-3": "Card Purchase Discount",
+      "label-4": "Card Buyback Discount",
+      "label-5": "Card Buyback Profit",
+      "label-6": "Distribution Share",
+      "label-7": "Status"
+    },
+    "recharge": {
+      "form-check-hit": "ID: {aid}, Nickname: {nickname}, Payee: {realname}",
+      "form-uid-label": "User ID",
+      "form-uid-check-btn": "Check",
+      "form-uid-placeholder": "Please enter the user ID",
+      "form-amount-label": "Recharge Amount",
+      "form-amount-placeholder": "Please enter the recharge amount",
+      "form-amount-min": "Insufficient balance, unable to recharge",
+      "head-bank-point": "Bank Balance",
+      "head-rate": "Discount",
+      "head-rate-unit": "off",
+      "record-title": "Recharge Records",
+      "record-grid-1": "Time",
+      "record-grid-2": "Coins",
+      "record-grid-3": "Operation Details"
+    },
+    "log": {
+      "grid-1": "Operation Type",
+      "grid-2": "Coins",
+      "grid-3": "Coin Balance",
+      "grid-4": "Operation Time",
+      "grid-5": "Details"
+    },
+    "conversion": {
+      "form-uid-label": "Transfer Agent",
+      "form-uid-placeholder": "Please select an agent to transfer to",
+      "form-amount-label": "Transfer Amount",
+      "form-amount-placeholder": "Please enter the transfer amount",
+      "form-amount-min": "Insufficient amount, transfer not allowed"
+    },
+    "recycle": {
+      "head-rate": "Card Buyback Discount",
+      "form-card-label": "Card Code",
+      "form-card-placeholder": "Please enter the card code",
+      "form-btn-1": "Check Availability",
+      "form-btn-2": "Recycle Records",
+      "form-btn-3": "Confirm",
+      "form-btn-4": "Cancel",
+      "check-result-title": "Result",
+      "result-grid-1": "Card Number",
+      "result-grid-2": "Coins",
+      "result-grid-3": "Status",
+      "result-grid-4": "Remarks"
+    }
   }
 }

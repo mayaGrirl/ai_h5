@@ -8,7 +8,7 @@ import {toast} from "sonner";
 import {LOCALE_CURRENCY_MAP} from "@/i18n/routing";
 import {cardRecords} from "@/api/shop";
 import {CardRecordField} from "@/types/shop.type";
-import {getSecureToken} from "../verify-key";
+import {getSecureToken, clearSecureToken} from "../verify-key";
 import {maskString} from "@/utils/utils";
 import {
   AlertDialog,
@@ -173,7 +173,10 @@ export default function CardRecordPage() {
             <AlertDialogDescription>{alertDialogContent}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => window.location.reload()}>{_t('common.confirm')}</AlertDialogAction>
+            <AlertDialogAction onClick={() => {
+              clearSecureToken();
+              window.location.reload();
+            }}>{_t('common.confirm')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

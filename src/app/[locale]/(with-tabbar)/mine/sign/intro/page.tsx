@@ -33,13 +33,13 @@ export default function SignIntroPage() {
   }, []);
 
   return (
-    <div className="px-4 py-4 bg-white rounded-lg">
+    <div className="py-4 bg-white rounded-lg">
       {/* 异步加载简介 */}
       {loading ? (
         <TextSkeleton lines={3}/>
       ) : (
         <div
-          className="prose prose-sm max-w-none text-gray-700"
+          className="px-4 prose prose-sm max-w-none text-gray-700"
           dangerouslySetInnerHTML={{__html: content!}}
         />
       )}

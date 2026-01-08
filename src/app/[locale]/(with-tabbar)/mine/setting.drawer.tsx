@@ -34,19 +34,19 @@ export default function SettingDrawer({open, onOpenChange, locale}: Props) {
   const [loggingOut, setLoggingOut] = useState(false);
 
   const settingItems = [
-    {label: _t("mine.setting.mail"), href: "/mine/message", icon: Mail},
-    {label: _t("mine.setting.receipt-text"), href: "/mine/receipt-text?from=drawer", icon: ReceiptText},
-    {label: _t("mine.setting.profile"), href: "/mine/profile", icon: User},
-    {label: _t("mine.setting.toolcase"), href: "/mine/toolcase", icon: ToolCase},
-    {label: _t("mine.setting.gift"), href: "/mine/gift", icon: Gift},
-    {label: _t("mine.setting.landmark"), href: "/mine/customer-transfer", icon: Landmark},
-    {label: _t("mine.setting.repeat"), href: "/mine/repeat", icon: Repeat},
-    {label: _t("mine.setting.salary"), href: "/mine/salary", icon: Banknote},
-    {label: _t("mine.setting.hand-coins"), href: "/mine/hand-coins", icon: HandCoins},
-    // {label: _t("mine.setting.message-circle-more"), href: "/mine/message-circle-more", icon: MessageCircleMore},
-    {label: _t("mine.setting.security-settings"), href: "/mine/security-settings", icon: ShieldPlus},
-    // {label: _t("mine.setting.edit-password"), href: "/mine/security-settings/password", icon: ShieldEllipsis},
-    {label: _t("mine.setting.edit-nickname"), href: "/mine/edit-nickname", icon: PencilLine},
+    {label: _t("mine.setting.mail"), href: "mine/message", icon: Mail},
+    {label: _t("mine.setting.receipt-text"), href: "mine/receipt-text?from=drawer", icon: ReceiptText},
+    {label: _t("mine.setting.profile"), href: "mine/profile", icon: User},
+    {label: _t("mine.setting.toolcase"), href: "mine/toolcase", icon: ToolCase},
+    {label: _t("mine.setting.gift"), href: "mine/gift", icon: Gift},
+    {label: _t("mine.setting.landmark"), href: "mine/customer-transfer", icon: Landmark},
+    {label: _t("mine.setting.repeat"), href: "mine/repeat", icon: Repeat},
+    {label: _t("mine.setting.salary"), href: "mine/salary", icon: Banknote},
+    {label: _t("mine.setting.hand-coins"), href: "mine/hand-coins", icon: HandCoins},
+    // {label: _t("mine.setting.message-circle-more"), href: "mine/message-circle-more", icon: MessageCircleMore},
+    {label: _t("mine.setting.security-settings"), href: "mine/security-settings", icon: ShieldPlus},
+    // {label: _t("mine.setting.edit-password"), href: "mine/security-settings/password", icon: ShieldEllipsis},
+    {label: _t("mine.setting.edit-nickname"), href: "mine/edit-nickname", icon: PencilLine},
     {label: _t("mine.setting.x"), href: "", icon: X},
   ];
 
