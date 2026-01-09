@@ -222,7 +222,7 @@ export default function TrendPage() {
   const getExpectNo = (item: LotteryResultItem): string => {
     const expectNo = item.final_res?.expectNo || item.final_res?.expect_no || item.expect_no;
     if (!expectNo) return "--";
-    return String(expectNo).slice(-6);
+    return String(expectNo).slice(-7);
   };
 
   // 获取开奖号码数组
@@ -274,8 +274,8 @@ export default function TrendPage() {
   const trendTabs = [
     { key: "nums" as TrendTab, label: "号码" },
     { key: "bigSmall" as TrendTab, label: "大小单双" },
-    { key: "shape" as TrendTab, label: "形态" },
     { key: "mod" as TrendTab, label: "取模" },
+    { key: "shape" as TrendTab, label: "形态" },
   ];
 
   return (
