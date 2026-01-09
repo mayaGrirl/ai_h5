@@ -105,6 +105,7 @@ export default function BetPage() {
   const isFetchingRef = useRef(false); // 防止重复请求
   const remainingOpenRef = useRef(0); // 用于轮询定时器访问最新的倒计时值
   const previousExpectNoRef = useRef<string>(""); // 用于跟踪上一个期号
+  const activeGroupIdRef = useRef<number | null>(null); // 用于轮询定时器访问当前选中的分组ID
 
   const [currExpect, setCurrExpect] = useState<ExpectInfo | null>(null);
   const [lastExpect, setLastExpect] = useState<ExpectInfo | null>(null);
@@ -201,15 +202,27 @@ export default function BetPage() {
         setGroups(playGroups);
 
         // 如果有 group_id 参数，设置为默认选中的分组
+        let defaultGroupId: number | null = null;
         if (group_id && playGroups.length > 0) {
           const targetGroup = playGroups.find((g) => String(g.id) === String(group_id));
           if (targetGroup) {
             setActiveGroup(targetGroup);
+            defaultGroupId = Number(targetGroup.id);
           } else {
             setActiveGroup(playGroups[0]);
+            defaultGroupId = Number(playGroups[0].id);
           }
         } else if (playGroups.length > 0) {
           setActiveGroup(playGroups[0]);
+          defaultGroupId = Number(playGroups[0].id);
+        }
+
+        // 更新 ref 以供轮询使用
+        activeGroupIdRef.current = defaultGroupId;
+
+        // 如果 URL 没有 group_id，用默认分组ID调用开奖接口
+        if (!group_id && defaultGroupId) {
+          fetchExpectInfo(defaultGroupId);
         }
       } else if (res.code !== 3001) {
         // 统一处理非200和3001的状态码
@@ -224,13 +237,15 @@ export default function BetPage() {
   };
 
   // ====================== 获取开奖接口 ======================
-  const fetchExpectInfo = async () => {
-    if (!lottery_id || !group_id) return;
+  const fetchExpectInfo = async (groupIdOverride?: number) => {
+    // 使用传入的 groupId 或 URL 的 group_id 或 ref 中保存的最新分组ID
+    const effectiveGroupId = groupIdOverride ?? (group_id ? parseInt(group_id) : activeGroupIdRef.current);
+    if (!lottery_id || !effectiveGroupId) return;
 
     try {
       const res = await fetchExpectInfoAPI({
         lottery_id: parseInt(lottery_id),
-        game_group_id: parseInt(group_id)
+        game_group_id: Number(effectiveGroupId)
       });
 
       setStatusCode(res.code);
@@ -299,6 +314,7 @@ export default function BetPage() {
     isFetchingRef.current = false;
     remainingOpenRef.current = 0;
     previousExpectNoRef.current = ""; // 重置期号 ref
+    activeGroupIdRef.current = group_id ? parseInt(group_id) : null; // 重置分组ID ref
     setPreviousExpectNo("");
 
     fetchGameName();
@@ -346,9 +362,8 @@ export default function BetPage() {
     setPlayAmounts({});
     setActiveQuick(null);
     // 跳转到新的游戏页面，不保留group_id，让新游戏使用默认分组
-    //const newUrl = `/games/play?lottery_id=${gameId}`;
-    // 跳转到新的游戏页面，保持当前的group_id或使用默认值
-    const newUrl = `/games/play?lottery_id=${gameId}${group_id ? `&group_id=${group_id}` : ''}`;
+    // 不同游戏有不同的玩法分组，不能复用旧的group_id
+    const newUrl = `/games/play?lottery_id=${gameId}&t=${Date.now()}`;
     router.push(newUrl);
   };
 
@@ -359,9 +374,13 @@ export default function BetPage() {
     setPlayAmounts({});
     setActiveGroup(group);
     setActiveQuick(null);
+    // 更新 ref 以供轮询使用
+    activeGroupIdRef.current = Number(group.id);
     setToastMessage("已清空已选玩法");
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
+    // 切换分组后立即获取新分组的开奖信息
+    fetchExpectInfo(Number(group.id));
   };
 
   // ====================== 切换玩法 ======================
@@ -583,14 +602,19 @@ export default function BetPage() {
   const getDisplayResult = (expectInfo: ExpectInfo | null) => {
     if (!expectInfo) return "--";
     const res = expectInfo.finalRes;
-    if (res && activeGroup) {
-      switch (activeGroup.id) {
-        case "sum": return res.sum ?? expectInfo.action_no;
-        case "shape": return res.shape ?? expectInfo.action_no;
-        case "mix": return res.lungFuPao ?? expectInfo.action_no;
-        default: return expectInfo.action_no;
+
+    // 根据当前选中的分组ID获取对应的开奖结果
+    // 例如：game_group_id=3 则取 finalOpenRes3
+    if (res && activeGroupIdRef.current) {
+      const groupId = activeGroupIdRef.current;
+      const resultKey = `finalOpenRes${groupId}` as keyof typeof res;
+      const resultValue = res[resultKey];
+      if (resultValue !== undefined && resultValue !== null) {
+        return String(resultValue);
       }
     }
+
+    // 回退到原始开奖号码
     return expectInfo.action_no ?? "--";
   };
 
@@ -649,8 +673,11 @@ export default function BetPage() {
             {/* 上一期左列 */}
             <div className="w-[48%] min-w-[200px] border-r pr-3 space-y-1">
               <div><span className="font-bold">第</span>{lastExpect?.expect_no || "--"}期</div>
-              <div><span className="font-bold">时间：</span>{lastExpect?.open_time|| "--"}</div>
-              <div className="break-words word-break-all"><span className="font-bold">奖号：</span>{getDisplayResult(lastExpect)}</div>
+              <div><span className="font-bold">开奖时间：</span>{lastExpect?.open_time|| "--"}</div>
+              <div className="flex">
+                <span className="font-bold whitespace-nowrap flex-shrink-0">开奖号码：</span>
+                <span className="break-all">{getDisplayResult(lastExpect)}</span>
+              </div>
             </div>
 
             {/* 当前期右列 */}

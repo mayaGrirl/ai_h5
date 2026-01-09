@@ -409,7 +409,6 @@ export default function OpenPage() {
             onChange={(e) => handleGroupChange(Number(e.target.value))}
             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
           >
-            <option value={0}>请选择分组</option>
             {playGroups.map((group) => (
               <option key={group.id} value={group.id}>
                 {group.name}

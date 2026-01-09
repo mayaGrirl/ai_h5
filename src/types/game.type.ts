@@ -138,12 +138,16 @@ export interface ExpectInfo {
 // 期号开奖结果
 export interface ExpectFinalRes {
   expect_no?: string;
+  expectNo?: string;  // API返回的驼峰命名
   nums?: string | string[] | Record<string, string>;
   sum?: string | number;
   bigSmall?: string;
   oddEven?: string;
   shape?: string;
   lungFuPao?: string;
+  // 动态开奖结果字段，根据 game_group_id 取值
+  // finalOpenRes3, finalOpenRes4, finalOpenRes5, etc.
+  [key: `finalOpenRes${number}`]: string | number | undefined;
 }
 
 // 获取期号信息请求参数
