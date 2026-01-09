@@ -425,5 +425,10 @@
       "result-grid-3": "Status",
       "result-grid-4": "Remarks"
     }
+  },
+  "rank": {
+    "tab-1": "Today Ranking",
+    "tab-2": "Yesterday Ranking",
+    "tab-3": "Last Week Ranking"
   }
 }

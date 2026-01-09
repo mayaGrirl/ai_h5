@@ -59,8 +59,11 @@ export default function LoginPage() {
         setToken(data?.access_token, data?.token_type, data?.expires_at);
 
         // 跳转到指定页面
-        const urlParams = new URL(window.location.href).searchParams;
-        router.replace(urlParams.get('redirect') || '/');
+        let redirect = searchParams.get('redirect')
+        if (!redirect || redirect?.includes('auth/login')) {
+          redirect = `/${locale}`;
+        }
+        router.replace(redirect);
       }
     }).catch(error => {
       toast.warning(error.message);
