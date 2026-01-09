@@ -286,7 +286,7 @@ export default function OpenPage() {
       return "豹子";
     } else if (shape === 'shun') {
       return "顺子";
-    } else if (shape === 'tuo') {
+    } else if (shape === 'ban') {
       return "半顺";
     } else if (shape === 'dui') {
       return "对子";
