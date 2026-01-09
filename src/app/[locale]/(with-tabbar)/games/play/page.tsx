@@ -56,6 +56,26 @@ export default function BetPage() {
       router.push(`/games/open?lottery_id=${lottery_id}`);
       return;
     }
+    if (tab === "模式") {
+      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
+      router.push(`/games/mode?lottery_id=${lottery_id}`);
+      return;
+    }
+    if (tab === "自动") {
+      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
+      router.push(`/games/auto?lottery_id=${lottery_id}`);
+      return;
+    }
+    if (tab === "走势") {
+      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
+      router.push(`/games/trend?lottery_id=${lottery_id}`);
+      return;
+    }
+    if (tab === "盈亏") {
+      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
+      router.push(`/games/stat?lottery_id=${lottery_id}`);
+      return;
+    }
     if (tab === "投注记录") {
       router.push(`/games/record?lottery_id=${lottery_id}`);
       return;

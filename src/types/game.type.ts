@@ -190,12 +190,23 @@ export interface LotteryListRes {
 // 开奖记录项
 export interface LotteryResultItem {
   id?: number;
+  game_type_id?: number;
+  is_opened?: number;
   expect_no?: string;
   action_no?: string;
+  action_no_sort?: string;
   action_no_num?: string | string[] | Record<string, string>;
+  origin_data?: string;
   open_time?: string;
   close_time?: string;
+  bet_gold?: number;
+  win_person_num?: number;
+  user_bet_gold?: number;
+  user_bet_win_gold?: number;
+  game_type_name?: string;
+  deleted_at?: string | null;
   created_at?: string;
+  updated_at?: string;
   final_res?: LotteryFinalRes;
   memberBet?: MemberBetItem[] | MemberBetItem;  // 可能是数组或单个对象
 }
@@ -203,11 +214,19 @@ export interface LotteryResultItem {
 // 开奖结果详情
 export interface LotteryFinalRes {
   expect_no?: string;
+  expectNo?: string;  // API返回的驼峰命名
   nums?: string | string[] | Record<string, string>;  // 可能是字符串、数组或对象
   sum?: number | string;
   bigSmall?: string;  // 大/小
   oddEven?: string;   // 单/双
-  shape?: string;     // 形态：豹子/顺子/对子/杂六等
+  middleSide?: string;  // 中/边
+  tail?: number | string;  // 尾数
+  tailBigSmall?: string;  // 尾大/尾小
+  mod6?: number;  // 余6
+  mod5?: number;  // 余5
+  mod4?: number;  // 余4
+  mod3?: number;  // 余3
+  shape?: string;     // 形态：bao/ban/dui/za/shun等
   lungFuPao?: string;
 }
 
@@ -241,6 +260,7 @@ export interface BetRecordItem {
   expect_no?: string;
   bet_no?: BetNoItem[] | Record<string, BetNoItem>;  // 可能是数组或对象
   bet_gold?: number;
+  bet_no_gold?: string;
   bet_num?: number;
   win_gold?: number;
   water_gold?: number;
@@ -266,6 +286,110 @@ export interface BetNoItem {
   multiple?: number;
   win_gold?: number;
   unique_played_method?: string;
+}
+
+// ====================== 模式相关类型 ======================
+
+// 获取模式列表请求参数
+export interface ModeListDto {
+  lottery_id: number;
+  game_group_id: number;
+  page: number;
+  pageSize: number;
+  mode_id?: number;  // 编辑时传递，获取指定模式详情
+}
+
+// 设置模式请求参数
+export interface SetModeDto {
+  lottery_id: number | string;
+  game_group_id: number | string;
+  lottery_played_id: string;  // 玩法ID（逗号分隔）
+  bet_no: string;             // 投注号码（逗号分隔）
+  bet_gold: string;           // 投注金额（逗号分隔）
+  total_gold: number;         // 总金额
+  mode_name: string;          // 模式名称
+  mode_id?: number;           // 模式ID（0或不传=新增，>0=编辑）
+  status?: number;            // 状态（0=删除，1=正常）
+}
+
+// 模式项
+export interface ModeItem {
+  id: number;
+  mode_name: string;
+  lottery_id: number;
+  game_group_id: number;
+  lottery_played_id: string;
+  bet_no: string;
+  bet_no_gold: string;
+  bet_gold: string;
+  total_gold: number;
+  status: number;
+  created_at?: string;
+  updated_at?: string;
+  game_group_name?: string;
+}
+
+// 模式列表响应
+export interface ModeListRes {
+  list: ModeItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+}
+
+// 设置模式响应
+export interface SetModeRes {
+  success?: boolean;
+  message?: string;
+  mode_id?: number;
+}
+
+// ====================== 自动投注相关类型 ======================
+
+// 获取自动配置请求参数
+export interface AutoOneDto {
+  lottery_id: number;
+}
+
+// 自动配置项
+export interface AutoItem {
+  id?: number;
+  member_id?: number;
+  auto_id?: number;           // 关联的自动配置ID
+  game_type_id?: number;      // 游戏类型ID (lottery_id)
+  game_group_id?: number;     // 玩法分组ID
+  mode_id?: number;           // 模式ID
+  total_expect_nums?: number; // 要执行的期数
+  min_gold?: number;          // 金币下限
+  max_gold?: number;          // 金币上限
+  min_bet_num?: string;       // 最小期号
+  max_bet_num?: string;       // 最大期号
+  user_type?: number;
+  status?: number;            // 0关闭，1启动
+  mode_name?: string;         // 模式名称
+  deleted_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// 获取自动配置响应 - 数据直接返回，不包装在auto字段中
+export type AutoOneRes = AutoItem | null;
+
+// 设置自动配置请求参数
+export interface SetAutoDto {
+  lottery_id: number | string;
+  game_group_id: number | string;  // 玩法分组ID
+  mode_id: number | string;
+  total_expect_nums: number;  // 要执行的期数（1-1440）
+  min_gold: number;           // 金币下限
+  max_gold: number;           // 金币上限
+  status: number;             // 0关闭，1启动
+}
+
+// 设置自动配置响应
+export interface SetAutoRes {
+  success?: boolean;
+  message?: string;
 }
 
 
