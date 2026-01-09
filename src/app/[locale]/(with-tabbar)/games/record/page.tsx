@@ -381,6 +381,12 @@ export default function RecordPage() {
                       <div className="text-[10px] text-gray-400 mt-1">
                         {item.bet_time || item.created_at || ""}
                       </div>
+                      <div className="text-[10px] mt-1">
+                        <span className="text-gray-500">自动：</span>
+                        <span className={item.is_auto === 1 ? "text-green-600" : "text-red-500"}>
+                          {item.is_auto === 1 ? "√" : "×"}
+                        </span>
+                      </div>
                     </div>
 
                     {/* 投注详情 */}
