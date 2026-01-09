@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import Link from "next/link";
 import Image from "next/image";
-import { Bell, Star, Gift, UsersRound, X } from "lucide-react";
+import { Bell, Star, Gift, UsersRound, X, Loader2 } from "lucide-react";
 import { useTranslations } from "use-intl";
 import { cn } from "@/lib/utils";
 import styles from "./page.module.css";
@@ -22,6 +22,18 @@ import {
   indexGameHotNew,
 } from "@/api/home";
 import {IndexDataItem, IndexGameItem, webConfig} from "@/types/index.type";
+
+// 骨架屏组件
+const Skeleton = ({ className }: { className?: string }) => (
+  <div className={cn("animate-pulse bg-gray-200 rounded", className)} />
+);
+
+// 游戏卡片骨架屏
+const GameCardSkeleton = () => (
+  <div className="rounded-md overflow-hidden">
+    <Skeleton className="w-full aspect-[3/2]" />
+  </div>
+);
 
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "";
 const getImageUrl = (pic: string) => {
@@ -44,6 +56,7 @@ export default function HomePage() {
   const _t = useTranslations();
 
   const [gameHotNew, setGameHotNew] = useState<IndexGameItem>();
+  const [gamesLoading, setGamesLoading] = useState(true);
   // 轮播图 (type=1)
   const [banners, setBanners] = useState<IndexDataItem[]>([]);
   const [bannersLoading, setBannersLoading] = useState(true);
@@ -58,24 +71,33 @@ export default function HomePage() {
   const [showPopup, setShowPopup] = useState(false);
 
   const [getConfig, setGetConfig] = useState<webConfig|null>(null);
+  const [configLoading, setConfigLoading] = useState(true);
   const [getTestData, setGetTestData] = useState<webConfig|null>(null);
 
-  useEffect(() => {
+  // 页面初始加载状态
+  const [pageLoaded, setPageLoaded] = useState(false);
 
-    getWebConfig().then(({ code, data }) => {
-      if (code === 200 && data) setGetConfig(data);
-    });
+  useEffect(() => {
+    // 页面加载动画延迟
+    const timer = setTimeout(() => setPageLoaded(true), 100);
+
+    // 获取网站配置
+    getWebConfig()
+      .then(({ code, data }) => {
+        if (code === 200 && data) setGetConfig(data);
+      })
+      .finally(() => setConfigLoading(false));
 
     /*testData({lottery_id:1, game_group_id:1, page:1, pageSize:30}).then(({ code, data }) => {
       if (code === 200 && data) setGetTestData(data);
     });*/
 
-    //首页热门游戏
-    indexGameHotNew({limit: 6}).then(({ code, data }) => {
-      if (code === 200 && data) setGameHotNew(data);
-    });
-
-
+    // 首页热门游戏
+    indexGameHotNew({ limit: 6 })
+      .then(({ code, data }) => {
+        if (code === 200 && data) setGameHotNew(data);
+      })
+      .finally(() => setGamesLoading(false));
 
     // type=1 轮播图
     getBanners()
@@ -97,6 +119,8 @@ export default function HomePage() {
         }
       }
     });
+
+    return () => clearTimeout(timer);
   }, []);
 
   const quickActions = [
@@ -130,20 +154,32 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen justify-center bg-[#eef3f8]">
-      <div className="w-full max-w-xl bg-[#f5f7fb] shadow-sm">
-        <header className="h-16 bg-red-600 flex items-center justify-center">
-          <span className="text-white text-2xl font-black tracking-wide">鼎丰28</span>
+      <div className={cn(
+        "w-full max-w-xl bg-[#f5f7fb] shadow-sm transition-opacity duration-500",
+        pageLoaded ? "opacity-100" : "opacity-0"
+      )}>
+        {/* 头部 */}
+        <header className="h-16 bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center shadow-md">
+          <span className="text-white text-2xl font-black tracking-wide drop-shadow">鼎丰28</span>
         </header>
 
         <main className="px-3 pb-20 pt-3">
           {/* 四个快捷入口 */}
           <section className="grid grid-cols-4 gap-2 mb-3">
-            {quickActions.map(({ name, color, href, icon: Icon, count }) => (
-              <Link key={name} href={`/${locale}/${href}`} className="flex flex-col items-center justify-center text-[13px] relative">
-                <div className={cn("flex h-11 w-11 items-center justify-center rounded-lg text-xl text-white shadow relative", color)}>
+            {quickActions.map(({ name, color, href, icon: Icon, count }, index) => (
+              <Link
+                key={name}
+                href={`/${locale}/${href}`}
+                className="flex flex-col items-center justify-center text-[13px] relative transform transition-transform duration-200 hover:scale-105 active:scale-95"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className={cn(
+                  "flex h-11 w-11 items-center justify-center rounded-lg text-xl text-white shadow-md relative transition-shadow hover:shadow-lg",
+                  color
+                )}>
                   <Icon className="h-5 w-5" />
                   {count > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
                       {count > 99 ? "99+" : count}
                     </span>
                   )}
@@ -156,11 +192,14 @@ export default function HomePage() {
           {/* 轮播图 (type=1) */}
           <section className="mb-3">
             {bannersLoading ? (
-              <div className="h-40 bg-gray-200 rounded-lg animate-pulse flex items-center justify-center">
-                <span className="text-gray-400">加载中...</span>
+              <div className="h-40 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-xl animate-pulse flex items-center justify-center shadow-sm">
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="h-8 w-8 text-gray-400 animate-spin" />
+                  <span className="text-gray-400 text-sm">加载中...</span>
+                </div>
               </div>
             ) : (
-              <div className={styles.embla}>
+              <div className={cn(styles.embla, "rounded-xl overflow-hidden shadow-sm")}>
                 <div className={styles.embla__viewport} ref={emblaRef}>
                   <div className={styles.embla__container}>
                     {emblaSlides.map((slide, index) => (
@@ -173,7 +212,7 @@ export default function HomePage() {
                               fill
                               priority={index === 0}
                               sizes="(max-width: 768px) 100vw, 768px"
-                              className="object-cover"
+                              className="object-cover transition-transform duration-300 hover:scale-105"
                             />
                           </div>
                         </Link>
@@ -185,41 +224,103 @@ export default function HomePage() {
             )}
           </section>
 
-
           {/* 热门游戏 */}
           <section className="mb-2 flex items-center justify-between text-[13px]">
-            <span className="text-black font-medium">{_t("home.hot-games")}</span>
-            {/*<button className="text-xs text-blue-600">网络检测</button>*/}
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-4 bg-red-500 rounded-full"></span>
+              <span className="text-black font-bold">{_t("home.hot-games")}</span>
+            </div>
+            {gamesLoading && (
+              <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
+            )}
           </section>
           <section className="mb-4 grid grid-cols-3 gap-2">
-            {gameHotNew?.hot && gameHotNew?.hot.map((item, index) => (
-              <Link key={"hot-games" + index} href={`/${locale}/games?lottery_id=${item.id}`} className="block">
-                <Image src={item.logo || ''} alt={item.name || ''} width={300} height={200} className="w-full rounded-md" />
-              </Link>
-            ))}
+            {gamesLoading ? (
+              // 骨架屏
+              <>
+                {[1, 2, 3].map((i) => (
+                  <GameCardSkeleton key={`hot-skeleton-${i}`} />
+                ))}
+              </>
+            ) : gameHotNew?.hot && gameHotNew?.hot.length > 0 ? (
+              gameHotNew.hot.map((item, index) => (
+                <Link
+                  key={"hot-games" + index}
+                  href={`/${locale}/games?lottery_id=${item.id}`}
+                  className="block transform transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 rounded-md overflow-hidden"
+                >
+                  <Image
+                    src={item.logo || ''}
+                    alt={item.name || ''}
+                    width={300}
+                    height={200}
+                    className="w-full rounded-md"
+                  />
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-4 text-gray-400 text-sm">
+                暂无热门游戏
+              </div>
+            )}
           </section>
 
+          {/* 最新游戏 */}
           <section className="mb-2 flex items-center justify-between text-[13px]">
-            <span className="text-black font-medium">{_t("home.new-games")}</span>
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+              <span className="text-black font-bold">{_t("home.new-games")}</span>
+            </div>
+            {gamesLoading && (
+              <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
+            )}
           </section>
           <section className="mb-4 grid grid-cols-3 gap-2">
-            {gameHotNew?.new && gameHotNew?.new.map((item, index) => (
-              <Link key={"hot-games" + index} href={`/${locale}/games?lottery_id=${item.id}`} className="block">
-                <Image src={item.logo || ''} alt={item.name || ''} width={300} height={200} className="w-full rounded-md" />
-              </Link>
-            ))}
+            {gamesLoading ? (
+              // 骨架屏
+              <>
+                {[1, 2, 3].map((i) => (
+                  <GameCardSkeleton key={`new-skeleton-${i}`} />
+                ))}
+              </>
+            ) : gameHotNew?.new && gameHotNew?.new.length > 0 ? (
+              gameHotNew.new.map((item, index) => (
+                <Link
+                  key={"new-games" + index}
+                  href={`/${locale}/games?lottery_id=${item.id}`}
+                  className="block transform transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 rounded-md overflow-hidden"
+                >
+                  <Image
+                    src={item.logo || ''}
+                    alt={item.name || ''}
+                    width={300}
+                    height={200}
+                    className="w-full rounded-md"
+                  />
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-4 text-gray-400 text-sm">
+                暂无最新游戏
+              </div>
+            )}
           </section>
-
-
 
           {/* 底部按钮 */}
-          {getConfig && (
+          {configLoading ? (
+            <section className="space-y-3">
+              <Skeleton className="h-11 w-full rounded-full" />
+              <Skeleton className="h-11 w-full rounded-full" />
+            </section>
+          ) : getConfig && (
             <section className="space-y-3">
               <Link href={getConfig.pc_url} className="block">
-                <button className="flex h-11 w-full items-center justify-center rounded-full bg-[#ff3a00] text-[14px] font-medium text-white shadow">电脑版</button>
+                <button className="flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff3a00] to-[#ff6b35] text-[14px] font-medium text-white shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+                  电脑版
+                </button>
               </Link>
               <Link href={getConfig.customer_link} className="block">
-                <button className="flex h-11 w-full items-center justify-center rounded-full bg-[#ff3a00] text-[14px] font-medium text-white shadow">
+                <button className="flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff3a00] to-[#ff6b35] text-[14px] font-medium text-white shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                   联系客服
                 </button>
               </Link>
@@ -231,19 +332,25 @@ export default function HomePage() {
 
       {/* 首页弹框公告 (type=5) */}
       {showPopup && popupAnnouncement && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full max-h-[70vh] overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="font-bold text-gray-800 text-lg">{popupAnnouncement.title}</h3>
-              <button onClick={closePopup} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-2xl max-w-sm w-full max-h-[70vh] overflow-hidden shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+            <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-red-500 to-red-600">
+              <h3 className="font-bold text-white text-lg">{popupAnnouncement.title}</h3>
+              <button
+                onClick={closePopup}
+                className="text-white/80 hover:text-white p-1.5 rounded-full hover:bg-white/20 transition-colors"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="p-4 overflow-y-auto max-h-[50vh]">
               <div className="text-sm text-gray-600 leading-relaxed prose prose-sm" dangerouslySetInnerHTML={{ __html: popupAnnouncement.content }} />
             </div>
-            <div className="p-4 border-t">
-              <button onClick={closePopup} className="w-full bg-[#ff3a00] text-white rounded-full py-2.5 text-sm font-medium hover:bg-[#e63500] transition-colors">
+            <div className="p-4 border-t bg-gray-50">
+              <button
+                onClick={closePopup}
+                className="w-full bg-gradient-to-r from-[#ff3a00] to-[#ff6b35] text-white rounded-full py-3 text-sm font-bold hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              >
                 我知道了
               </button>
             </div>
