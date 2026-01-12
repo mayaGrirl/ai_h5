@@ -1,24 +1,20 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronLeft, Plus, Edit2, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Edit2, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 import { toast } from "sonner";
-import { parseErrorMessage, parseAxiosError, cn } from "@/lib/utils";
-import { useAuthStore } from "@/utils/storage/auth";
+import { parseErrorMessage, parseAxiosError } from "@/lib/utils";
 import { useFormatter } from "use-intl";
-import Image from "next/image";
 
-import { gameAll, modeList, setMode, playAll } from "@/api/game";
+import { modeList, setMode } from "@/api/game";
+import { useGameContext } from "../_context";
 
 import {
-  Game,
-  GameTypeMapItem,
   ModeItem,
-  GamePlayGroup,
 } from "@/types/game.type";
 
 export default function ModePage() {
@@ -26,56 +22,15 @@ export default function ModePage() {
   const format = useFormatter();
   const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const urlLotteryId = searchParams.get("lottery_id") || "";
-  const urlGroupId = searchParams.get("group_id") || "";
+  // 从 Context 获取共享的游戏状态
+  const {
+    activeGame,
+    playGroups,
+    selectedGroupId,
+    setSelectedGroupId,
+  } = useGameContext();
 
-  // Tab navigation
-  const tabs = ["投注", "开奖记录", "投注记录", "模式", "自动", "走势", "盈亏"];
-  const activeTab = "模式";
-
-  const currentCustomer = useAuthStore((s) => s.currentCustomer);
-
-  // Tab切换处理
-  const handleTabClick = (tab: string) => {
-    const currentLotteryId = activeGame?.id || urlLotteryId;
-    if (tab === "投注") {
-      router.push(`/games/play?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "开奖记录") {
-      router.push(`/games/open?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "投注记录") {
-      router.push(`/games/record?lottery_id=${currentLotteryId}`);
-      return;
-    }
-    if (tab === "自动") {
-      router.push(`/games/auto?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "走势") {
-      router.push(`/games/trend?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "盈亏") {
-      router.push(`/games/stat?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-  };
-
-  const [gameName, setGameName] = useState("加载中...");
-  const [allGames, setAllGames] = useState<Game[]>([]);
-  const [activeGame, setActiveGame] = useState<Game | null>(null);
-  const [showGameSelector, setShowGameSelector] = useState(false);
   const [modes, setModes] = useState<ModeItem[]>([]);
-
-  // 玩法分组
-  const [playGroups, setPlayGroups] = useState<GamePlayGroup[]>([]);
-  const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
-
-  const [isLoadingGames, setIsLoadingGames] = useState(true);
   const [isLoadingModes, setIsLoadingModes] = useState(false);
 
   // 分页
@@ -87,88 +42,27 @@ export default function ModePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingMode, setDeletingMode] = useState<ModeItem | null>(null);
 
-  // 防止重复请求
-  const hasFetchedRef = useRef(false);
+  // 当游戏或分组变化时获取模式列表
+  const prevGameIdRef = useRef<number | null>(null);
+  const prevGroupIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    if (!activeGame || !selectedGroupId) return;
 
-    fetchGameAll();
-  }, []);
-
-  /**
-   * 获取所有游戏 + 选中 URL 指定 lottery_id 对应的彩种
-   */
-  const fetchGameAll = async () => {
-    try {
-      setIsLoadingGames(true);
-      const res = await gameAll({});
-
-      if (res.code === 200 && res.data) {
-        const { gameTypeMap = [] } = res.data;
-
-        // 收集所有游戏到一个扁平数组
-        const games: Game[] = [];
-        (Array.isArray(gameTypeMap) ? gameTypeMap : []).forEach((typeItem: GameTypeMapItem) => {
-          if (typeItem.children && Array.isArray(typeItem.children)) {
-            typeItem.children.forEach((game: Game) => {
-              if (game.is_show === undefined || game.is_show === 1) {
-                games.push(game);
-              }
-            });
-          }
-        });
-        setAllGames(games);
-
-        // 找到URL指定的游戏或默认第一个
-        let defaultGame: Game | null = null;
-        if (urlLotteryId) {
-          defaultGame = games.find((g) => String(g.id) === String(urlLotteryId)) || null;
-        }
-        if (!defaultGame && games.length > 0) {
-          defaultGame = games[0];
-        }
-
-        if (defaultGame) {
-          setActiveGame(defaultGame);
-          setGameName(defaultGame.name);
-          // 先获取玩法分组，再获取模式列表（默认选择第一个分组）
-          const groups = await fetchPlayGroups(defaultGame.id);
-          const defaultGroupId = groups.length > 0 ? groups[0].id : 0;
-          setSelectedGroupId(defaultGroupId);
-          fetchModeList(defaultGame.id, defaultGroupId, 1, true);
-        }
-      } else {
-        toast.error(parseErrorMessage(res, "获取游戏列表失败"));
-      }
-    } catch (error) {
-      toast.error(parseAxiosError(error, "获取游戏列表失败，请稍后重试"));
-    } finally {
-      setIsLoadingGames(false);
+    // 检查是否是相同的游戏和分组，避免重复请求
+    if (prevGameIdRef.current === activeGame.id && prevGroupIdRef.current === selectedGroupId) {
+      return;
     }
-  };
 
-  // 获取玩法分组，返回分组列表
-  const fetchPlayGroups = async (lotteryId: number): Promise<GamePlayGroup[]> => {
-    try {
-      const res = await playAll({ lottery_id: lotteryId });
-      if (res.code === 200 && res.data) {
-        const groups = (res.data.groupArr || []).filter(
-          (g: GamePlayGroup) => g.status === 1
-        );
-        setPlayGroups(groups);
-        return groups;
-      } else {
-        setPlayGroups([]);
-        return [];
-      }
-    } catch (error) {
-      console.error("获取玩法分组失败", error);
-      setPlayGroups([]);
-      return [];
-    }
-  };
+    prevGameIdRef.current = activeGame.id;
+    prevGroupIdRef.current = selectedGroupId;
+
+    // 重置列表并获取数据
+    setModes([]);
+    setPage(1);
+    setHasMore(true);
+    fetchModeList(activeGame.id, selectedGroupId, 1, true);
+  }, [activeGame, selectedGroupId]);
 
   const fetchModeList = async (lotteryId: number, groupId: number, pageNum: number, reset: boolean = false) => {
     try {
@@ -201,30 +95,9 @@ export default function ModePage() {
     }
   };
 
-  // 切换彩种时默认选择第一个分组
-  const handleGameSwitch = async (game: Game) => {
-    setShowGameSelector(false);
-    setActiveGame(game);
-    setGameName(game.name);
-    setModes([]);
-    setPage(1);
-    setHasMore(true);
-    // 获取新彩种的玩法分组，并默认选择第一个
-    const groups = await fetchPlayGroups(game.id);
-    const defaultGroupId = groups.length > 0 ? groups[0].id : 0;
-    setSelectedGroupId(defaultGroupId);
-    fetchModeList(game.id, defaultGroupId, 1, true);
-  };
-
-  // 切换玩法分组
+  // 切换玩法分组 - 通过 Context 更新，useEffect 会处理数据获取
   const handleGroupChange = (groupId: number) => {
     setSelectedGroupId(groupId);
-    setModes([]);
-    setPage(1);
-    setHasMore(true);
-    if (activeGame) {
-      fetchModeList(activeGame.id, groupId, 1, true);
-    }
   };
 
   const handleLoadMore = () => {
@@ -286,63 +159,8 @@ export default function ModePage() {
     return group?.name || `分组${groupId}`;
   };
 
-  if (isLoadingGames) {
-    return (
-      <div className="flex min-h-screen justify-center items-center bg-zinc-50 dark:bg-black">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-red-600 border-r-transparent"></div>
-          <p className="mt-3 text-gray-600 dark:text-gray-400">加载中...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black">
-      {/* 头部 - 与其他页面一致 */}
-      <div className="bg-red-600 text-white px-4 py-3 flex items-center justify-between">
-        <button className="text-white" onClick={() => router.back()}>
-          <ChevronLeft size={24} />
-        </button>
-        <h1
-          className="text-lg font-bold cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setShowGameSelector(true)}
-        >
-          {gameName} ▼
-        </h1>
-        <div
-          className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => router.push("/mine/receipt-text?tab=points")}
-        >
-          <span className="font-bold text-sm">
-            {format.number(currentCustomer?.points ?? 0)}
-          </span>
-          <Image
-            alt="coin"
-            className="inline-block w-[13px] h-[13px]"
-            src="/ranking/coin.png"
-            width={13}
-            height={13}
-          />
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white border-b">
-        <div className="flex overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => handleTabClick(tab)}
-              className={cn(
-                "px-4 py-2 text-xs whitespace-nowrap",
-                activeTab === tab ? "text-red-600 border-b-2 border-red-600 font-bold" : "text-gray-700"
-              )}
-            >{tab}</button>
-          ))}
-        </div>
-      </div>
-
+    <div className="bg-gray-100 dark:bg-black">
       {/* 玩法分组筛选 + 新增按钮 */}
       <div className="bg-white px-3 py-2 border-b flex items-center gap-2">
         {playGroups.length > 0 && (
@@ -466,37 +284,6 @@ export default function ModePage() {
           您可以保存多个自定义模式，使用它们进行投注、托管、对号投注，方便您进行多样化的操作！
         </div>
       </div>
-
-      {/* 彩种选择 Dialog */}
-      <Dialog open={showGameSelector} onOpenChange={setShowGameSelector}>
-        <DialogContent className="max-w-sm p-0 flex flex-col max-h-[70vh] transition-all duration-300 ease-in-out">
-          <DialogHeader className="p-3 border-b">
-            <DialogTitle>选择彩种</DialogTitle>
-          </DialogHeader>
-
-          <div className="flex-1 overflow-y-auto px-3 py-3">
-            <div className="grid grid-cols-2 gap-3">
-              {allGames.map((game) => (
-                <button
-                  key={game.id}
-                  onClick={() => handleGameSwitch(game)}
-                  className={cn(
-                    "p-3 rounded-lg text-center font-bold text-sm border transition-all",
-                    activeGame && String(game.id) === String(activeGame.id)
-                      ? "bg-red-600 text-white border-red-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-red-600 hover:text-red-600"
-                  )}
-                >
-                  {game.name}
-                  {activeGame && String(game.id) === String(activeGame.id) && (
-                    <div className="text-xs mt-1">当前</div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* 删除确认 Dialog */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

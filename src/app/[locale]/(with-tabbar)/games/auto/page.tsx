@@ -1,22 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 import { toast } from "sonner";
 import { parseErrorMessage, parseAxiosError, cn } from "@/lib/utils";
-import { useAuthStore } from "@/utils/storage/auth";
 import { useFormatter } from "use-intl";
-import Image from "next/image";
 
-import { gameAll, playAll, autoOne, setAuto, modeList } from "@/api/game";
+import { autoOne, setAuto, modeList } from "@/api/game";
+import { useGameContext } from "../_context";
 import {
-  Game,
-  GameTypeMapItem,
-  GamePlayGroup,
   ModeItem,
   AutoItem,
 } from "@/types/game.type";
@@ -24,55 +19,14 @@ import {
 export default function AutoPage() {
   useRequireLogin();
   const format = useFormatter();
-  const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const urlLotteryId = searchParams.get("lottery_id") || "";
-  const urlGroupId = searchParams.get("group_id") || "";
-
-  // Tab navigation
-  const tabs = ["投注", "开奖记录", "投注记录", "模式", "自动", "走势", "盈亏"];
-  const activeTab = "自动";
-
-  const currentCustomer = useAuthStore((s) => s.currentCustomer);
-
-  // Tab切换处理
-  const handleTabClick = (tab: string) => {
-    const currentLotteryId = activeGame?.id || urlLotteryId;
-    if (tab === "投注") {
-      router.push(`/games/play?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "开奖记录") {
-      router.push(`/games/open?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "投注记录") {
-      router.push(`/games/record?lottery_id=${currentLotteryId}`);
-      return;
-    }
-    if (tab === "模式") {
-      router.push(`/games/mode?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "走势") {
-      router.push(`/games/trend?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-    if (tab === "盈亏") {
-      router.push(`/games/stat?lottery_id=${currentLotteryId}&group_id=${selectedGroupId}&t=${Date.now()}`);
-      return;
-    }
-  };
-
-  const [gameName, setGameName] = useState("加载中...");
-  const [allGames, setAllGames] = useState<Game[]>([]);
-  const [activeGame, setActiveGame] = useState<Game | null>(null);
-  const [showGameSelector, setShowGameSelector] = useState(false);
-
-  // 玩法分组
-  const [playGroups, setPlayGroups] = useState<GamePlayGroup[]>([]);
-  const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
+  // 从 Context 获取共享的游戏状态
+  const {
+    activeGame,
+    playGroups,
+    selectedGroupId,
+    setSelectedGroupId,
+  } = useGameContext();
 
   // 模式列表
   const [modes, setModes] = useState<ModeItem[]>([]);
@@ -86,92 +40,38 @@ export default function AutoPage() {
   const [autoStatus, setAutoStatus] = useState<number>(0);  // 0关闭，1启动
   const [existingAuto, setExistingAuto] = useState<AutoItem | null>(null);
 
-  const [isLoadingGames, setIsLoadingGames] = useState(true);
   const [isLoadingAuto, setIsLoadingAuto] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 防止重复请求
-  const hasFetchedRef = useRef(false);
+  // 当游戏或分组变化时获取数据
+  const prevGameIdRef = useRef<number | null>(null);
+  const prevGroupIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    if (!activeGame || !selectedGroupId) return;
 
-    fetchGameAll();
-  }, []);
+    // 检查是否是相同的游戏，避免重复请求
+    const gameChanged = prevGameIdRef.current !== activeGame.id;
+    const groupChanged = prevGroupIdRef.current !== selectedGroupId;
 
-  /**
-   * 获取所有游戏
-   */
-  const fetchGameAll = async () => {
-    try {
-      setIsLoadingGames(true);
-      const res = await gameAll({});
-
-      if (res.code === 200 && res.data) {
-        const { gameTypeMap = [] } = res.data;
-
-        const games: Game[] = [];
-        (Array.isArray(gameTypeMap) ? gameTypeMap : []).forEach((typeItem: GameTypeMapItem) => {
-          if (typeItem.children && Array.isArray(typeItem.children)) {
-            typeItem.children.forEach((game: Game) => {
-              if (game.is_show === undefined || game.is_show === 1) {
-                games.push(game);
-              }
-            });
-          }
-        });
-        setAllGames(games);
-
-        let defaultGame: Game | null = null;
-        if (urlLotteryId) {
-          defaultGame = games.find((g) => String(g.id) === String(urlLotteryId)) || null;
-        }
-        if (!defaultGame && games.length > 0) {
-          defaultGame = games[0];
-        }
-
-        if (defaultGame) {
-          setActiveGame(defaultGame);
-          setGameName(defaultGame.name);
-          const groups = await fetchPlayGroups(defaultGame.id);
-          const defaultGroupId = groups.length > 0 ? groups[0].id : 0;
-          setSelectedGroupId(defaultGroupId);
-          // 获取模式列表
-          const modesList = await fetchModes(defaultGame.id, defaultGroupId);
-          // 获取自动配置，传入模式列表
-          await fetchAutoConfig(defaultGame.id, modesList);
-        }
-      } else {
-        toast.error(parseErrorMessage(res, "获取游戏列表失败"));
-      }
-    } catch (error) {
-      toast.error(parseAxiosError(error, "获取游戏列表失败，请稍后重试"));
-    } finally {
-      setIsLoadingGames(false);
+    if (!gameChanged && !groupChanged) {
+      return;
     }
-  };
 
-  // 获取玩法分组
-  const fetchPlayGroups = async (lotteryId: number): Promise<GamePlayGroup[]> => {
-    try {
-      const res = await playAll({ lottery_id: lotteryId });
-      if (res.code === 200 && res.data) {
-        const groups = (res.data.groupArr || []).filter(
-          (g: GamePlayGroup) => g.status === 1
-        );
-        setPlayGroups(groups);
-        return groups;
-      } else {
-        setPlayGroups([]);
-        return [];
+    prevGameIdRef.current = activeGame.id;
+    prevGroupIdRef.current = selectedGroupId;
+
+    // 获取模式列表和自动配置
+    const loadData = async () => {
+      const modesList = await fetchModes(activeGame.id, selectedGroupId);
+      if (gameChanged) {
+        // 仅在游戏变化时重新获取自动配置
+        await fetchAutoConfig(activeGame.id, modesList);
       }
-    } catch (error) {
-      console.error("获取玩法分组失败", error);
-      setPlayGroups([]);
-      return [];
-    }
-  };
+    };
+
+    loadData();
+  }, [activeGame, selectedGroupId]);
 
   // 获取模式列表
   const fetchModes = async (lotteryId: number, groupId: number): Promise<ModeItem[]> => {
@@ -243,27 +143,9 @@ export default function AutoPage() {
     }
   };
 
-  // 切换彩种
-  const handleGameSwitch = async (game: Game) => {
-    setShowGameSelector(false);
-    setActiveGame(game);
-    setGameName(game.name);
-    setSelectedMode(null);
-    setExistingAuto(null);
-
-    const groups = await fetchPlayGroups(game.id);
-    const defaultGroupId = groups.length > 0 ? groups[0].id : 0;
-    setSelectedGroupId(defaultGroupId);
-    const modesList = await fetchModes(game.id, defaultGroupId);
-    await fetchAutoConfig(game.id, modesList);
-  };
-
-  // 切换分组时重新获取模式
-  const handleGroupChange = async (groupId: number) => {
+  // 切换分组 - 通过 Context 更新，useEffect 会处理数据获取
+  const handleGroupChange = (groupId: number) => {
     setSelectedGroupId(groupId);
-    if (activeGame) {
-      await fetchModes(activeGame.id, groupId);
-    }
   };
 
   // 选择模式
@@ -334,63 +216,8 @@ export default function AutoPage() {
     }
   };
 
-  if (isLoadingGames) {
-    return (
-      <div className="flex min-h-screen justify-center items-center bg-zinc-50 dark:bg-black">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-red-600 border-r-transparent"></div>
-          <p className="mt-3 text-gray-600 dark:text-gray-400">加载中...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black pb-32">
-      {/* 头部 */}
-      <div className="bg-red-600 text-white px-4 py-3 flex items-center justify-between">
-        <button className="text-white" onClick={() => router.back()}>
-          <ChevronLeft size={24} />
-        </button>
-        <h1
-          className="text-lg font-bold cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setShowGameSelector(true)}
-        >
-          {gameName} ▼
-        </h1>
-        <div
-          className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => router.push("/mine/receipt-text?tab=points")}
-        >
-          <span className="font-bold text-sm">
-            {format.number(currentCustomer?.points ?? 0)}
-          </span>
-          <Image
-            alt="coin"
-            className="inline-block w-[13px] h-[13px]"
-            src="/ranking/coin.png"
-            width={13}
-            height={13}
-          />
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white border-b">
-        <div className="flex overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => handleTabClick(tab)}
-              className={cn(
-                "px-4 py-2 text-xs whitespace-nowrap",
-                activeTab === tab ? "text-red-600 border-b-2 border-red-600 font-bold" : "text-gray-700"
-              )}
-            >{tab}</button>
-          ))}
-        </div>
-      </div>
-
+    <div className="bg-gray-100 dark:bg-black pb-32">
       {/* 自动投注配置表单 */}
       <div className="space-y-3 mt-3">
         {/* 基础设置 */}
@@ -523,37 +350,6 @@ export default function AutoPage() {
           )}
         </div>
       </div>
-
-      {/* 彩种选择 Dialog */}
-      <Dialog open={showGameSelector} onOpenChange={setShowGameSelector}>
-        <DialogContent className="max-w-sm p-0 flex flex-col max-h-[70vh] transition-all duration-300 ease-in-out">
-          <DialogHeader className="p-3 border-b">
-            <DialogTitle>选择彩种</DialogTitle>
-          </DialogHeader>
-
-          <div className="flex-1 overflow-y-auto px-3 py-3">
-            <div className="grid grid-cols-2 gap-3">
-              {allGames.map((game) => (
-                <button
-                  key={game.id}
-                  onClick={() => handleGameSwitch(game)}
-                  className={cn(
-                    "p-3 rounded-lg text-center font-bold text-sm border transition-all",
-                    activeGame && String(game.id) === String(activeGame.id)
-                      ? "bg-red-600 text-white border-red-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-red-600 hover:text-red-600"
-                  )}
-                >
-                  {game.name}
-                  {activeGame && String(game.id) === String(activeGame.id) && (
-                    <div className="text-xs mt-1">当前</div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* 模式选择 Dialog */}
       <Dialog open={showModeSelector} onOpenChange={setShowModeSelector}>

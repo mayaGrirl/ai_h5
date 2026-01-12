@@ -14,6 +14,8 @@ import {
   GamePlay,
   GameTypeMapItem,
 } from "@/types/game.type";
+import {PageHeader} from "@/components/page-header";
+import {useTranslations} from "use-intl";
 
 // 游戏系列数据结构
 interface GameSeries {
@@ -31,6 +33,7 @@ interface PlayMethodGroup {
 
 export default function Games() {
   useRequireLogin();
+  const _t = useTranslations();
 
   const searchParams = useSearchParams();
   const urlLotteryId = searchParams.get("lottery_id") || ""; // <-- URL 传入的 lottery_id
@@ -204,16 +207,12 @@ export default function Games() {
       <main className="w-full max-w-3xl bg-white dark:bg-black">
 
         {/* 头部 */}
-        <div className="relative bg-red-600 text-white py-5 flex items-center justify-center">
-          <span className="absolute left-4 text-lg font-bold">🔔</span>
-          <h1 className="text-xl font-bold text-center">游戏大厅</h1>
-          <span className="absolute right-4 text-lg font-bold">🔥</span>
-        </div>
+        <PageHeader title={_t("游戏大厅")}/>
 
-        <div className="bg-yellow-100 text-yellow-800 px-4 py-2 text-sm flex justify-between items-center">
+        {/*<div className="bg-yellow-100 text-yellow-800 px-4 py-2 text-sm flex justify-between items-center">
           <span>📷 即将抽出红包幸运儿</span>
           <button className="text-red-600">点击查看</button>
-        </div>
+        </div>*/}
 
         {/* 系列横向 */}
         <div className="w-full overflow-x-auto whitespace-nowrap border-b py-3 px-4 bg-red-50">

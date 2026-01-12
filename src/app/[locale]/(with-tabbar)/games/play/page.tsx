@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronLeft, Bell, Video, RefreshCcw, CheckCircle, X } from "lucide-react";
+import { RefreshCcw, CheckCircle, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn, parseErrorMessage, parseAxiosError } from "@/lib/utils";
-import { playAll, betGame, fetchExpectInfo as fetchExpectInfoAPI, gameAll } from "@/api/game";
+import { playAll, betGame, fetchExpectInfo as fetchExpectInfoAPI } from "@/api/game";
 import { currentCustomer as fetchCurrentCustomer } from "@/api/auth";
 import { toast } from "sonner";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
@@ -14,12 +14,11 @@ import {
   ExpectInfo,
   GamePlay,
   GamePlayMapItem,
-  Game,
-  GameTypeMapItem
 } from "@/types/game.type";
 import {useAuthStore} from "@/utils/storage/auth";
 import Image from "next/image";
 import {useFormatter} from "use-intl";
+import { useGameContext } from "../_context";
 
 interface PlayItem {
   id: number;
@@ -44,43 +43,42 @@ export default function BetPage() {
   const group_id = searchParams.get("group_id") || "";
   const refreshTs = searchParams.get("t") || ""; // 用于强制刷新的时间戳
 
-  const [gameName, setGameName] = useState("加载中...");
-  const [allGames, setAllGames] = useState<Game[]>([]);
-  const [showGameSelector, setShowGameSelector] = useState(false);
-  const tabs = ["投注", "开奖记录", "投注记录", "模式", "自动", "走势", "盈亏"];
-  const [activeTab, setActiveTab] = useState("投注");
+  // 从 Context 获取游戏信息（头部和Tab由layout处理）
+  const { activeGame, soundEnabled } = useGameContext();
 
-  // Tab切换处理 - 切换到开奖记录/投注记录时默认全部分组
-  const handleTabClick = (tab: string) => {
-    if (tab === "开奖记录") {
-      router.push(`/games/open?lottery_id=${lottery_id}`);
-      return;
+  // 播放开奖提示音
+  const playNotificationSound = () => {
+    try {
+      // 使用 Web Audio API 生成简单的叮咚声
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // 创建第一个音调（叮）
+      const oscillator1 = audioContext.createOscillator();
+      const gainNode1 = audioContext.createGain();
+      oscillator1.connect(gainNode1);
+      gainNode1.connect(audioContext.destination);
+      oscillator1.frequency.value = 880; // A5 音符
+      oscillator1.type = "sine";
+      gainNode1.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      oscillator1.start(audioContext.currentTime);
+      oscillator1.stop(audioContext.currentTime + 0.3);
+
+      // 创建第二个音调（咚）- 延迟 0.15 秒
+      const oscillator2 = audioContext.createOscillator();
+      const gainNode2 = audioContext.createGain();
+      oscillator2.connect(gainNode2);
+      gainNode2.connect(audioContext.destination);
+      oscillator2.frequency.value = 1320; // E6 音符
+      oscillator2.type = "sine";
+      gainNode2.gain.setValueAtTime(0, audioContext.currentTime + 0.15);
+      gainNode2.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.16);
+      gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      oscillator2.start(audioContext.currentTime + 0.15);
+      oscillator2.stop(audioContext.currentTime + 0.5);
+    } catch (error) {
+      console.error("播放提示音失败", error);
     }
-    if (tab === "模式") {
-      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
-      router.push(`/games/mode?lottery_id=${lottery_id}`);
-      return;
-    }
-    if (tab === "自动") {
-      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
-      router.push(`/games/auto?lottery_id=${lottery_id}`);
-      return;
-    }
-    if (tab === "走势") {
-      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
-      router.push(`/games/trend?lottery_id=${lottery_id}`);
-      return;
-    }
-    if (tab === "盈亏") {
-      // 传递当前选中的分组ID和时间戳，确保倒计时接口被调用
-      router.push(`/games/stat?lottery_id=${lottery_id}`);
-      return;
-    }
-    if (tab === "投注记录") {
-      router.push(`/games/record?lottery_id=${lottery_id}`);
-      return;
-    }
-    setActiveTab(tab);
   };
 
   const [groups, setGroups] = useState<PlayGroup[]>([]);
@@ -89,7 +87,7 @@ export default function BetPage() {
   // 支持快捷选择的玩法分组ID
   const quickSelectGroupIds = [1, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
   // 快捷选择按钮列表
-  const quickSelectButtons = ["全包", "反选", "大", "小", "中", "边", "单", "双", "极大", "极小"];
+  const quickSelectButtons = ["全包", "反选", "大", "小", "中", "边", "单", "双", "极大", "极小","清空"];
 
   const [activeGroup, setActiveGroup] = useState<PlayGroup | null>(null);
   const [selectedPlays, setSelectedPlays] = useState<string[]>([]);
@@ -106,6 +104,12 @@ export default function BetPage() {
   const remainingOpenRef = useRef(0); // 用于轮询定时器访问最新的倒计时值
   const previousExpectNoRef = useRef<string>(""); // 用于跟踪上一个期号
   const activeGroupIdRef = useRef<number | null>(null); // 用于轮询定时器访问当前选中的分组ID
+  const soundEnabledRef = useRef(soundEnabled); // 用于回调函数访问最新的铃声状态
+
+  // 同步 soundEnabled 到 ref
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
 
   const [currExpect, setCurrExpect] = useState<ExpectInfo | null>(null);
   const [lastExpect, setLastExpect] = useState<ExpectInfo | null>(null);
@@ -126,45 +130,6 @@ export default function BetPage() {
       }
     } catch (error) {
       console.error("刷新用户金豆失败", error);
-    }
-  };
-
-  // ====================== 获取游戏名称 ======================
-  const fetchGameName = async () => {
-    if (!lottery_id) return;
-
-    try {
-      const res = await gameAll({});
-      if (res.code === 200 && res.data) {
-        const { gameTypeMap = [] } = res.data;
-
-        // 收集所有游戏到一个扁平数组
-        const games: Game[] = [];
-        gameTypeMap.forEach((typeItem: GameTypeMapItem) => {
-          if (typeItem.children && Array.isArray(typeItem.children)) {
-            typeItem.children.forEach((game: Game) => {
-              if (game.is_show === undefined || game.is_show === 1) {
-                games.push(game);
-              }
-            });
-          }
-        });
-        setAllGames(games);
-
-        // 遍历所有分类找到对应的游戏
-        for (const typeItem of gameTypeMap) {
-          const foundGame = typeItem.children?.find((game: Game) => String(game.id) === String(lottery_id));
-          if (foundGame) {
-            setGameName(foundGame.name);
-            return;
-          }
-        }
-      } else if (res.code !== 200 && res.code !== 3001) {
-        toast.error(parseErrorMessage(res, "获取游戏信息失败"));
-      }
-    } catch (error) {
-      console.error("获取游戏名称失败", error);
-      toast.error(parseAxiosError(error, "获取游戏信息失败"));
     }
   };
 
@@ -257,6 +222,10 @@ export default function BetPage() {
           // 开奖完成后刷新用户金豆（可能中奖）- 排除首次加载
           if (previousExpectNoRef.current) {
             refreshUserPoints();
+            // 如果开启了提示音，播放叮咚声
+            if (soundEnabledRef.current) {
+              playNotificationSound();
+            }
           }
           // 更新 ref 和 state
           previousExpectNoRef.current = newExpectNo;
@@ -317,7 +286,6 @@ export default function BetPage() {
     activeGroupIdRef.current = group_id ? parseInt(group_id) : null; // 重置分组ID ref
     setPreviousExpectNo("");
 
-    fetchGameName();
     fetchPlayMethods();
     fetchExpectInfo();
 
@@ -352,19 +320,6 @@ export default function BetPage() {
     const m = Math.floor((sec % 3600) / 60);
     const s = sec % 60;
     return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-  };
-
-  // ====================== 切换彩种 ======================
-  const handleGameSwitch = (gameId: number) => {
-    setShowGameSelector(false);
-    // 重置选中状态
-    setSelectedPlays([]);
-    setPlayAmounts({});
-    setActiveQuick(null);
-    // 跳转到新的游戏页面，不保留group_id，让新游戏使用默认分组
-    // 不同游戏有不同的玩法分组，不能复用旧的group_id
-    const newUrl = `/games/play?lottery_id=${gameId}&t=${Date.now()}`;
-    router.push(newUrl);
   };
 
   // ====================== 切换玩法分组 ======================
@@ -442,6 +397,9 @@ export default function BetPage() {
       .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10));
 
     switch (type) {
+      case "清空":
+        newSelected = [];
+        break;
       case "全包":
         // 全选所有玩法
         newSelected = activeGroup.plays.map((p) => p.name);
@@ -619,55 +577,8 @@ export default function BetPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black relative pb-20">
-      {/* 头部 */}
-      <div className="bg-red-600 text-white px-4 py-3 flex items-center justify-between">
-        <button className="text-white" onClick={() => router.back()}>
-          <ChevronLeft size={24} />
-        </button>
-        <h1
-          className="text-lg font-bold cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setShowGameSelector(true)}
-        >
-          {gameName} ▼
-        </h1>
-        <div
-          className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => router.push("/mine/receipt-text?tab=points")}
-        >
-          {/*<Bell /><Video />*/}
-          <span className="font-bold text-sm">
-            {format.number(currentCustomer?.points ?? 0)}
-          </span>
-          <Image
-            alt="coin"
-            className="inline-block w-[13px] h-[13px]"
-            src="/ranking/coin.png"
-            width={13}
-            height={13}
-          />
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white border-b">
-        <div className="flex overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => handleTabClick(tab)}
-              className={cn(
-                "px-4 py-2 text-xs whitespace-nowrap",
-                activeTab === tab ? "text-red-600 border-b-2 border-red-600 font-bold" : "text-gray-700"
-              )}
-            >{tab}</button>
-          ))}
-        </div>
-      </div>
-
-      {/* 投注页 */}
-      {activeTab === "投注" && (
-        <>
+    <div className="bg-gray-100 dark:bg-black relative pb-20">
+      {/* 投注页内容 */}
           {/* 当前期 & 上一期一行两列 */}
           <div className="bg-white p-3 my-2 mx-3 rounded-lg shadow text-sm flex justify-between">
             {/* 上一期左列 */}
@@ -820,8 +731,6 @@ export default function BetPage() {
               </button>
             </div>
           )}
-        </>
-      )}
 
       {/* 批量下注 Dialog */}
       <Dialog open={showBatchModal} onOpenChange={setShowBatchModal}>
@@ -886,37 +795,6 @@ export default function BetPage() {
               >
                 确认提交
               </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* 彩种选择 Dialog */}
-      <Dialog open={showGameSelector} onOpenChange={setShowGameSelector}>
-        <DialogContent className="max-w-sm p-0 flex flex-col max-h-[70vh] transition-all duration-300 ease-in-out">
-          <DialogHeader className="p-3 border-b">
-            <DialogTitle>选择彩种</DialogTitle>
-          </DialogHeader>
-
-          <div className="flex-1 overflow-y-auto px-3 py-3">
-            <div className="grid grid-cols-2 gap-3">
-              {allGames.map((game) => (
-                <button
-                  key={game.id}
-                  onClick={() => handleGameSwitch(game.id)}
-                  className={cn(
-                    "p-3 rounded-lg text-center font-bold text-sm border transition-all",
-                    String(game.id) === String(lottery_id)
-                      ? "bg-red-600 text-white border-red-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-red-600 hover:text-red-600"
-                  )}
-                >
-                  {game.name}
-                  {String(game.id) === String(lottery_id) && (
-                    <div className="text-xs mt-1">当前</div>
-                  )}
-                </button>
-              ))}
             </div>
           </div>
         </DialogContent>
