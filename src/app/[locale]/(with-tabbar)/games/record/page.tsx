@@ -32,7 +32,7 @@ export default function RecordPage() {
   // 分页
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const pageSize = 30;
+  const pageSize = 15;
 
   // 当游戏或分组变化时获取投注记录
   const prevGameIdRef = useRef<number | null>(null);
