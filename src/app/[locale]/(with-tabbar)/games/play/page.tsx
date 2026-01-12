@@ -21,6 +21,11 @@ import Image from "next/image";
 import {useFormatter} from "use-intl";
 import { useGameContext } from "../_context";
 
+// 扩展 Window 接口以支持 webkitAudioContext（Safari 兼容）
+interface WebkitWindow extends Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+
 interface PlayItem {
   id: number;
   name: string;
@@ -45,13 +50,15 @@ export default function BetPage() {
   const refreshTs = searchParams.get("t") || ""; // 用于强制刷新的时间戳
 
   // 从 Context 获取游戏信息（头部和Tab由layout处理）
-  const { activeGame, soundEnabled } = useGameContext();
+  const { soundEnabled } = useGameContext();
 
   // 播放开奖提示音
   const playNotificationSound = () => {
     try {
       // 使用 Web Audio API 生成简单的叮咚声
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as WebkitWindow).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const audioContext = new AudioContextClass();
 
       // 创建第一个音调（叮）
       const oscillator1 = audioContext.createOscillator();
