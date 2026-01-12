@@ -6,7 +6,7 @@ import { RefreshCcw, CheckCircle, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn, parseErrorMessage, parseAxiosError } from "@/lib/utils";
-import { playAll, betGame, fetchExpectInfo as fetchExpectInfoAPI } from "@/api/game";
+import { playAll, betGame, fetchExpectInfo as fetchExpectInfoAPI, lotteryRecord } from "@/api/game";
 import { currentCustomer as fetchCurrentCustomer } from "@/api/auth";
 import { toast } from "sonner";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
@@ -14,6 +14,7 @@ import {
   ExpectInfo,
   GamePlay,
   GamePlayMapItem,
+  LotteryResultItem,
 } from "@/types/game.type";
 import {useAuthStore} from "@/utils/storage/auth";
 import Image from "next/image";
@@ -118,6 +119,11 @@ export default function BetPage() {
   const [statusCode, setStatusCode] = useState<number>(200);
   const [previousExpectNo, setPreviousExpectNo] = useState<string>("");
 
+  // 最近开奖记录弹窗
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyRecords, setHistoryRecords] = useState<LotteryResultItem[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
   const setCurrentCustomer = useAuthStore((s) => s.setCurrentCustomer);
   const currentCustomer = useAuthStore((s) => s.currentCustomer);
 
@@ -131,6 +137,73 @@ export default function BetPage() {
     } catch (error) {
       console.error("刷新用户金豆失败", error);
     }
+  };
+
+  // ====================== 获取最近开奖记录 ======================
+  const fetchHistoryRecords = async () => {
+    if (!lottery_id || !activeGroupIdRef.current) return;
+
+    try {
+      setIsLoadingHistory(true);
+      const res = await lotteryRecord({
+        lottery_id: parseInt(lottery_id),
+        game_group_id: activeGroupIdRef.current,
+        page: 1,
+        pageSize: 11,
+      });
+
+      if (res.code === 200 && res.data) {
+        // 过滤掉未开奖的记录（is_opened !== 1）
+        const openedRecords = (res.data.list || []).filter(
+          (item) => item.is_opened === 1
+        );
+        setHistoryRecords(openedRecords);
+      } else {
+        toast.error(parseErrorMessage(res, "获取开奖记录失败"));
+      }
+    } catch (error) {
+      console.error("获取开奖记录失败", error);
+      toast.error(parseAxiosError(error, "获取开奖记录失败"));
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  // 打开历史记录弹窗
+  const handleOpenHistory = () => {
+    setShowHistoryModal(true);
+    fetchHistoryRecords();
+  };
+
+  // 获取开奖结果显示文本
+  const getHistoryResult = (item: LotteryResultItem): string => {
+    const fr = item.final_res;
+    if (!fr) return "--";
+
+    // 优先使用 finalResRecord
+    if (fr.finalResRecord) {
+      return String(fr.finalResRecord);
+    }
+
+    // 其次尝试根据当前分组ID获取对应的结果
+    const groupId = activeGroupIdRef.current;
+    if (groupId) {
+      const resultKey = `finalOpenRes${groupId}` as keyof typeof fr;
+      const resultValue = fr[resultKey];
+      if (resultValue !== undefined && resultValue !== null) {
+        return String(resultValue);
+      }
+    }
+
+    // 回退到开奖号码
+    const nums = fr.nums;
+    if (nums) {
+      if (Array.isArray(nums)) return nums.join(",");
+      if (typeof nums === "object") return Object.values(nums).join(",");
+      return String(nums);
+    }
+
+    return "--";
   };
 
   // ====================== 获取玩法列表 ======================
@@ -583,10 +656,18 @@ export default function BetPage() {
           <div className="bg-white p-3 my-2 mx-3 rounded-lg shadow text-sm flex justify-between">
             {/* 上一期左列 */}
             <div className="w-[48%] min-w-[200px] border-r pr-3 space-y-1">
-              <div><span className="font-bold">第</span>{lastExpect?.expect_no || "--"}期</div>
+              <div className="flex items-center justify-between">
+                <span><span className="font-bold">第</span>{lastExpect?.expect_no || "--"}期</span>
+                <button
+                  onClick={handleOpenHistory}
+                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                >
+                  更多
+                </button>
+              </div>
               <div><span className="font-bold">开奖时间：</span>{lastExpect?.open_time|| "--"}</div>
               <div className="flex">
-                <span className="font-bold whitespace-nowrap flex-shrink-0">开奖号码：</span>
+                <span className="font-bold whitespace-nowrap flex-shrink-0">开奖结果：</span>
                 <span className="break-all">{getDisplayResult(lastExpect)}</span>
               </div>
             </div>
@@ -622,11 +703,11 @@ export default function BetPage() {
 
                 {/* 状态提示 - 按优先级显示 */}
                 {statusCode === 3001 ? (
-                  <div className="text-red-600 font-bold animate-pulse">🔒 封盘中，暂停投注</div>
+                  <div className="text-red-600 font-bold animate-pulse">🔒 停盘中，暂停投注</div>
                 ) : remainingOpen === 0 && currExpect && currExpect.expect_no === previousExpectNo ? (
                   <div className="text-blue-600 font-bold">正在开奖中...</div>
                 ) : remainingClose === 0 ? (
-                  <div className="text-orange-600 font-bold">已封盘/暂时停盘</div>
+                  <div className="text-orange-600 font-bold">封盘中...</div>
                 ) : remainingClose > 0 && remainingOpen > 0 ? (
                   <div className="text-green-600 font-bold">投注中....</div>
                 ) : null}
@@ -796,6 +877,59 @@ export default function BetPage() {
                 确认提交
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 最近开奖记录 Dialog */}
+      <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
+        <DialogContent className="max-w-sm p-0 flex flex-col max-h-[70vh]">
+          <DialogHeader className="p-3 border-b">
+            <DialogTitle>最近开奖记录</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto">
+            {isLoadingHistory ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+                <span className="ml-2 text-gray-600">加载中...</span>
+              </div>
+            ) : historyRecords.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                暂无开奖记录
+              </div>
+            ) : (
+              <div className="divide-y">
+                {historyRecords.map((item, index) => (
+                  <div key={`${item.expect_no}-${index}`} className="px-4 py-3">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-sm font-medium text-blue-700">
+                        第{item.expect_no || "--"}期
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {item.open_time || "--"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-800">
+                      <span className="text-gray-500">开奖结果：</span>
+                      <span className="font-medium text-red-600">
+                        {getHistoryResult(item)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="p-3 border-t">
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => setShowHistoryModal(false)}
+            >
+              关闭
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

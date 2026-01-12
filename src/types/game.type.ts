@@ -232,6 +232,9 @@ export interface LotteryFinalRes {
   mod3?: number;  // 余3
   shape?: string;     // 形态：bao/ban/dui/za/shun等
   lungFuPao?: string;
+  finalResRecord?: string;  // 开奖结果记录文本
+  // 动态字段：finalOpenRes1, finalOpenRes2, etc.
+  [key: `finalOpenRes${number}`]: string | number | undefined;
 }
 
 // 用户在该期的投注记录
