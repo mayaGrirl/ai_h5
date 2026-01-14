@@ -8,7 +8,6 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {packExchange} from "@/api/customer";
 import {toast} from "sonner";
-import {useParams, useRouter} from "next/navigation";
 import {useTranslations} from "use-intl";
 
 export default function GiftPage() {
@@ -20,7 +19,7 @@ export default function GiftPage() {
   // 表单验证
   const schema = z.object({
     code: z.string().min(1, _t('gift.code-placeholder'))
-      .max(10, _t('gift.code-max'))
+      .max(20, _t('gift.code-max'))
       .regex(/^[a-zA-Z0-9]+$/, _t('gift.code-regex')),
   });
 
