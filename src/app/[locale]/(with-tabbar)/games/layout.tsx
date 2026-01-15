@@ -39,10 +39,34 @@ function GamesLayoutInner({ children }: { children: React.ReactNode }) {
     setShowGameSelector,
     isLoadingGames,
     handleGameSwitch,
+    playGroups,
     selectedGroupId,
+    setSelectedGroupId,
     soundEnabled,
     setSoundEnabled,
   } = useGameContext();
+
+  // 分组选择 Dialog 状态
+  const [showGroupSelector, setShowGroupSelector] = React.useState(false);
+
+  // 获取当前分组名称
+  const currentGroupName = React.useMemo(() => {
+    if (!selectedGroupId || playGroups.length === 0) return "";
+    const group = playGroups.find((g) => g.id === selectedGroupId);
+    return group?.name || "";
+  }, [selectedGroupId, playGroups]);
+
+  // 处理分组切换
+  const handleGroupSwitch = (groupId: number) => {
+    setSelectedGroupId(groupId);
+    setShowGroupSelector(false);
+
+    // 更新 URL 以触发子页面刷新
+    if (activeGame) {
+      const newUrl = `${pathname}?lottery_id=${activeGame.id}&group_id=${groupId}`;
+      router.push(newUrl);
+    }
+  };
 
   // 判断是否是游戏大厅页面（games根路径）
   const isGamesRoot = () => {
@@ -103,6 +127,8 @@ function GamesLayoutInner({ children }: { children: React.ReactNode }) {
         onGameChange={() => setShowGameSelector(true)}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
+        groupName={currentGroupName}
+        onGroupChange={() => setShowGroupSelector(true)}
       />
 
       {/* 固定Tab导航 */}
@@ -157,6 +183,41 @@ function GamesLayoutInner({ children }: { children: React.ReactNode }) {
                 </button>
               ))}
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 分组选择 Dialog */}
+      <Dialog open={showGroupSelector} onOpenChange={setShowGroupSelector}>
+        <DialogContent className="max-w-sm p-0 flex flex-col max-h-[70vh] transition-all duration-300 ease-in-out">
+          <DialogHeader className="p-3 border-b">
+            <DialogTitle>选择玩法分组</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto px-3 py-3">
+            {playGroups.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">暂无分组数据</div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {playGroups.map((group) => (
+                  <button
+                    key={group.id}
+                    onClick={() => handleGroupSwitch(group.id)}
+                    className={cn(
+                      "p-3 rounded-lg text-center font-bold text-sm border transition-all",
+                      selectedGroupId === group.id
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-red-600 hover:text-red-600"
+                    )}
+                  >
+                    {group.name}
+                    {selectedGroupId === group.id && (
+                      <div className="text-xs mt-1">当前</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

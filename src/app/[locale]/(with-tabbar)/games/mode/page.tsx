@@ -95,11 +95,6 @@ export default function ModePage() {
     }
   };
 
-  // 切换玩法分组 - 通过 Context 更新，useEffect 会处理数据获取
-  const handleGroupChange = (groupId: number) => {
-    setSelectedGroupId(groupId);
-  };
-
   const handleLoadMore = () => {
     if (!activeGame || isLoadingModes || !hasMore) return;
     fetchModeList(activeGame.id, selectedGroupId, page + 1, false);
@@ -161,21 +156,8 @@ export default function ModePage() {
 
   return (
     <div className="bg-gray-100 dark:bg-black">
-      {/* 玩法分组筛选 + 新增按钮 */}
-      <div className="bg-white px-3 py-2 border-b flex items-center gap-2">
-        {playGroups.length > 0 && (
-          <select
-            value={selectedGroupId}
-            onChange={(e) => handleGroupChange(Number(e.target.value))}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-          >
-            {playGroups.map((group) => (
-              <option key={group.id} value={group.id}>
-                {group.name}
-              </option>
-            ))}
-          </select>
-        )}
+      {/* 新增按钮 */}
+      <div className="bg-white px-3 py-2 border-b flex items-center justify-end">
         <button
           onClick={handleAddMode}
           className="flex items-center gap-1 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"

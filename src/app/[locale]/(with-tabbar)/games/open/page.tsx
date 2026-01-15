@@ -21,9 +21,7 @@ export default function OpenPage() {
   // 从 Context 获取共享的游戏状态
   const {
     activeGame,
-    playGroups,
     selectedGroupId,
-    setSelectedGroupId,
   } = useGameContext();
 
   const [lotteryList, setLotteryList] = useState<LotteryResultItem[]>([]);
@@ -87,11 +85,6 @@ export default function OpenPage() {
     } finally {
       setIsLoadingLottery(false);
     }
-  };
-
-  // 切换玩法分组 - 通过 Context 更新，useEffect 会处理数据获取
-  const handleGroupChange = (groupId: number) => {
-    setSelectedGroupId(groupId);
   };
 
   const handleLoadMore = () => {
@@ -209,24 +202,7 @@ export default function OpenPage() {
 
 
   return (
-    <div className="bg-gray-100 dark:bg-black">
-      {/* 玩法分组筛选 */}
-      {playGroups.length > 0 && (
-        <div className="bg-white px-3 py-2 border-b">
-          <select
-            value={selectedGroupId}
-            onChange={(e) => handleGroupChange(Number(e.target.value))}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-          >
-            {playGroups.map((group) => (
-              <option key={group.id} value={group.id}>
-                {group.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
+    <div className="bg-gray-100 dark:bg-black pb-16">
       {/* 开奖记录列表 */}
       <div className="bg-white mx-3 my-3 rounded-lg shadow">
         {/* 表头 */}

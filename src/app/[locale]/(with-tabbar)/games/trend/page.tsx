@@ -23,9 +23,7 @@ export default function TrendPage() {
   // 从 Context 获取共享的游戏状态
   const {
     activeGame,
-    playGroups,
     selectedGroupId,
-    setSelectedGroupId,
   } = useGameContext();
 
   // 走势内容标签
@@ -78,11 +76,6 @@ export default function TrendPage() {
     } finally {
       setIsLoadingTrend(false);
     }
-  };
-
-  // 切换分组 - 通过 Context 更新，useEffect 会处理数据获取
-  const handleGroupChange = (groupId: number) => {
-    setSelectedGroupId(groupId);
   };
 
   const handlePeriodChange = (count: number) => {
@@ -149,23 +142,6 @@ export default function TrendPage() {
 
   return (
     <div className="bg-gray-100 dark:bg-black">
-      {/* 玩法分组筛选 */}
-      {playGroups.length > 0 && (
-        <div className="bg-white px-3 py-2 border-b">
-          <select
-            value={selectedGroupId}
-            onChange={(e) => handleGroupChange(Number(e.target.value))}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-          >
-            {playGroups.map((group) => (
-              <option key={group.id} value={group.id}>
-                {group.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
       {/* 走势表 */}
       <div className="bg-white m-3 rounded-lg shadow overflow-hidden">
         {/* 顶部控制栏 */}

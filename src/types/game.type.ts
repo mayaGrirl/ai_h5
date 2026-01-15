@@ -181,6 +181,7 @@ export interface BetDataDto {
   pageSize:number;
   lottery_id: number;
   game_group_id:number;
+  expect_no?: string;  // 期号，用于查询当期投注
 }
 
 // 开奖记录响应

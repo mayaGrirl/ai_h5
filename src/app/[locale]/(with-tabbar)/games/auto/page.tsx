@@ -143,11 +143,6 @@ export default function AutoPage() {
     }
   };
 
-  // 切换分组 - 通过 Context 更新，useEffect 会处理数据获取
-  const handleGroupChange = (groupId: number) => {
-    setSelectedGroupId(groupId);
-  };
-
   // 选择模式
   const handleSelectMode = (mode: ModeItem) => {
     setSelectedMode(mode);
@@ -223,24 +218,6 @@ export default function AutoPage() {
         {/* 基础设置 */}
         <div className="bg-white mx-3 rounded-lg shadow">
           <div className="px-4 py-3 text-gray-500 text-sm font-medium border-b">基础设置</div>
-
-          {/* 玩法分组 */}
-          {playGroups.length > 0 && (
-            <div className="flex justify-between items-center px-4 py-3 border-b">
-              <span className="text-sm">玩法分组</span>
-              <select
-                value={selectedGroupId}
-                onChange={(e) => handleGroupChange(Number(e.target.value))}
-                className="w-40 px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-              >
-                {playGroups.map((group) => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
 
           {/* 执行期数 */}
           <div className="flex justify-between items-center px-4 py-3 border-b">
