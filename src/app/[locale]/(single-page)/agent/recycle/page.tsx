@@ -111,7 +111,10 @@ export default function AgentConversionPage() {
                   <div className="w-1/4">{_t('agent.recycle.head-rate')}</div>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1 text-red-500 font-semibold">
-                      {(profile?.reccard_rate || 0) * 10}{_t('agent.recharge.head-rate-unit')}
+                      {format.number((profile?.reccard_rate || 0) * 10, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{_t('agent.recharge.head-rate-unit')}
                     </div>
                   </div>
                 </div>
