@@ -1285,116 +1285,121 @@ export default function BetPage() {
           {/* 可收起区域 */}
           {isExpanded && (
             <>
-              {/* 追加尾数 - 仅特定分组显示 */}
+              {/* 追加尾数 & 追加余数 - 左右并列显示，仅特定分组显示 */}
               {quickSelectGroupIds.includes(Number(activeGroup.id)) && (
-                <div className="mt-4">
-                  <div className="flex items-center mb-2">
-                    <span className="text-xs text-gray-500">——</span>
-                    <span className="text-xs text-gray-600 mx-2">追加尾数</span>
-                    <span className="text-xs text-gray-500 flex-1">——————————</span>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {/* 左侧：追加尾数 */}
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="text-xs text-gray-500">—</span>
+                      <span className="text-xs text-gray-600 mx-1">追加尾数</span>
+                      <span className="text-xs text-gray-500 flex-1">———</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-1">
+                      {tailButtons.slice(0, 4).map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 mt-1">
+                      {tailButtons.slice(4, 8).map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 mt-1">
+                      {tailButtons.slice(8).map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-6 gap-2">
-                    {tailButtons.slice(0, 6).map(btn => (
-                      <button
-                        key={btn}
-                        onClick={() => handleQuickSelect(btn)}
-                        className={cn(
-                          "py-1.5 text-xs rounded border",
-                          activeQuick === btn
-                            ? "bg-red-600 text-white border-red-600"
-                            : "bg-white text-gray-700 border-red-300"
-                        )}
-                      >
-                        {btn}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-6 gap-2 mt-2">
-                    {tailButtons.slice(6).map(btn => (
-                      <button
-                        key={btn}
-                        onClick={() => handleQuickSelect(btn)}
-                        className={cn(
-                          "py-1.5 text-xs rounded border",
-                          activeQuick === btn
-                            ? "bg-red-600 text-white border-red-600"
-                            : "bg-white text-gray-700 border-red-300"
-                        )}
-                      >
-                        {btn}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
 
-              {/* 追加余数 - 仅特定分组显示 */}
-              {quickSelectGroupIds.includes(Number(activeGroup.id)) && (
-                <div className="mt-4">
-                  <div className="flex items-center mb-2">
-                    <span className="text-xs text-gray-500">——</span>
-                    <span className="text-xs text-gray-600 mx-2">追加余数</span>
-                    <span className="text-xs text-gray-500 flex-1">——————————</span>
-                  </div>
-                  <div className="grid grid-cols-6 gap-2">
-                    {mod3Buttons.map(btn => (
-                      <button
-                        key={btn}
-                        onClick={() => handleQuickSelect(btn)}
-                        className={cn(
-                          "py-1.5 text-xs rounded border",
-                          activeQuick === btn
-                            ? "bg-red-600 text-white border-red-600"
-                            : "bg-white text-gray-700 border-red-300"
-                        )}
-                      >
-                        {btn}
-                      </button>
-                    ))}
-                    {mod4Buttons.slice(0, 3).map(btn => (
-                      <button
-                        key={btn}
-                        onClick={() => handleQuickSelect(btn)}
-                        className={cn(
-                          "py-1.5 text-xs rounded border",
-                          activeQuick === btn
-                            ? "bg-red-600 text-white border-red-600"
-                            : "bg-white text-gray-700 border-red-300"
-                        )}
-                      >
-                        {btn}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-6 gap-2 mt-2">
-                    {mod4Buttons.slice(3).map(btn => (
-                      <button
-                        key={btn}
-                        onClick={() => handleQuickSelect(btn)}
-                        className={cn(
-                          "py-1.5 text-xs rounded border",
-                          activeQuick === btn
-                            ? "bg-red-600 text-white border-red-600"
-                            : "bg-white text-gray-700 border-red-300"
-                        )}
-                      >
-                        {btn}
-                      </button>
-                    ))}
-                    {mod5Buttons.map(btn => (
-                      <button
-                        key={btn}
-                        onClick={() => handleQuickSelect(btn)}
-                        className={cn(
-                          "py-1.5 text-xs rounded border",
-                          activeQuick === btn
-                            ? "bg-red-600 text-white border-red-600"
-                            : "bg-white text-gray-700 border-red-300"
-                        )}
-                      >
-                        {btn}
-                      </button>
-                    ))}
+                  {/* 右侧：追加余数 */}
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="text-xs text-gray-500">—</span>
+                      <span className="text-xs text-gray-600 mx-1">追加余数</span>
+                      <span className="text-xs text-gray-500 flex-1">———</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      {mod3Buttons.map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 mt-1">
+                      {mod4Buttons.map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-5 gap-1 mt-1">
+                      {mod5Buttons.map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
