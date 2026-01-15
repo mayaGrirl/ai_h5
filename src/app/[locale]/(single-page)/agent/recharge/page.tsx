@@ -196,7 +196,10 @@ export default function AgentRechargePage() {
                 {/* 金豆余额 */}
                 <div className="flex px-3 py-3 bg-white rounded-lg">
                   <div className="w-1/4">{_t('agent.recharge.head-rate')}</div>
-                  <div className="">{(profile?.buycard_rate || 0) * 10} {_t('agent.recharge.head-rate-unit')}</div>
+                  <div className="">{format.number((profile?.buycard_rate || 0) * 10, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })} {_t('agent.recharge.head-rate-unit')}</div>
                 </div>
               </div>
             </div>

@@ -327,7 +327,7 @@
   "gift": {
     "title": "Claim Red Packet",
     "code-label": "Red Packet Code",
-    "code-max": "Maximum of 10 characters",
+    "code-max": "Maximum of 20 characters",
     "code-regex": "Invalid red packet code. Only letters and numbers are allowed",
     "code-placeholder": "Please enter the red packet code"
   },

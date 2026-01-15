@@ -7,6 +7,7 @@ import {useFormatter, useTranslations} from "use-intl";
 import {useEffect} from "react";
 import {agentProfile} from "@/api/agent";
 import {AgentField} from "@/types/agent.type";
+import {toast} from "sonner";
 
 export default function AgentPage() {
   // 页面需要登陆Hook
@@ -18,9 +19,13 @@ export default function AgentPage() {
   const [profile, setProfile] = React.useState<AgentField>();
   useEffect(() => {
     const init = async () => {
-      const {code, data} = await agentProfile();
+      const {code, data, message} = await agentProfile();
       if (code === 200) {
         setProfile(data);
+      } else {
+        toast.warning(message, {
+          duration: Infinity,
+        })
       }
     }
     void init();
@@ -49,19 +54,28 @@ export default function AgentPage() {
             <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
               <div className="flex justify-between px-2">
                 <div className="text-gray-500">{_t('agent.profile.label-3')}</div>
-                <div className="ml-1 text-[#c8c9cc]">{(profile?.buycard_rate || 0) * 10}折</div>
+                <div className="ml-1 text-[#c8c9cc]">{format.number((profile?.buycard_rate || 0) * 10, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} {_t('agent.recharge.head-rate-unit')}</div>
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
               <div className="flex justify-between px-2">
                 <div className="text-gray-500">{_t('agent.profile.label-4')}</div>
-                <div className="ml-1 text-[#c8c9cc]">{(profile?.reccard_rate || 0) * 10}折</div>
+                <div className="ml-1 text-[#c8c9cc]">{format.number((profile?.reccard_rate || 0) * 10, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} {_t('agent.recharge.head-rate-unit')}</div>
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-2 mt-2">
               <div className="flex justify-between px-2">
                 <div className="text-gray-500">{_t('agent.profile.label-5')}</div>
-                <div className="ml-1 text-[#c8c9cc]">{format.number(profile?.reccard_profit_rate || 0)}</div>
+                <div className="ml-1 text-[#c8c9cc]">{format.number((profile?.reccard_profit_rate || 0) * 10, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} {_t('agent.recharge.head-rate-unit')}</div>
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-2 mt-2">

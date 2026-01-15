@@ -205,9 +205,10 @@ export default function Games() {
   return (
     <div className="flex min-h-screen justify-center bg-zinc-50 dark:bg-black">
       <main className="w-full max-w-3xl bg-white dark:bg-black">
-
         {/* 头部 */}
-        <PageHeader title={_t("游戏大厅")}/>
+        <header className="h-16 flex items-center justify-center bg-red-600 text-white">
+          <span className="text-white text-2xl font-black tracking-wide">游戏大厅</span>
+        </header>
 
         {/*<div className="bg-yellow-100 text-yellow-800 px-4 py-2 text-sm flex justify-between items-center">
           <span>📷 即将抽出红包幸运儿</span>

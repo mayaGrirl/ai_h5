@@ -1,5 +1,5 @@
 import http from "@/utils/request";
-import { HttpRes } from "@/types/http.type";
+import {HttpRes, PageRequest} from "@/types/http.type";
 import {
   IndexType,
   IndexInfoDto,
@@ -28,7 +28,10 @@ export const indexGameHotNew = (data: IndexGameDto): Promise<HttpRes<IndexGameIt
   return http.post<HttpRes<IndexGameItem>, IndexGameDto>("/api/app/v1/game/newHot", data);
 };
 
-
+// 站内消息，需要登录才可查看
+export const systemMessage = (data: PageRequest): Promise<HttpRes<IndexDataItem[]>> => {
+  return http.post('/api/app/v1/system/message', data);
+};
 
 // ==================== 首页使用 ====================
 
@@ -48,10 +51,6 @@ export const getPartners = () => getIndex({ type: IndexType.PARTNER });
 export const getHomePopup = () => getIndex({ type: IndexType.HOME_POPUP });
 
 // ==================== 其他页面使用 ====================
-
-/** 获取站内消息 (type=6) */
-export const getMessages = () => getIndex({ type: IndexType.MESSAGE });
-
 /** 获取游戏页滚动公告 (type=7) */
 export const getGameNotice = () => getIndex({ type: IndexType.GAME_NOTICE });
 

@@ -8,7 +8,6 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {packExchange} from "@/api/customer";
 import {toast} from "sonner";
-import {useParams, useRouter} from "next/navigation";
 import {useTranslations} from "use-intl";
 
 export default function GiftPage() {
@@ -16,11 +15,12 @@ export default function GiftPage() {
   useRequireLogin();
 
   const _t = useTranslations();
+  const [formKey, setFormKey] = React.useState(0);
 
   // 表单验证
   const schema = z.object({
     code: z.string().min(1, _t('gift.code-placeholder'))
-      .max(10, _t('gift.code-max'))
+      .max(20, _t('gift.code-max'))
       .regex(/^[a-zA-Z0-9]+$/, _t('gift.code-regex')),
   });
 
@@ -45,7 +45,13 @@ export default function GiftPage() {
       toast.error(message);
     } else {
       toast.success(message);
+      /**
+       * reset 表单之后会导致输入框的值变成undefined
+       * 导致验证规则失效
+       * 使用formKey 让表单初始化成新的
+       */
       reset();
+      setFormKey((k) => k + 1);
     }
   })
 
@@ -57,7 +63,7 @@ export default function GiftPage() {
           <PageHeader title={_t("mine.setting.gift")}/>
 
           <div className="bg-gray-100 flex justify-center">
-            <form onSubmit={onSubmit} className="w-full bg-gray-100 px-3 py-4">
+            <form onSubmit={onSubmit} key={formKey} className="w-full bg-gray-100 px-3 py-4">
               {/* 红包码 */}
               <div className="bg-white rounded-lg mb-3 overflow-hidden">
                 <div className="flex items-center text-gray-600 px-4 py-3 pb-0">

@@ -60,19 +60,13 @@ export default function HomePage() {
   // 轮播图 (type=1)
   const [banners, setBanners] = useState<IndexDataItem[]>([]);
   const [bannersLoading, setBannersLoading] = useState(true);
-  // 公告 (type=2)
-  /*const [announcements, setAnnouncements] = useState<IndexDataItem[]>([]);
-  // 活动 (type=3)
-  const [activities, setActivities] = useState<IndexDataItem[]>([]);
-  // 合作商家 (type=4)
-  const [partners, setPartners] = useState<IndexDataItem[]>([]);*/
+
   // 首页弹框公告 (type=5)
   const [popupAnnouncement, setPopupAnnouncement] = useState<IndexDataItem | null>(null);
   const [showPopup, setShowPopup] = useState(false);
 
   const [getConfig, setGetConfig] = useState<webConfig|null>(null);
   const [configLoading, setConfigLoading] = useState(true);
-  const [getTestData, setGetTestData] = useState<webConfig|null>(null);
 
   // 页面初始加载状态
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -87,10 +81,6 @@ export default function HomePage() {
         if (code === 200 && data) setGetConfig(data);
       })
       .finally(() => setConfigLoading(false));
-
-    /*testData({lottery_id:1, game_group_id:1, page:1, pageSize:30}).then(({ code, data }) => {
-      if (code === 200 && data) setGetTestData(data);
-    });*/
 
     // 首页热门游戏
     indexGameHotNew({ limit: 6 })
@@ -137,17 +127,6 @@ export default function HomePage() {
     { id: 4, title: "04", pic: "/home/slide/04.png", jump_url: "" },
   ];
   const emblaSlides = banners.length > 0 ? banners : defaultSlides;
-
-  const hotGames = [
-    { name: "加拿大28", src: "/home/hot-games/1.png", href: "" },
-    { name: "宾果28", src: "/home/hot-games/2.png", href: "" },
-    { name: "蛋蛋28", src: "/home/hot-games/3.png", href: "" },
-    { name: "美国28", src: "/home/hot-games/4.png", href: "" },
-    { name: "韩国28", src: "/home/hot-games/5.png", href: "" },
-    { name: "加拿大10", src: "/home/hot-games/6.png", href: "" },
-  ];
-
-  // const hotApiGames = gameHotNew.length > 0 ? gameHotNew : hotGames;
 
   const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ playOnInit: true, delay: 2000 })]);
   const closePopup = () => setShowPopup(false);
