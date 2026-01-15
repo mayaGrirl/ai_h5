@@ -96,7 +96,7 @@ export default function BetPage() {
   const [isLoadingPlays, setIsLoadingPlays] = useState(true);
 
   // 支持快捷选择的玩法分组ID
-  const quickSelectGroupIds = [1, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
+  const quickSelectGroupIds = [1, 2, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
 
   const [activeGroup, setActiveGroup] = useState<PlayGroup | null>(null);
   const [selectedPlays, setSelectedPlays] = useState<string[]>([]);
@@ -125,6 +125,8 @@ export default function BetPage() {
   const previousExpectNoRef = useRef<string>(""); // 用于跟踪上一个期号
   const activeGroupIdRef = useRef<number | null>(null); // 用于轮询定时器访问当前选中的分组ID
   const soundEnabledRef = useRef(soundEnabled); // 用于回调函数访问最新的铃声状态
+  const isInitialLoadRef = useRef(true); // 标记是否是首次加载，防止重复请求
+  const lastFetchKeyRef = useRef<string>(""); // 上次请求的参数组合，防止 StrictMode 重复请求
 
   // 同步 soundEnabled 到 ref
   useEffect(() => {
@@ -436,6 +438,11 @@ export default function BetPage() {
       return;
     }
 
+    // 使用参数组合作为唯一标识，防止 StrictMode 重复请求
+    const fetchKey = `${lottery_id}-${group_id}-${refreshTs}`;
+    if (lastFetchKeyRef.current === fetchKey) return;
+    lastFetchKeyRef.current = fetchKey;
+
     try {
       setIsLoadingPlays(true);
       const res = await playAll({ lottery_id: parseInt(lottery_id) });
@@ -492,9 +499,11 @@ export default function BetPage() {
         // 更新 ref 以供轮询使用
         activeGroupIdRef.current = defaultGroupId;
 
-        // 如果 URL 没有 group_id，用默认分组ID调用开奖接口
-        if (!group_id && defaultGroupId) {
+        // 获取玩法列表后统一调用开奖接口
+        if (defaultGroupId) {
           fetchExpectInfo(defaultGroupId);
+          // 首次加载完成后，标记为非首次加载
+          isInitialLoadRef.current = false;
         }
       } else if (res.code !== 3001) {
         // 统一处理非200和3001的状态码
@@ -503,6 +512,8 @@ export default function BetPage() {
     } catch (error) {
       console.error("获取玩法列表失败", error);
       toast.error(parseAxiosError(error, "获取玩法列表失败，请稀后重试"));
+      // 请求失败时清除 fetchKey，允许重试
+      lastFetchKeyRef.current = "";
     } finally {
       setIsLoadingPlays(false);
     }
@@ -594,10 +605,11 @@ export default function BetPage() {
     remainingOpenRef.current = 0;
     previousExpectNoRef.current = ""; // 重置期号 ref
     activeGroupIdRef.current = group_id ? parseInt(group_id) : null; // 重置分组ID ref
+    isInitialLoadRef.current = true; // 重置首次加载标记
     setPreviousExpectNo("");
 
+    // 调用 fetchPlayMethods，内部通过 fetchKey 防止重复请求
     fetchPlayMethods();
-    fetchExpectInfo();
 
     // 倒计时定时器 - 每秒更新倒计时显示
     const countdownTimer = setInterval(() => {
@@ -650,14 +662,17 @@ export default function BetPage() {
       setMyBetAmounts({});
       // 更新 ref 以供轮询使用
       activeGroupIdRef.current = selectedGroupId;
-      // 切换分组后立即获取新分组的开奖信息
-      fetchExpectInfo(selectedGroupId);
-      // 切换分组后获取新分组的已投注记录
-      if (currExpect?.expect_no) {
-        // 延迟调用，确保 activeGroupIdRef 已更新
-        setTimeout(() => {
-          fetchMyBetRecords(currExpect.expect_no);
-        }, 100);
+
+      // 只在非首次加载时（用户主动切换分组）才调用 fetchExpectInfo
+      // 首次加载时由 fetchPlayMethods 统一调用
+      if (!isInitialLoadRef.current) {
+        fetchExpectInfo(selectedGroupId);
+        // 切换分组后获取新分组的已投注记录
+        if (currExpect?.expect_no) {
+          setTimeout(() => {
+            fetchMyBetRecords(currExpect.expect_no);
+          }, 100);
+        }
       }
     }
   }, [selectedGroupId, groups]);
@@ -696,235 +711,247 @@ export default function BetPage() {
     if (!activeGroup) return;
 
     const groupId = Number(activeGroup.id);
-    let newSelected: string[] = [...selectedPlays];
 
     // 获取所有数字玩法并按数字排序
     const numericPlays = activeGroup.plays
       .filter((p) => !isNaN(parseInt(p.name, 10)))
       .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10));
 
-    // 辅助函数：切换选择状态
-    const toggleSelection = (names: string[]) => {
-      names.forEach(name => {
-        if (newSelected.includes(name)) {
-          newSelected = newSelected.filter(n => n !== name);
-        } else {
-          newSelected.push(name);
-        }
-      });
+    // 互斥按钮列表（这些按钮之间互斥，点击会替换选择）
+    const exclusiveButtons = [
+      "全包", "单", "双", "大单", "小单", "大双", "小双", "单边", "双边",
+      "大", "小", "中", "边", "大边", "小边",
+      "0尾", "1尾", "2尾", "3尾", "4尾", "5尾", "6尾", "7尾", "8尾", "9尾", "小尾", "大尾",
+      "3余0", "3余1", "3余2", "4余0", "4余1", "4余2", "4余3", "5余0", "5余1", "5余2", "5余3", "5余4"
+    ];
+
+    // 如果点击的是已激活的互斥按钮，则清空选择并重置状态
+    if (exclusiveButtons.includes(type) && activeQuick === type) {
+      setSelectedPlays([]);
+      setPlayAmounts({});
+      setActiveQuick(null);
+      return;
+    }
+
+    // 定义各分组的范围配置
+    const getGroupConfig = (gId: number) => {
+      if ([1, 2, 3, 10, 14, 18, 22].includes(gId)) {
+        return { min: 0, max: 27, bigStart: 14, smallEnd: 13, midStart: 10, midEnd: 17, bigEdgeStart: 18, smallEdgeEnd: 9 };
+      } else if ([6, 15, 24].includes(gId)) {
+        return { min: 3, max: 18, bigStart: 11, smallEnd: 10, midStart: 8, midEnd: 13, bigEdgeStart: 14, smallEdgeEnd: 7 };
+      } else if ([5, 16, 23].includes(gId)) {
+        return { min: 2, max: 12, bigStart: 7, smallEnd: 6, midStart: 5, midEnd: 9, bigEdgeStart: 10, smallEdgeEnd: 4 };
+      } else if ([4, 26].includes(gId)) {
+        return { min: 1, max: 10, bigStart: 6, smallEnd: 5, midStart: 4, midEnd: 7, bigEdgeStart: 8, smallEdgeEnd: 3 };
+      }
+      return null;
     };
+
+    const config = getGroupConfig(groupId);
+    let newSelected: string[] = [];
+    let newActiveQuick: string | null = type;
 
     switch (type) {
       case "清空":
         newSelected = [];
         setPlayAmounts({});
-        break;
-
-      case "全包":
-        newSelected = activeGroup.plays.map((p) => p.name);
-        break;
+        setSelectedPlays([]);
+        setActiveQuick(null);
+        return;
 
       case "反选":
         newSelected = activeGroup.plays
           .filter((p) => !selectedPlays.includes(p.name))
           .map((p) => p.name);
+        newActiveQuick = null; // 反选不高亮
         break;
 
       case "上期":
-        // 获取上期投注并回显（异步操作）
         fetchPreviousPeriodBets();
-        return; // 直接返回，不执行后续的 setSelectedPlays
+        setActiveQuick(null);
+        return;
+
+      case "全包":
+        newSelected = activeGroup.plays.map((p) => p.name);
+        break;
 
       case "单":
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 2 === 1).map(p => p.name));
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max && num % 2 === 1;
+          }).map(p => p.name);
+        }
         break;
 
       case "双":
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 2 === 0).map(p => p.name));
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max && num % 2 === 0;
+          }).map(p => p.name);
+        }
         break;
 
       case "大单":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num >= 14 && num % 2 === 1;
-          }).map(p => p.name));
+            return num >= config.bigStart && num <= config.max && num % 2 === 1;
+          }).map(p => p.name);
         }
         break;
 
       case "小单":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num <= 13 && num % 2 === 1;
-          }).map(p => p.name));
+            return num >= config.min && num <= config.smallEnd && num % 2 === 1;
+          }).map(p => p.name);
         }
         break;
 
       case "大双":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num >= 14 && num % 2 === 0;
-          }).map(p => p.name));
+            return num >= config.bigStart && num <= config.max && num % 2 === 0;
+          }).map(p => p.name);
         }
         break;
 
       case "小双":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num <= 13 && num % 2 === 0;
-          }).map(p => p.name));
+            return num >= config.min && num <= config.smallEnd && num % 2 === 0;
+          }).map(p => p.name);
         }
         break;
 
       case "单边":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return ((num >= 0 && num <= 3) || (num >= 24 && num <= 27)) && num % 2 === 1;
-          }).map(p => p.name));
+            return num >= config.min && num <= config.max &&
+                   (num < config.midStart || num > config.midEnd) && num % 2 === 1;
+          }).map(p => p.name);
         }
         break;
 
       case "双边":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return ((num >= 0 && num <= 3) || (num >= 24 && num <= 27)) && num % 2 === 0;
-          }).map(p => p.name));
+            return num >= config.min && num <= config.max &&
+                   (num < config.midStart || num > config.midEnd) && num % 2 === 0;
+          }).map(p => p.name);
         }
         break;
 
       case "大":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) >= 14).map(p => p.name));
-        } else if ([4, 26].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) >= 6).map(p => p.name));
-        } else if ([5, 16, 23].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) >= 7).map(p => p.name));
-        } else if ([6, 15, 24].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) >= 11).map(p => p.name));
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.bigStart && num <= config.max;
+          }).map(p => p.name);
         }
         break;
 
       case "小":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) <= 13).map(p => p.name));
-        } else if ([4, 26].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) <= 5).map(p => p.name));
-        } else if ([5, 16, 23].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) <= 6).map(p => p.name));
-        } else if ([6, 15, 24].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) <= 10).map(p => p.name));
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.smallEnd;
+          }).map(p => p.name);
         }
         break;
 
       case "中":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num >= 10 && num <= 17;
-          }).map(p => p.name));
-        } else if ([4, 26].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
-            const num = parseInt(p.name, 10);
-            return num >= 4 && num <= 7;
-          }).map(p => p.name));
-        } else if ([5, 16, 23].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
-            const num = parseInt(p.name, 10);
-            return num >= 5 && num <= 9;
-          }).map(p => p.name));
-        } else if ([6, 15, 24].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
-            const num = parseInt(p.name, 10);
-            return num >= 8 && num <= 13;
-          }).map(p => p.name));
+            return num >= config.midStart && num <= config.midEnd;
+          }).map(p => p.name);
         }
         break;
 
       case "边":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return (num >= 0 && num <= 3) || (num >= 24 && num <= 27);
-          }).map(p => p.name));
+            return num >= config.min && num <= config.max &&
+                   (num < config.midStart || num > config.midEnd);
+          }).map(p => p.name);
         }
         break;
 
       case "大边":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num >= 24 && num <= 27;
-          }).map(p => p.name));
+            return num >= config.bigEdgeStart && num <= config.max;
+          }).map(p => p.name);
         }
         break;
 
       case "小边":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          toggleSelection(numericPlays.filter(p => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            return num >= 0 && num <= 3;
-          }).map(p => p.name));
+            return num >= config.min && num <= config.smallEdgeEnd;
+          }).map(p => p.name);
         }
         break;
 
       // 尾数选择
       case "0尾": case "1尾": case "2尾": case "3尾": case "4尾":
-      case "5尾": case "6尾": case "7尾": case "8尾": case "9尾":
+      case "5尾": case "6尾": case "7尾": case "8尾": case "9尾": {
         const tailNum = parseInt(type.replace("尾", ""), 10);
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 10 === tailNum).map(p => p.name));
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 10 === tailNum).map(p => p.name);
         break;
+      }
 
       case "小尾":
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 10 <= 4).map(p => p.name));
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 10 <= 4).map(p => p.name);
         break;
 
       case "大尾":
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 10 >= 5).map(p => p.name));
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 10 >= 5).map(p => p.name);
         break;
 
       // 余数选择
-      case "3余0": case "3余1": case "3余2":
+      case "3余0": case "3余1": case "3余2": {
         const mod3Val = parseInt(type.replace("3余", ""), 10);
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 3 === mod3Val).map(p => p.name));
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 3 === mod3Val).map(p => p.name);
         break;
+      }
 
-      case "4余0": case "4余1": case "4余2": case "4余3":
+      case "4余0": case "4余1": case "4余2": case "4余3": {
         const mod4Val = parseInt(type.replace("4余", ""), 10);
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 4 === mod4Val).map(p => p.name));
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 4 === mod4Val).map(p => p.name);
         break;
+      }
 
-      case "5余0": case "5余1": case "5余2": case "5余3": case "5余4":
+      case "5余0": case "5余1": case "5余2": case "5余3": case "5余4": {
         const mod5Val = parseInt(type.replace("5余", ""), 10);
-        toggleSelection(numericPlays.filter(p => parseInt(p.name, 10) % 5 === mod5Val).map(p => p.name));
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 5 === mod5Val).map(p => p.name);
         break;
+      }
     }
 
     // 为新选中的玩法设置默认金额（min_bet_gold）
-    const newAmounts = { ...playAmounts };
-
-    // 找出新增选中的玩法
-    const newlySelected = newSelected.filter(name => !selectedPlays.includes(name));
-    newlySelected.forEach(name => {
+    const newAmounts: Record<string, string> = {};
+    newSelected.forEach(name => {
       const playItem = activeGroup.plays.find(p => p.name === name);
-      if (playItem && playItem.minBetGold > 0 && !newAmounts[name]) {
+      if (playItem && playItem.minBetGold > 0) {
         newAmounts[name] = String(playItem.minBetGold);
       }
     });
 
-    // 移除被取消选中的玩法的金额
-    const deselected = selectedPlays.filter(name => !newSelected.includes(name));
-    deselected.forEach(name => {
-      delete newAmounts[name];
-    });
-
     setPlayAmounts(newAmounts);
     setSelectedPlays(newSelected);
-    setActiveQuick(type);
+    setActiveQuick(newActiveQuick);
   };
 
   // ====================== 倍数投注 ======================
@@ -1628,7 +1655,9 @@ export default function BetPage() {
         <div className="flex justify-between px-4 py-2 border-b">
           <div className="flex items-center text-sm">
             <span className="text-gray-600">已投注</span>
-            <span className="text-red-600 font-bold ml-1">0</span>
+            <span className="text-red-600 font-bold ml-1">
+              {format.number(Object.values(myBetAmounts).reduce((sum, amt) => sum + amt, 0))}
+            </span>
             <Image
               alt="coin"
               className="inline-block w-4 h-4 ml-0.5"
