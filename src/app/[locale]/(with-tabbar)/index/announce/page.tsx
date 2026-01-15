@@ -25,10 +25,6 @@ const AnnouncementSkeleton = () => (
   </div>
 );
 
-// 👉 图片占位（假数据）
-const PLACEHOLDER_IMAGE =
-  "https://via.placeholder.com/500x200.png?text=Announcement";
-
 export default function AnnouncementListPage() {
   const _t = useTranslations();
   const [announcements, setAnnouncements] = useState<IndexDataItem[]>([]);
@@ -56,7 +52,7 @@ export default function AnnouncementListPage() {
         )}
       >
         {/* 顶部标题 */}
-        <PageHeader title={_t("近期公告")} />
+        <PageHeader title={_t("home.announcement")} />
 
         <main className="px-3 pb-20 pt-3">
           {/* 公告列表 */}
@@ -93,16 +89,18 @@ export default function AnnouncementListPage() {
                     <ChevronRight className="h-5 w-5 text-gray-300 flex-shrink-0 ml-2" />
                   </div>
 
-                  {/* ✅ 图片始终显示（无 pic 时用占位图） */}
-                  <div className="mt-3 rounded-lg overflow-hidden">
-                    <Image
-                      src={item.pic || PLACEHOLDER_IMAGE}
-                      alt={item.title}
-                      width={500}
-                      height={200}
-                      className="w-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
+                  {/* 无 pic 时不展示图片 */}
+                  {item.pic && (
+                    <div className="mt-3 rounded-lg overflow-hidden">
+                      <Image
+                        src={item.pic}
+                        alt={item.title}
+                        width={500}
+                        height={200}
+                        className="w-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+                  )}
                 </Link>
               ))
             )}

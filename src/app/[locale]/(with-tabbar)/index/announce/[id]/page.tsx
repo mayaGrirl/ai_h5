@@ -34,7 +34,7 @@ export default function AnnouncementDetailPage() {
       <div className="w-full max-w-xl mx-auto bg-[#f5f7fb] shadow-sm">
 
         {/* 顶部导航 */}
-        <PageHeader title={_t("近期公告")}/>
+        <PageHeader title={_t("home.announcement")}/>
 
         <main className="px-4 py-5 pb-20">
           <div className="text-xs text-gray-500">发布于 {detail.created_at}</div>
