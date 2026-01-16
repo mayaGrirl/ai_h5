@@ -19,6 +19,7 @@
   },
   "mine": {
     "vip_title": "我的会员卡",
+    "vip_not_found": "暂无会员卡",
     "last-login-msg-1": "最后一次在",
     "last-login-msg-2": "登录",
     "account-points": "金豆",

@@ -19,6 +19,7 @@
   },
   "mine": {
     "vip_title": "My Membership Card",
+    "vip_not_found": "Not Fount Card",
     "last-login-msg-1": "Last login at",
     "last-login-msg-2": "Logged in",
     "account-points": "Coins",
