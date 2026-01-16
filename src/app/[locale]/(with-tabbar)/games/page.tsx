@@ -47,15 +47,17 @@ export default function Games() {
   const [isLoadingPlays, setIsLoadingPlays] = useState(false);
 
   // 防止重复请求
-  const hasFetchedRef = useRef(false);
+  const lastGameAllKeyRef = useRef<string>("");
+  const lastPlayAllKeyRef = useRef<string>("");
 
   useEffect(() => {
-    // 防止 React StrictMode 下重复请求
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    // 使用参数组合作为唯一标识，防止 StrictMode 重复请求
+    const fetchKey = `gameAll-${urlLotteryId}`;
+    if (lastGameAllKeyRef.current === fetchKey) return;
+    lastGameAllKeyRef.current = fetchKey;
 
     fetchGameAll();
-  }, []);
+  }, [urlLotteryId]);
 
   /**
    * 获取所有游戏 + 选中 URL 指定 lottery_id 对应的彩种
@@ -127,15 +129,22 @@ export default function Games() {
         fetchPlayAll(defaultGame.id);
       } else {
         toast.error(parseErrorMessage(res, "获取游戏列表失败"));
+        lastGameAllKeyRef.current = ""; // 请求失败，允许重试
       }
     } catch (error) {
       toast.error(parseAxiosError(error, "获取游戏列表失败，请稍后重试"));
+      lastGameAllKeyRef.current = ""; // 请求失败，允许重试
     } finally {
       setIsLoadingGames(false);
     }
   };
 
-  const fetchPlayAll = async (lotteryId: number) => {
+  const fetchPlayAll = async (lotteryId: number, forceRefresh: boolean = false) => {
+    // 使用参数组合作为唯一标识，防止重复请求
+    const fetchKey = `playAll-${lotteryId}`;
+    if (!forceRefresh && lastPlayAllKeyRef.current === fetchKey) return;
+    lastPlayAllKeyRef.current = fetchKey;
+
     try {
       setIsLoadingPlays(true);
       const res = await playAll({ lottery_id: lotteryId });
@@ -155,10 +164,12 @@ export default function Games() {
       } else {
         toast.error(parseErrorMessage(res, "获取玩法分组失败"));
         setPlayMethodGroups([]);
+        lastPlayAllKeyRef.current = ""; // 请求失败，允许重试
       }
     } catch (error) {
       toast.error(parseAxiosError(error, "获取玩法分组失败，请稍后重试"));
       setPlayMethodGroups([]);
+      lastPlayAllKeyRef.current = ""; // 请求失败，允许重试
     } finally {
       setIsLoadingPlays(false);
     }
@@ -169,13 +180,13 @@ export default function Games() {
     if (series.games.length > 0) {
       const game = series.games[0];
       setActiveGame(game);
-      fetchPlayAll(game.id);
+      fetchPlayAll(game.id, true); // 用户主动切换，强制刷新
     }
   };
 
   const handleGameChange = (game: Game) => {
     setActiveGame(game);
-    fetchPlayAll(game.id);
+    fetchPlayAll(game.id, true); // 用户主动切换，强制刷新
   };
 
   if (isLoadingGames) {

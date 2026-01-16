@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronLeft, CheckCircle, X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn, parseErrorMessage, parseAxiosError } from "@/lib/utils";
 import { playAll, setMode, modeList, gameAll } from "@/api/game";
 import { toast } from "sonner";
@@ -13,12 +11,12 @@ import {
   GamePlay,
   GamePlayMapItem,
   Game,
-  GameTypeMapItem,
   ModeItem,
 } from "@/types/game.type";
 import { useAuthStore } from "@/utils/storage/auth";
 import Image from "next/image";
 import { useFormatter } from "use-intl";
+import GameHeader from "@/components/game/GameHeader";
 
 interface PlayItem {
   id: number;
@@ -31,6 +29,8 @@ interface PlayGroup {
   id: string | number;
   name: string;
   plays: PlayItem[];
+  betMultiplier?: string;
+  startNum?: number;
 }
 
 export default function ModeEditPage() {
@@ -45,26 +45,36 @@ export default function ModeEditPage() {
   const isEdit = !!mode_id && mode_id !== "0";
 
   const [gameName, setGameName] = useState("加载中...");
+  const [groupName, setGroupName] = useState("");
   const [modeName, setModeName] = useState("");
   const [groups, setGroups] = useState<PlayGroup[]>([]);
   const [isLoadingPlays, setIsLoadingPlays] = useState(true);
   const [isLoadingMode, setIsLoadingMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 快捷选择按钮
-  const quickSelectGroupIds = [1, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
-  const quickSelectButtons = ["全包", "反选", "大", "小", "中", "边", "单", "双", "极大", "极小"];
+  // 快捷选择相关
+  const quickSelectGroupIds = [1, 2, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
+  const quickButtons1 = ["全包", "单", "大单", "小单", "单边", "双"];
+  const quickButtons2 = ["大双", "小双", "双边", "大", "小", "中"];
+  const quickButtons3 = ["边", "大边", "小边"];
+  const specialButtons = ["反选", "清空"];
+  const tailButtons = ["0尾", "1尾", "2尾", "3尾", "4尾", "5尾", "6尾", "7尾", "8尾", "9尾", "小尾", "大尾"];
+  const mod3Buttons = ["3余0", "3余1", "3余2"];
+  const mod4Buttons = ["4余0", "4余1", "4余2", "4余3"];
+  const mod5Buttons = ["5余0", "5余1", "5余2", "5余3", "5余4"];
+  const multiplierButtons1 = [0.1, 0.5, 0.8, 1.2, 1.5, 2];
+  const multiplierButtons2 = [5, 10, 20, 30, 50, 100];
 
   const [activeGroup, setActiveGroup] = useState<PlayGroup | null>(null);
   const [selectedPlays, setSelectedPlays] = useState<string[]>([]);
   const [playAmounts, setPlayAmounts] = useState<Record<string, string>>({});
-  const [showBatchModal, setShowBatchModal] = useState(false);
   const [activeQuick, setActiveQuick] = useState<string | null>(null);
-  const [modeDataLoaded, setModeDataLoaded] = useState(false);  // 标记模式数据是否已加载
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedMultiplier, setSelectedMultiplier] = useState<number | null>(null);
+  const [modeDataLoaded, setModeDataLoaded] = useState(false);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const isLoadingModeRef = useRef(false);  // 防止切换分组时清空选中
   const currentCustomer = useAuthStore((s) => s.currentCustomer);
+  const isLoadingModeRef = useRef(false);
 
   // 获取游戏名称
   const fetchGameName = async () => {
@@ -99,37 +109,52 @@ export default function ModeEditPage() {
       const res = await playAll({ lottery_id: parseInt(lottery_id) });
 
       if (res.code === 200 && res.data) {
-        const { gamePlayMap = [] } = res.data;
+        const { gamePlayMap = [], groupArr = [] } = res.data;
+
+        // 创建分组配置映射
+        const groupConfigMap: Record<number, { betMultiplier: string; startNum: number }> = {};
+        groupArr.forEach((g: { id: number; bet_multiplier?: string; start_num?: number }) => {
+          groupConfigMap[g.id] = {
+            betMultiplier: g.bet_multiplier || "",
+            startNum: g.start_num || 0,
+          };
+        });
 
         const playGroups: PlayGroup[] = gamePlayMap
-          .map((mapItem: GamePlayMapItem) => ({
-            id: mapItem.id,
-            name: mapItem.name,
-            plays: (mapItem.children || []).map((play: GamePlay): PlayItem => ({
-              id: play.id,
-              name: play.name,
-              odds: play.multiple || 0,
-              minBetGold: play.min_bet_gold || 0,
-            })),
-          }))
+          .map((mapItem: GamePlayMapItem) => {
+            const config = groupConfigMap[mapItem.id] || { betMultiplier: "", startNum: 0 };
+            return {
+              id: mapItem.id,
+              name: mapItem.name,
+              betMultiplier: config.betMultiplier,
+              startNum: config.startNum,
+              plays: (mapItem.children || []).map((play: GamePlay): PlayItem => ({
+                id: play.id,
+                name: play.name,
+                odds: play.multiple || 0,
+                minBetGold: play.min_bet_gold || 0,
+              })),
+            };
+          })
           .filter((g: PlayGroup) => g.plays.length > 0);
 
         setGroups(playGroups);
 
-        // 如果是编辑模式，先加载模式数据（会设置正确的分组和选中状态）
         if (isEdit && mode_id) {
           await loadModeData(playGroups);
         } else {
-          // 新增模式时，根据 group_id 参数设置默认分组
           if (group_id && playGroups.length > 0) {
             const targetGroup = playGroups.find((g) => String(g.id) === String(group_id));
             if (targetGroup) {
               setActiveGroup(targetGroup);
+              setGroupName(targetGroup.name);
             } else {
               setActiveGroup(playGroups[0]);
+              setGroupName(playGroups[0].name);
             }
           } else if (playGroups.length > 0) {
             setActiveGroup(playGroups[0]);
+            setGroupName(playGroups[0].name);
           }
         }
       } else if (res.code !== 3001) {
@@ -151,7 +176,6 @@ export default function ModeEditPage() {
       isLoadingModeRef.current = true;
       setIsLoadingMode(true);
 
-      // 传递 mode_id 获取指定模式
       const res = await modeList({
         lottery_id: parseInt(lottery_id),
         game_group_id: parseInt(group_id),
@@ -161,17 +185,12 @@ export default function ModeEditPage() {
       });
 
       if (res.code === 200 && res.data) {
-        // 从返回列表中找到对应的模式（可能返回单条或多条）
         const list = res.data.list || [];
         const mode = list.find((m: ModeItem) => String(m.id) === String(mode_id)) || list[0];
 
         if (mode) {
-          console.log("加载模式数据:", mode);
-
-          // 1. 先找到对应的分组
           const targetGroup = playGroups.find((g) => Number(g.id) === mode.game_group_id);
 
-          // 2. 解析已保存的数据
           const betNoStr = mode.bet_no || "";
           const betNos = betNoStr.split(",").filter((n: string) => n.trim() !== "");
           const betGoldStr = mode?.bet_no_gold || "";
@@ -179,14 +198,10 @@ export default function ModeEditPage() {
           const playedIdStr = mode.lottery_played_id || "";
           const playedIds = playedIdStr.split(",").filter((n: string) => n.trim() !== "");
 
-          console.log("回显数据 - bet_no:", betNos, "lottery_played_id:", playedIds, "bet_gold:", betGolds);
-
-          // 3. 根据 lottery_played_id 或 bet_no 找到对应的玩法名称
           let selectedPlayNames: string[] = [];
           const amounts: Record<string, string> = {};
 
           if (targetGroup && playedIds.length > 0) {
-            // 优先使用 lottery_played_id 来匹配（更精确）
             playedIds.forEach((playId: string, idx: number) => {
               const playItem = targetGroup.plays.find((p) => String(p.id) === String(playId));
               if (playItem) {
@@ -194,35 +209,25 @@ export default function ModeEditPage() {
                 amounts[playItem.name] = betGolds[idx] || "0";
               }
             });
-            console.log("通过 lottery_played_id 匹配到的玩法:", selectedPlayNames);
           }
 
-          // 如果通过 ID 没匹配到，则使用 bet_no（玩法名称）
           if (selectedPlayNames.length === 0 && betNos.length > 0) {
             selectedPlayNames = betNos;
             betNos.forEach((no: string, idx: number) => {
               amounts[no] = betGolds[idx] || "0";
             });
-            console.log("通过 bet_no 匹配到的玩法:", selectedPlayNames);
           }
 
-          // 4. 设置模式名称
           setModeName(mode.mode_name || "");
-
-          // 5. 设置选中的玩法和金豆
-          console.log("设置选中玩法:", selectedPlayNames);
           setSelectedPlays([...selectedPlayNames]);
-          setPlayAmounts({...amounts});
+          setPlayAmounts({ ...amounts });
 
-          // 6. 切换到对应分组
           if (targetGroup) {
             setActiveGroup(targetGroup);
+            setGroupName(targetGroup.name);
           }
 
-          // 7. 标记模式数据已加载
           setModeDataLoaded(true);
-        } else {
-          console.warn("未找到模式数据, mode_id:", mode_id);
         }
       }
     } catch (error) {
@@ -239,19 +244,6 @@ export default function ModeEditPage() {
     fetchPlayMethods();
   }, [lottery_id, group_id, mode_id]);
 
-  // 切换玩法分组（用户手动切换时清空选中）
-  const handleGroupChange = (group: PlayGroup) => {
-    if (activeGroup && group.id === activeGroup.id) return;
-    // 只有用户手动切换分组时才清空（不是加载模式数据时）
-    if (!isLoadingModeRef.current) {
-      setSelectedPlays([]);
-      setPlayAmounts({});
-      setActiveQuick(null);
-      toast.info("已清空已选玩法");
-    }
-    setActiveGroup(group);
-  };
-
   // 切换玩法
   const togglePlay = (playItem: PlayItem) => {
     const playName = playItem.name;
@@ -262,8 +254,16 @@ export default function ModeEditPage() {
         delete newAmounts[playName];
         setPlayAmounts(newAmounts);
         return newArr;
+      } else {
+        const defaultAmount = playItem.minBetGold || 0;
+        if (defaultAmount > 0) {
+          setPlayAmounts((prevAmounts) => ({
+            ...prevAmounts,
+            [playName]: String(defaultAmount),
+          }));
+        }
+        return [...prev, playName];
       }
-      return [...prev, playName];
     });
   };
 
@@ -271,131 +271,271 @@ export default function ModeEditPage() {
     setPlayAmounts((prev) => ({ ...prev, [play]: value }));
   };
 
-  // 从Dialog中删除玩法
-  const removeFromSelectedPlays = (playName: string) => {
-    setSelectedPlays((prev) => prev.filter((p) => p !== playName));
-    const newAmounts = { ...playAmounts };
-    delete newAmounts[playName];
-    setPlayAmounts(newAmounts);
-  };
-
-  // 打开批量下注弹框
-  const handleOpenBatchModal = () => {
-    if (!activeGroup) return;
-
-    // 为没有设置金豆的玩法设置默认最小金豆
-    const newAmounts = { ...playAmounts };
-    selectedPlays.forEach((playName) => {
-      if (!newAmounts[playName]) {
-        const playItem = activeGroup.plays.find((p) => p.name === playName);
-        if (playItem && playItem.minBetGold > 0) {
-          newAmounts[playName] = String(playItem.minBetGold);
-        }
-      }
-    });
-    setPlayAmounts(newAmounts);
-    setShowBatchModal(true);
-  };
-
   // 快速选择
   const handleQuickSelect = (type: string) => {
     if (!activeGroup) return;
 
     const groupId = Number(activeGroup.id);
-    let newSelected: string[] = [];
-
     const numericPlays = activeGroup.plays
       .filter((p) => !isNaN(parseInt(p.name, 10)))
       .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10));
 
+    const exclusiveButtons = [
+      "全包", "单", "双", "大单", "小单", "大双", "小双", "单边", "双边",
+      "大", "小", "中", "边", "大边", "小边",
+      "0尾", "1尾", "2尾", "3尾", "4尾", "5尾", "6尾", "7尾", "8尾", "9尾", "小尾", "大尾",
+      "3余0", "3余1", "3余2", "4余0", "4余1", "4余2", "4余3", "5余0", "5余1", "5余2", "5余3", "5余4"
+    ];
+
+    if (exclusiveButtons.includes(type) && activeQuick === type) {
+      setSelectedPlays([]);
+      setPlayAmounts({});
+      setActiveQuick(null);
+      return;
+    }
+
+    const getGroupConfig = (gId: number) => {
+      if ([1, 2, 3, 10, 14, 18, 22].includes(gId)) {
+        return { min: 0, max: 27, bigStart: 14, smallEnd: 13, midStart: 10, midEnd: 17, bigEdgeStart: 18, smallEdgeEnd: 9 };
+      } else if ([6, 15, 24].includes(gId)) {
+        return { min: 3, max: 18, bigStart: 11, smallEnd: 10, midStart: 8, midEnd: 13, bigEdgeStart: 14, smallEdgeEnd: 7 };
+      } else if ([5, 16, 23].includes(gId)) {
+        return { min: 2, max: 12, bigStart: 7, smallEnd: 6, midStart: 5, midEnd: 9, bigEdgeStart: 10, smallEdgeEnd: 4 };
+      } else if ([4, 26].includes(gId)) {
+        return { min: 1, max: 10, bigStart: 6, smallEnd: 5, midStart: 4, midEnd: 7, bigEdgeStart: 8, smallEdgeEnd: 3 };
+      }
+      return null;
+    };
+
+    const config = getGroupConfig(groupId);
+    let newSelected: string[] = [];
+    let newActiveQuick: string | null = type;
+
     switch (type) {
-      case "全包":
-        newSelected = activeGroup.plays.map((p) => p.name);
-        break;
+      case "清空":
+        setSelectedPlays([]);
+        setPlayAmounts({});
+        setActiveQuick(null);
+        return;
+
       case "反选":
         newSelected = activeGroup.plays
           .filter((p) => !selectedPlays.includes(p.name))
           .map((p) => p.name);
+        newActiveQuick = null;
         break;
+
+      case "全包":
+        newSelected = activeGroup.plays.map((p) => p.name);
+        break;
+
       case "单":
-        numericPlays.forEach((p) => {
-          const num = parseInt(p.name, 10);
-          if (num % 2 === 1) newSelected.push(p.name);
-        });
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max && num % 2 === 1;
+          }).map(p => p.name);
+        }
         break;
+
       case "双":
-        numericPlays.forEach((p) => {
-          const num = parseInt(p.name, 10);
-          if (num % 2 === 0) newSelected.push(p.name);
-        });
-        break;
-      case "极大":
-        if (numericPlays.length >= 3) {
-          const top3 = numericPlays.slice(-3);
-          newSelected = top3.map((p) => p.name);
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max && num % 2 === 0;
+          }).map(p => p.name);
         }
         break;
-      case "极小":
-        if (numericPlays.length >= 3) {
-          const bottom3 = numericPlays.slice(0, 3);
-          newSelected = bottom3.map((p) => p.name);
+
+      case "大单":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.bigStart && num <= config.max && num % 2 === 1;
+          }).map(p => p.name);
         }
         break;
+
+      case "小单":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.smallEnd && num % 2 === 1;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "大双":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.bigStart && num <= config.max && num % 2 === 0;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "小双":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.smallEnd && num % 2 === 0;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "单边":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max &&
+              (num < config.midStart || num > config.midEnd) && num % 2 === 1;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "双边":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max &&
+              (num < config.midStart || num > config.midEnd) && num % 2 === 0;
+          }).map(p => p.name);
+        }
+        break;
+
       case "大":
-      case "小":
-      case "中":
-      case "边":
-        if ([1, 3, 10, 14, 18, 22].includes(groupId)) {
-          numericPlays.forEach((p) => {
+        if (config) {
+          newSelected = numericPlays.filter(p => {
             const num = parseInt(p.name, 10);
-            if (type === "大" && num >= 14) newSelected.push(p.name);
-            if (type === "小" && num <= 13) newSelected.push(p.name);
-            if (type === "中" && num >= 10 && num <= 17) newSelected.push(p.name);
-            if (type === "边" && ((num >= 0 && num <= 3) || (num >= 24 && num <= 27))) newSelected.push(p.name);
-          });
-        } else if ([4, 26].includes(groupId)) {
-          numericPlays.forEach((p) => {
-            const num = parseInt(p.name, 10);
-            if (type === "大" && num >= 6) newSelected.push(p.name);
-            if (type === "小" && num <= 5) newSelected.push(p.name);
-            if (type === "中" && num >= 4 && num <= 7) newSelected.push(p.name);
-            if (type === "边" && ((num >= 0 && num <= 3) || (num >= 8 && num <= 10))) newSelected.push(p.name);
-          });
-        } else if ([5, 16, 23].includes(groupId)) {
-          numericPlays.forEach((p) => {
-            const num = parseInt(p.name, 10);
-            if (type === "大" && num >= 7) newSelected.push(p.name);
-            if (type === "小" && num <= 6) newSelected.push(p.name);
-            if (type === "中" && num >= 5 && num <= 9) newSelected.push(p.name);
-            if (type === "边" && ((num >= 2 && num <= 4) || (num >= 10 && num <= 12))) newSelected.push(p.name);
-          });
-        } else if ([6, 15, 24].includes(groupId)) {
-          numericPlays.forEach((p) => {
-            const num = parseInt(p.name, 10);
-            if (type === "大" && num >= 11) newSelected.push(p.name);
-            if (type === "小" && num <= 10) newSelected.push(p.name);
-            if (type === "中" && num >= 8 && num <= 13) newSelected.push(p.name);
-            if (type === "边" && ((num >= 3 && num <= 7) || (num >= 14 && num <= 18))) newSelected.push(p.name);
-          });
+            return num >= config.bigStart && num <= config.max;
+          }).map(p => p.name);
         }
         break;
+
+      case "小":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.smallEnd;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "中":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.midStart && num <= config.midEnd;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "边":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.max &&
+              (num < config.midStart || num > config.midEnd);
+          }).map(p => p.name);
+        }
+        break;
+
+      case "大边":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.bigEdgeStart && num <= config.max;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "小边":
+        if (config) {
+          newSelected = numericPlays.filter(p => {
+            const num = parseInt(p.name, 10);
+            return num >= config.min && num <= config.smallEdgeEnd;
+          }).map(p => p.name);
+        }
+        break;
+
+      case "0尾": case "1尾": case "2尾": case "3尾": case "4尾":
+      case "5尾": case "6尾": case "7尾": case "8尾": case "9尾": {
+        const tailNum = parseInt(type.replace("尾", ""), 10);
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 10 === tailNum).map(p => p.name);
+        break;
+      }
+
+      case "小尾":
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 10 <= 4).map(p => p.name);
+        break;
+
+      case "大尾":
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 10 >= 5).map(p => p.name);
+        break;
+
+      case "3余0": case "3余1": case "3余2": {
+        const mod3Val = parseInt(type.replace("3余", ""), 10);
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 3 === mod3Val).map(p => p.name);
+        break;
+      }
+
+      case "4余0": case "4余1": case "4余2": case "4余3": {
+        const mod4Val = parseInt(type.replace("4余", ""), 10);
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 4 === mod4Val).map(p => p.name);
+        break;
+      }
+
+      case "5余0": case "5余1": case "5余2": case "5余3": case "5余4": {
+        const mod5Val = parseInt(type.replace("5余", ""), 10);
+        newSelected = numericPlays.filter(p => parseInt(p.name, 10) % 5 === mod5Val).map(p => p.name);
+        break;
+      }
     }
 
+    const newAmounts: Record<string, string> = {};
+    newSelected.forEach(name => {
+      const playItem = activeGroup.plays.find(p => p.name === name);
+      if (playItem && playItem.minBetGold > 0) {
+        newAmounts[name] = String(playItem.minBetGold);
+      }
+    });
+
+    setPlayAmounts(newAmounts);
     setSelectedPlays(newSelected);
-    setActiveQuick(type);
+    setActiveQuick(newActiveQuick);
   };
 
-  const handleInputFocus = (index: number) => {
-    const scrollEl = scrollRef.current;
-    if (!scrollEl) return;
-    const inputEl = scrollEl.children[index] as HTMLElement;
-    if (!inputEl) return;
-    const scrollTop = scrollEl.scrollTop;
-    const scrollHeight = scrollEl.clientHeight;
-    const inputBottom = inputEl.offsetTop + inputEl.clientHeight;
-    if (inputBottom > scrollTop + scrollHeight) {
-      scrollEl.scrollTo({ top: inputBottom - scrollHeight + 10, behavior: "smooth" });
+  // 倍数投注
+  const handleMultiplierSelect = (multiplier: number) => {
+    setSelectedMultiplier(multiplier);
+    if (selectedPlays.length === 0) {
+      toast.info("请先选择玩法");
+      return;
     }
+    const newAmounts = { ...playAmounts };
+    selectedPlays.forEach((playName) => {
+      const currentAmount = parseInt(newAmounts[playName] || "0", 10) || 0;
+      if (currentAmount > 0) {
+        newAmounts[playName] = String(Math.floor(currentAmount * multiplier));
+      }
+    });
+    setPlayAmounts(newAmounts);
+  };
+
+  // 金额倍数调整
+  const handleAmountMultiplier = (playName: string, multiplier: number) => {
+    const currentAmount = parseInt(playAmounts[playName] || "0", 10) || 0;
+    if (currentAmount > 0) {
+      setPlayAmounts((prev) => ({
+        ...prev,
+        [playName]: String(Math.floor(currentAmount * multiplier)),
+      }));
+    }
+  };
+
+  // 取消
+  const handleCancel = () => {
+    router.back();
   };
 
   // 提交保存模式
@@ -424,7 +564,7 @@ export default function ModeEditPage() {
     const total_gold = selectedPlays.reduce((sum, p) => sum + (parseInt(playAmounts[p] || "0", 10) || 0), 0);
 
     if (total_gold <= 0) {
-      toast.error("请输入投注金豆");
+      toast.error("请输入投注金额");
       return;
     }
 
@@ -445,7 +585,6 @@ export default function ModeEditPage() {
       const res = await setMode(payload);
       if (res.code === 200) {
         toast.success(isEdit ? "模式更新成功" : "模式保存成功");
-        setShowBatchModal(false);
         router.back();
       } else {
         toast.error(parseErrorMessage(res, "保存失败"));
@@ -458,189 +597,412 @@ export default function ModeEditPage() {
     }
   };
 
+  const totalBetAmount = selectedPlays.reduce((sum, p) => sum + (parseInt(playAmounts[p] || "0", 10) || 0), 0);
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black relative pb-20">
+    <div className="bg-gray-100 dark:bg-black min-h-screen pb-32">
       {/* 头部 */}
-      <div className="bg-red-600 text-white px-4 py-3 flex items-center justify-between">
-        <button className="text-white" onClick={() => router.back()}>
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className="text-lg font-bold">
-          {isEdit ? "编辑模式" : "新增模式"} - {gameName}
-        </h1>
-        <div className="flex items-center">
-          <span className="font-bold text-sm">
-            {format.number(currentCustomer?.points ?? 0)}
-          </span>
-          <Image
-            alt="coin"
-            className="inline-block w-[13px] h-[13px]"
-            src="/ranking/coin.png"
-            width={13}
-            height={13}
-          />
-        </div>
-      </div>
+      <GameHeader
+        gameName={gameName}
+        customTitle={isEdit ? "编辑模式" : "新增模式"}
+        showDropdown={false}
+        groupName={groupName}
+      />
 
-      {/* 模式名称输入 */}
-      <div className="bg-white p-3 my-2 mx-3 rounded-lg shadow">
-        <label className="block text-sm font-bold text-gray-700 mb-2">模式名称</label>
-        <input
-          type="text"
-          value={modeName}
-          onChange={(e) => setModeName(e.target.value)}
-          placeholder="请输入模式名称"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-          maxLength={20}
-        />
-      </div>
-
-      {/* 快速选择 */}
-      {activeGroup && quickSelectGroupIds.includes(Number(activeGroup.id)) && (
-        <div className="px-3 mb-2">
-          <div className="flex flex-wrap gap-2">
-            {quickSelectButtons.map((btn) => {
-              const isActive = activeQuick === btn;
-              return (
+      {/* 快捷选择区域 */}
+      {activeGroup && (
+        <div className="bg-white mx-3 mt-3 rounded-lg shadow p-3">
+          {quickSelectGroupIds.includes(Number(activeGroup.id)) ? (
+            <>
+              <div className="grid grid-cols-6 gap-2 mb-2">
+                {quickButtons1.map(btn => (
+                  <button
+                    key={btn}
+                    onClick={() => handleQuickSelect(btn)}
+                    className={cn(
+                      "py-1.5 text-xs rounded border",
+                      activeQuick === btn
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-white text-gray-700 border-red-300 hover:border-red-500"
+                    )}
+                  >
+                    {btn}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-6 gap-2 mb-2">
+                {quickButtons2.map(btn => (
+                  <button
+                    key={btn}
+                    onClick={() => handleQuickSelect(btn)}
+                    className={cn(
+                      "py-1.5 text-xs rounded border",
+                      activeQuick === btn
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-white text-gray-700 border-red-300 hover:border-red-500"
+                    )}
+                  >
+                    {btn}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-6 gap-2">
+                {quickButtons3.map(btn => (
+                  <button
+                    key={btn}
+                    onClick={() => handleQuickSelect(btn)}
+                    className={cn(
+                      "py-1.5 text-xs rounded border",
+                      activeQuick === btn
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-white text-gray-700 border-red-300 hover:border-red-500"
+                    )}
+                  >
+                    {btn}
+                  </button>
+                ))}
+                {specialButtons.map(btn => (
+                  <button
+                    key={btn}
+                    onClick={() => handleQuickSelect(btn)}
+                    className="py-1.5 text-xs rounded bg-red-600 text-white"
+                  >
+                    {btn}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {["全包", "反选", "清空"].map(btn => (
                 <button
                   key={btn}
                   onClick={() => handleQuickSelect(btn)}
-                  className={cn(
-                    "px-3 py-1 rounded-full text-xs font-bold border",
-                    isActive ? "bg-red-600 text-white border-red-600" : "bg-yellow-300 text-gray-800 border-yellow-300"
-                  )}
-                >{btn}</button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 玩法分组 */}
-      <div className="flex mt-3 px-3">
-        <div className="w-24 bg-white border-r">
-          {isLoadingPlays ? (
-            <div className="p-2 text-xs text-gray-500 text-center">加载中...</div>
-          ) : (
-            groups.map((g) => (
-              <button
-                key={g.id}
-                onClick={() => handleGroupChange(g)}
-                className={cn(
-                  "block w-full p-2 text-xs text-left border-b",
-                  activeGroup && activeGroup.id === g.id ? "bg-blue-600 text-white" : "bg-white text-gray-800"
-                )}
-              >{g.name}</button>
-            ))
-          )}
-        </div>
-
-        <div className="flex-1 p-2">
-          {isLoadingPlays || isLoadingMode ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-              <span className="ml-2 text-gray-600">加载中...</span>
+                  className="py-1.5 text-xs rounded bg-red-600 text-white"
+                >
+                  {btn}
+                </button>
+              ))}
             </div>
-          ) : activeGroup ? (
-            <div className="grid grid-cols-3 gap-2">
-              {activeGroup.plays.map((playItem) => {
-                const isSelected = selectedPlays.includes(playItem.name);
-                const displayOdds = (playItem.odds / 1000).toFixed(3);
-                return (
-                  <button
-                    key={playItem.id}
-                    onClick={() => togglePlay(playItem)}
-                    className={cn(
-                      "p-2 rounded-lg text-center font-bold text-sm flex flex-col items-center justify-center border",
-                      isSelected ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700 border-gray-300"
-                    )}
-                  >
-                    <div>{playItem.name}</div>
-                    <div className="text-xs font-normal mt-1">{displayOdds}</div>
-                    {isSelected && <CheckCircle className="inline mt-1" size={14} />}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">暂无玩法数据</div>
           )}
-        </div>
-      </div>
 
-      {/* 保存按钮 */}
-      {selectedPlays.length > 0 && (
-        <div className="pb-16 p-3">
+          {/* 可收起区域 */}
+          {isExpanded && (
+            <>
+              {quickSelectGroupIds.includes(Number(activeGroup.id)) && (
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="text-xs text-gray-500">—</span>
+                      <span className="text-xs text-gray-600 mx-1">追加尾数</span>
+                      <span className="text-xs text-gray-500 flex-1">———</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-1">
+                      {tailButtons.slice(0, 4).map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 mt-1">
+                      {tailButtons.slice(4, 8).map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 mt-1">
+                      {tailButtons.slice(8).map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="text-xs text-gray-500">—</span>
+                      <span className="text-xs text-gray-600 mx-1">追加余数</span>
+                      <span className="text-xs text-gray-500 flex-1">———</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      {mod3Buttons.map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 mt-1">
+                      {mod4Buttons.map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-5 gap-1 mt-1">
+                      {mod5Buttons.map(btn => (
+                        <button
+                          key={btn}
+                          onClick={() => handleQuickSelect(btn)}
+                          className={cn(
+                            "py-1 text-[10px] rounded border",
+                            activeQuick === btn
+                              ? "bg-red-600 text-white border-red-600"
+                              : "bg-white text-gray-700 border-red-300"
+                          )}
+                        >
+                          {btn}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 倍数投注 */}
+              <div className="mt-4">
+                <div className="flex items-center mb-2">
+                  <span className="text-xs text-gray-500">——</span>
+                  <span className="text-xs text-gray-600 mx-2">倍数投注</span>
+                  <span className="text-xs text-gray-500 flex-1">——————————</span>
+                </div>
+                <div className="grid grid-cols-6 gap-2">
+                  {multiplierButtons1.map(mult => (
+                    <button
+                      key={mult}
+                      onClick={() => handleMultiplierSelect(mult)}
+                      className={cn(
+                        "py-1.5 text-xs rounded border",
+                        selectedMultiplier === mult
+                          ? "bg-red-600 text-white border-red-600"
+                          : "bg-white text-gray-700 border-red-300"
+                      )}
+                    >
+                      {mult}倍
+                    </button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-6 gap-2 mt-2">
+                  {multiplierButtons2.map(mult => (
+                    <button
+                      key={mult}
+                      onClick={() => handleMultiplierSelect(mult)}
+                      className={cn(
+                        "py-1.5 text-xs rounded border",
+                        selectedMultiplier === mult
+                          ? "bg-red-600 text-white border-red-600"
+                          : "bg-white text-gray-700 border-red-300"
+                      )}
+                    >
+                      {mult}倍
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* 收起/展开按钮 */}
           <button
-            onClick={handleOpenBatchModal}
-            className="w-full py-2 rounded-lg font-bold text-sm bg-red-600 text-white"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="w-full mt-3 py-2 bg-orange-500 text-white rounded-lg flex items-center justify-center gap-1"
           >
-            设置金豆并保存（已选 {selectedPlays.length} 项）
+            {isExpanded ? "收起" : "展开"}
+            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
         </div>
       )}
 
-      {/* 批量设置金豆 Dialog */}
-      <Dialog open={showBatchModal} onOpenChange={setShowBatchModal}>
-        <DialogContent className="max-w-sm p-0 flex flex-col h-[60vh] md:h-[55vh] transition-all duration-300 ease-in-out">
-          <DialogHeader className="p-3 border-b">
-            <DialogTitle className="flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <span>设置投注金豆（{selectedPlays.length}项）</span>
-                <span className="text-sm font-normal text-gray-600">
-                  累计：<span className="text-red-600 font-bold">
-                    {format.number(selectedPlays.reduce((sum, p) => sum + (parseInt(playAmounts[p] || "0", 10) || 0), 0))}
-                  </span>
-                  <Image
-                    alt="coin"
-                    className="inline-block w-[13px] h-[13px]"
-                    src="/ranking/coin.png"
-                    width={13}
-                    height={13}
-                  />
-                </span>
-              </div>
-            </DialogTitle>
-          </DialogHeader>
+      {/* 号码列表区域 */}
+      <div className="bg-white mx-3 mt-3 mb-[20px] rounded-lg shadow">
+        {/* 表头 */}
+        <div className="grid grid-cols-[80px_1fr_100px_90px] text-xs text-gray-500 border-b px-3 py-2">
+          <span>号码</span>
+          <span className="text-center">赔率</span>
+          <span className="text-center">投注</span>
+          <span></span>
+        </div>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 space-y-3 scroll-smooth">
-            {selectedPlays.map((play, idx) => (
-              <div key={play} className="flex items-center border p-2 rounded-lg gap-2">
-                <button
-                  onClick={() => removeFromSelectedPlays(play)}
-                  className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors"
-                >
-                  <X size={14} />
-                </button>
-                <span className="font-bold text-gray-800 text-sm flex-1 text-center">{play}</span>
-                <input
-                  type="number"
-                  className="h-10 w-24 rounded-md border px-2 text-center text-sm flex-shrink-0"
-                  placeholder="金豆"
-                  value={playAmounts[play] || ""}
-                  onChange={(e) => updatePlayAmount(play, e.target.value)}
-                  onFocus={() => handleInputFocus(idx)}
-                />
-              </div>
-            ))}
-
-            {selectedPlays.length === 0 && (
-              <div className="text-center py-8 text-gray-500">暂无选中玩法</div>
-            )}
-
-            <div className="flex justify-between mt-2 pb-3">
-              <Button variant="secondary" onClick={() => setShowBatchModal(false)}>取消</Button>
-              <Button
-                className="bg-red-600 text-white"
-                onClick={handleSubmit}
-                disabled={selectedPlays.length === 0 || isSubmitting}
-              >
-                {isSubmitting ? "保存中..." : "确认保存"}
-              </Button>
-            </div>
+        {/* 号码列表 */}
+        {isLoadingPlays || isLoadingMode ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+            <span className="ml-2 text-gray-600">加载中...</span>
           </div>
-        </DialogContent>
-      </Dialog>
+        ) : activeGroup ? (
+          <div className="divide-y">
+            {activeGroup.plays.map((playItem) => {
+              const isSelected = selectedPlays.includes(playItem.name);
+              const displayOdds = (playItem.odds / 1000).toFixed(2);
+              const amount = playAmounts[playItem.name] || "";
+
+              return (
+                <div
+                  key={playItem.id}
+                  className={cn(
+                    "grid grid-cols-[80px_1fr_100px_90px] items-center px-3 py-2",
+                    isSelected ? "bg-orange-50" : "bg-white"
+                  )}
+                >
+                  {/* 号码 */}
+                  <div className="flex flex-col items-start">
+                    <button
+                      onClick={() => togglePlay(playItem)}
+                      className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold",
+                        isSelected
+                          ? "bg-blue-600 text-white"
+                          : "bg-blue-100 text-blue-700"
+                      )}
+                    >
+                      {playItem.name}
+                    </button>
+                  </div>
+
+                  {/* 赔率 */}
+                  <div className="text-center text-sm text-gray-600">
+                    {displayOdds}
+                  </div>
+
+                  {/* 投注输入 */}
+                  <div className="flex justify-center">
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => updatePlayAmount(playItem.name, e.target.value)}
+                      placeholder="0"
+                      className={cn(
+                        "w-20 h-8 px-2 text-center text-sm border rounded",
+                        isSelected
+                          ? "border-orange-400 bg-orange-50"
+                          : "border-gray-300 bg-gray-50"
+                      )}
+                    />
+                  </div>
+
+                  {/* 倍数按钮 */}
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      onClick={() => handleAmountMultiplier(playItem.name, 0.5)}
+                      className="text-xs text-blue-600"
+                    >
+                      ×0.5
+                    </button>
+                    <button
+                      onClick={() => handleAmountMultiplier(playItem.name, 2)}
+                      className="text-xs text-blue-600"
+                    >
+                      ×2
+                    </button>
+                    <button
+                      onClick={() => handleAmountMultiplier(playItem.name, 10)}
+                      className="text-xs text-blue-600"
+                    >
+                      ×10
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">暂无玩法数据</div>
+        )}
+      </div>
+
+      {/* 底部固定操作栏 */}
+      <div className="fixed bottom-12 left-0 right-0 bg-white border-t shadow-lg">
+        {/* 模式名称输入 + 总投入 */}
+        <div className="flex items-center justify-between px-4 py-2 border-b">
+          <input
+            type="text"
+            value={modeName}
+            onChange={(e) => setModeName(e.target.value)}
+            placeholder="填写模式名称"
+            className="flex-1 h-8 px-3 text-sm border border-gray-300 rounded mr-3"
+            maxLength={20}
+          />
+          <div className="flex items-center text-sm flex-shrink-0">
+            <span className="text-gray-600">总投入</span>
+            <span className="text-red-600 font-bold ml-1">{format.number(totalBetAmount)}</span>
+            <Image
+              alt="coin"
+              className="inline-block w-4 h-4 ml-0.5"
+              src="/ranking/coin.png"
+              width={16}
+              height={16}
+            />
+          </div>
+        </div>
+
+        {/* 操作按钮 */}
+        <div className="grid grid-cols-2 h-12">
+          <button
+            onClick={handleCancel}
+            className="bg-white text-gray-700 font-bold flex items-center justify-center gap-1 border-r"
+          >
+            <span className="text-lg">&lt;</span> 取消
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || selectedPlays.length === 0 || totalBetAmount <= 0}
+            className={cn(
+              "font-bold flex items-center justify-center gap-1",
+              isSubmitting || selectedPlays.length === 0 || totalBetAmount <= 0
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-blue-600 text-white"
+            )}
+          >
+            <span className="text-lg">✓</span> 保存模式
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
