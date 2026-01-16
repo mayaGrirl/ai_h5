@@ -29,7 +29,12 @@ export const fetchExpectInfo = (data: ExpectInfoDto): Promise<HttpRes<ExpectInfo
 
 //获取投注记录
 export const betRecords = (data: BetDataDto): Promise<HttpRes<BetRecordRes>> => {
-  return http.post<HttpRes<BetRecordRes>, BetDataDto>("/api/app/v1/game/betRecord", data);
+  // 确保 expect_no 是字符串类型，后端要求必须是字符串
+  const payload = {
+    ...data,
+    expect_no: data.expect_no !== undefined ? String(data.expect_no) : undefined,
+  };
+  return http.post<HttpRes<BetRecordRes>, BetDataDto>("/api/app/v1/game/betRecord", payload);
 };
 
 //获取开奖记录
