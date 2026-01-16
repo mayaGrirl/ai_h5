@@ -96,7 +96,7 @@ export default function BetPage() {
   const [isLoadingPlays, setIsLoadingPlays] = useState(true);
 
   // 支持快捷选择的玩法分组ID
-  const quickSelectGroupIds = [1, 2, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
+  const quickSelectGroupIds = [1, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24];
 
   const [activeGroup, setActiveGroup] = useState<PlayGroup | null>(null);
   const [selectedPlays, setSelectedPlays] = useState<string[]>([]);
