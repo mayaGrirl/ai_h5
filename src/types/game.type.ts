@@ -85,6 +85,8 @@ export interface GamePlayGroup {
   reward_num?: number;  // 奖励数量
   start_num?: number;   // 起始数字
   logo?: string;
+  info?: string;        // 游戏规则说明
+  lang_info?: Record<string, string> | null;  // 多语言游戏规则
   status?: number;      // 状态（实际字段：status）
   sort?: number;
   created_at?: string;
@@ -100,6 +102,8 @@ export interface GamePlayMapItem {
   game_class?: number;
   game_type?: number;
   logo?: string;
+  info?: string;        // 游戏规则说明
+  lang_info?: Record<string, string> | null;  // 多语言游戏规则
   children: GamePlay[];  // 包含完整的玩法对象
 }
 
@@ -277,7 +281,7 @@ export interface BetRecordItem {
   is_win?: number;       // 0: 待开奖, 2: 中奖, 3: 未中奖
   is_robot?: number;
   is_auto?: number;
-  status?: string;       // "00": 待开奖, "01": 已开奖
+  status?: number | string;  // 0: 未结算, 1: 已结算, 2: 已回滚, 3: 已删除
   deleted_at?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -400,6 +404,56 @@ export interface SetAutoRes {
   message?: string;
 }
 
+// ====================== 盈亏统计相关类型 ======================
 
+// 获取盈亏统计请求参数
+export interface ProfitLossDto {
+  page: number;
+  pageSize: number;
+  lottery_id?: number;
+  game_group_id?: number;
+}
+
+// 盈亏统计项
+export interface ProfitLossItem {
+  id?: number;
+  member_id?: number;
+  game_type_id?: number;
+  game_group_id?: number;
+  stat_date?: string;
+  bet_count?: number;        // 投注次数
+  bet_gold?: number;         // 投注金额
+  win_gold?: number;         // 中奖金额
+  profit?: number;           // 盈亏
+  auto_bet_gold?: number;    // 自动投注金额
+  hand_bet_gold?: number;    // 手动投注金额
+  tax_gold?: number;         // 税金
+  is_robot?: number;
+  game_type_name?: string;   // 游戏名称
+  game_group_name?: string;  // 分组名称
+  created_at?: string;
+  updated_at?: string;
+}
+
+// 盈亏汇总
+export interface ProfitLossSummary {
+  member_count?: number;
+  bet_count?: number;
+  bet_gold?: number;
+  win_gold?: number;
+  profit?: number;
+  auto_bet_gold?: number;
+  hand_bet_gold?: number;
+  tax_gold?: number;
+}
+
+// 盈亏统计响应
+export interface ProfitLossRes {
+  list: ProfitLossItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  summary?: ProfitLossSummary;
+}
 
 

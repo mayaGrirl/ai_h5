@@ -4,7 +4,7 @@ import { HttpRes } from "@/types/http.type";
 import {
   GameClassRes, gamePlayAll, gamePlayAllDto, BetGameDto, BetGameRes, ExpectInfoDto, ExpectInfoRes, LotteryDataDto,
   BetDataDto, LotteryListRes, BetRecordRes, ModeListDto, ModeListRes, SetModeDto, SetModeRes,
-  AutoOneDto, AutoOneRes, SetAutoDto, SetAutoRes
+  AutoOneDto, AutoOneRes, SetAutoDto, SetAutoRes, ProfitLossDto, ProfitLossRes
 
 } from "@/types/game.type";
 
@@ -62,6 +62,7 @@ export const setAuto = (data: SetAutoDto): Promise<HttpRes<SetAutoRes>> => {
   return http.post<HttpRes<SetAutoRes>, SetAutoDto>("/api/app/v1/game/autoSet", data);
 };
 
-
-
-
+// 获取盈亏统计
+export const profitLoss = (data: ProfitLossDto): Promise<HttpRes<ProfitLossRes>> => {
+  return http.post<HttpRes<ProfitLossRes>, ProfitLossDto>("/api/app/v1/game/profitLoss", data);
+};

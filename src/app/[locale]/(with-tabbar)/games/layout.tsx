@@ -23,6 +23,7 @@ const DEFAULT_TABS: TabItem[] = [
   { name: "自动", path: "/games/auto", needGroupId: false },
   { name: "走势", path: "/games/trend", needGroupId: false },
   { name: "盈亏", path: "/games/stat", needGroupId: false },
+  { name: "规则", path: "/games/rules", needGroupId: false },
 ];
 
 /**

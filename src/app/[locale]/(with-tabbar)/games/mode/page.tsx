@@ -229,10 +229,10 @@ export default function ModePage() {
                 </div>
 
                 {/* 投注详情 */}
-                <div className="mt-2 text-xs text-gray-500">
+                <div className="mt-2 text-xs text-gray-500 break-all">
                   <span>玩法: {mode.bet_no}</span>
                 </div>
-                <div className="mt-2 text-xs text-gray-500">
+                <div className="mt-2 text-xs text-gray-500 break-all">
                   <span>金豆: {mode.bet_no_gold}</span>
                 </div>
               </div>
