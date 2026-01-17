@@ -186,13 +186,14 @@ export default function Mine() {
                     }}
             >
               <span className="flex items-center gap-1 leading-none">
-                <Flag width={17} height={17} />
+                <Flag width={17} height={17}/>
                 {_t('mine.btn-tasks')}
               </span>
             </button>
-            <Link href={`/${locale}/mine/sign?tab=in`} className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
+            <Link href={`/${locale}/mine/sign?tab=in`}
+                  className="flex justify-center items-center h-10 rounded-md bg-[#ff3a00] font-medium text-white">
               <span className="flex items-center gap-1 leading-none">
-                <CalendarCheck width={17} height={17} />
+                <CalendarCheck width={17} height={17}/>
                 {_t('mine.btn-sign_in')}
               </span>
             </Link>
@@ -215,25 +216,26 @@ export default function Mine() {
             <div className="rounded-t-md border-b border-[#ff3a00] bg-white py-1 text-center  text-[#ff3a00]">
               {_t('mine.vip_title')}
             </div>
-            <div className="rounded-b-md bg-gradient-to-r from-[#ff8e4a] to-[#ff3a00] px-4 py-3 text-center  text-white">
-              <div className={"min-h-6"}>{member?.vip ? member?.vip_label : member?.gid_label}</div>
-              <div className={"h-12"}>
-                {(member && member?.vip > 0) && (
-                  <button className={`mt-2 h-12 w-1/5 rounded-2xl bg-[#ffffff] text-black
-                  font-medium tracking-wide transition transform active:scale-95
+            <div className="flex items-center justify-evenly rounded-b-md bg-gradient-to-r from-[#ff8e4a]
+            to-[#ff3a00] px-4 py-3 text-center  text-white min-h-20">
+              <div className={"min-h-6 font-semibold"}>{(member && member?.vip > 0) ? member?.vip_label : _t('mine.vip_not_found')}</div>
+              {(member && member?.vip > 0) && (
+                <div className="w-xs">
+                  <button className={`w-full h-11 rounded-full bg-white text-orange-500 font-medium
+                  shadow-md active:scale-95 transition
                   ${receiveWelfare ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`
                   } onClick={() => handleReceiveWelfare()}>
                     {receiveWelfare ? _t("common.form.button.submitting") : _t('mine.vip-btn-receive')}
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </section>
 
           {/* 登陆时间和地点 */}
           <section className="mt-3 px-3">
             <div
-              className="w-full rounded-lg border border-[#c7e6ff] bg-[#f4fbff] px-3 py-2 text-[12px] text-[#4b84b6] flex items-center">
+              className="w-full rounded-lg border border-[#c7e6ff] bg-[#f4fbff] px-3 py-2 text-[12px] text-[#4b84b6] flex items-center min-h-9">
               <MapPin className="w-3 h-3 mr-1 text-[#4b84b6]"/>
               {currentCustomer && (
                 <span>
@@ -261,7 +263,8 @@ export default function Mine() {
                   />
                 </div>
               </Link>
-              <Link className="flex flex-col border-x border-gray-200 cursor-pointer" href={`/${locale}/mine/customer-transfer`}>
+              <Link className="flex flex-col border-x border-gray-200 cursor-pointer"
+                    href={`/${locale}/mine/customer-transfer`}>
                 <div className="text-gray-500">{_t('mine.account-bank-points')}</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
                   <span>{format.number(memberCapital?.bankpoints ?? 0)}</span>
@@ -293,7 +296,8 @@ export default function Mine() {
               </div>
               <div className="flex flex-col">
                 <div className=" text-gray-500">{_t('mine.account-freeze')}</div>
-                <div className="mt-1 text-[13px] font-semibold text-[#ff3a00]">{format.number(memberCapital?.frozen ?? 0)}</div>
+                <div
+                  className="mt-1 text-[13px] font-semibold text-[#ff3a00]">{format.number(memberCapital?.frozen ?? 0)}</div>
               </div>
             </div>
           </section>
@@ -314,7 +318,7 @@ export default function Mine() {
                 {/*/>*/}
               </div>
               <span className="flex justify-center items-center text-sm">
-                {_t('mine.yesterday_loss_btn')} <ChevronRight />
+                {_t('mine.yesterday_loss_btn')} <ChevronRight/>
               </span>
             </Link>
 
@@ -323,7 +327,7 @@ export default function Mine() {
                   className="mt-2 flex items-center justify-between bg-[#ff3a00] px-3 py-2 text-white cursor-pointer">
               <span>{_t('mine.recharge_rebate')}</span>
               <span className="flex justify-center items-center text-sm">
-                {_t('mine.recharge_rebate_btn')} <ChevronRight />
+                {_t('mine.recharge_rebate_btn')} <ChevronRight/>
               </span>
             </Link>
 
