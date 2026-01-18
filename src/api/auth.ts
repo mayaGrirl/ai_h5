@@ -37,6 +37,13 @@ export const sendSmsToMobile = (mobile: string): Promise<HttpRes<unknown>> => {
 };
 
 /**
+ * 登录发送短信
+ */
+export const loginSendSmsToMobile = (mobile: string): Promise<HttpRes<unknown>> => {
+  return http.post('/api/app/v1/login/send-sms', {mobile: mobile});
+};
+
+/**
  * 注册发送短信
  */
 export const forgotPasswordSendSms = (mobile: string): Promise<HttpRes<unknown>> => {

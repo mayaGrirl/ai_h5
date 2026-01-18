@@ -280,6 +280,7 @@
   "register": {
     "mobile-label": "Mobile",
     "mobile-placeholder": "Please enter your mobile number",
+    "mobile-regex": "Mobile Invalid",
     "mobile-max": "Invalid mobile number",
     "password-label": "Password",
     "password-placeholder": "Please enter your password",

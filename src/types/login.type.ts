@@ -8,7 +8,7 @@ export interface RegistrationDto {
 
 export interface LoginDto {
   mobile: string;
-  password: string;
+  password?: string;
   code?: string;
   type: number;
 }

@@ -27,7 +27,7 @@ export default function RegisterPage() {
   const queryString = searchParams.toString();
 
   const schema = z.object({
-    mobile: z.string().min(1, _t('register.mobile-placeholder')).max(50, _t('register.mobile-max')),
+    mobile: z.string().min(1, _t('register.mobile-placeholder')).regex(/^1[3-9]\d{9}$/, _t("register.mobile-regex")),
     verify_code: z.string().min(1, _t('common.sms-verify_code-placeholder')).max(6, _t('common.sms-verify_code-max')),
     password: z.string().min(8, _t("register.password-placeholder")),
     confirm_password: z.string(),
