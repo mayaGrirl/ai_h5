@@ -11,6 +11,9 @@ import {useParams, useRouter, useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {useTranslations} from "use-intl";
 import {cn} from "@/lib/utils";
+import TextSkeleton from "@/components/text-skeleton";
+import {getPasswordTip} from "@/api/common";
+import {useAuthStore} from "@/utils/storage/auth";
 
 // 倒计时页面刷新继续保持的存储key
 const STORAGE_KEY = "sms_countdown_end_at_register";
@@ -49,6 +52,9 @@ export default function RegisterPage() {
     mode: "onChange",
   });
   const router = useRouter();
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [tipContent, setTipContent] = useState<string | null>(null);
 
   // 发送短信相关
   const duration = 60;
@@ -118,11 +124,13 @@ export default function RegisterPage() {
     };
   }, [countdown]);
 
+  const setToken = useAuthStore((s) => s.setToken);
+
   // 表单提交
   const onSubmit = handleSubmit(async (values) => {
     // 推荐人的key
     const recommend = searchParams.get('t');
-    const {code, message} = await registration({
+    const {code, message, data} = await registration({
       mobile: values.mobile,
       verify_code: values.verify_code,
       password: values.password,
@@ -134,11 +142,24 @@ export default function RegisterPage() {
     } else {
       toast.success(message);
 
-      // 跳转到指定页面
-      const urlParams = new URL(window.location.href).searchParams;
-      router.replace(urlParams.get('redirect') || `${locale}/auth/login`);
+      // 设置token
+      // 用 Zustand 统一设置
+      setToken(data?.access_token, data?.token_type, data?.expires_at);
+
+      router.replace(`/${locale}`);
     }
   });
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      setLoading(true);
+      const {data} = await getPasswordTip();
+      setTipContent(data?.content || '');
+      setLoading(false);
+    };
+
+    void fetchContent();
+  }, []);
 
   return (
     <div className="flex min-h-screen justify-center bg-[#eef3f8]">
@@ -238,6 +259,23 @@ export default function RegisterPage() {
               </div>
               {errors.confirm_password && (
                 <p className="mt-1 text-xs text-red-500">{errors.confirm_password.message}</p>
+              )}
+            </div>
+
+            <div className="rounded-lg mb-3 overflow-hidden">
+              <div className="flex items-center text-gray-600 px-4 py-3  pb-0">
+                <span className="w-1 h-4 bg-red-600 rounded mr-2"></span>
+                {_t("mine.security-settings.group-account.password.tip")}
+              </div>
+
+              {/* 异步加载温馨提示 */}
+              {loading ? (
+                <TextSkeleton lines={3}/>
+              ) : (
+                <div
+                  className="px-4 py-3 text-gray-600"
+                  dangerouslySetInnerHTML={{__html: tipContent!}}
+                />
               )}
             </div>
 

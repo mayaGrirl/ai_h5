@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import Image from "next/image";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -23,6 +23,9 @@ export default function LoginPage() {
   const params = useParams();
   const locale = params.locale as string;
 
+  // 页面初始化查询数据
+  const [loginType, setLoginType] = useState<number>(1);
+
   const schema = z.object({
     mobile: z.string().min(1, _t('register.mobile-placeholder')).max(50),
     password: z.string().min(1, _t('register.password-placeholder')),
@@ -43,9 +46,10 @@ export default function LoginPage() {
   // 表单提交
   const onSubmit = handleSubmit((values) => {
     login({
+      type: loginType,
       mobile: values.mobile,
       password: values.password,
-      mfa_code: '',
+      code: '',
     }).then((result: HttpRes<LoginReq>) => {
       const {code, data, message} = result;
       if (code !== 200) {
@@ -54,7 +58,6 @@ export default function LoginPage() {
         toast.success(message);
 
         // 设置token
-        // accessToken.setToken(data?.access_token, data?.token_type, data?.expires_at);
         // 用 Zustand 统一设置
         setToken(data?.access_token, data?.token_type, data?.expires_at);
 
@@ -96,17 +99,21 @@ export default function LoginPage() {
               )}
 
               {/* 密码 */}
-              <div className="flex justify-center items-center">
-                <label className="w-1/4 text-gray-700">{_t('register.password-label')}</label>
-                <input
-                  type="password"
-                  {...register("password")}
-                  placeholder={_t('register.password-placeholder')}
-                  className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
-                />
-              </div>
-              {errors.password && (
-                <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+              {loginType == 1 && (
+                <>
+                  <div className="flex justify-center items-center">
+                    <label className="w-1/4 text-gray-700">{_t('register.password-label')}</label>
+                    <input
+                      type="password"
+                      {...register("password")}
+                      placeholder={_t('register.password-placeholder')}
+                      className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
+                    />
+                  </div>
+                  {errors.password && (
+                    <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+                  )}
+                </>
               )}
             </div>
 

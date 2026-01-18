@@ -11,6 +11,13 @@ export const getBlockByIdentifier = (identifier:string): Promise<HttpRes<BlockFi
 };
 
 /**
+ * 获取Block数据
+ */
+export const getPasswordTip = (): Promise<HttpRes<BlockField>> => {
+  return http.get(`/api/app/v1/password/tip`, {});
+};
+
+/**
  * 获取会员等级选项
  */
 export const getCustomerLevelOptions = (): Promise<HttpRes<CustomerLevelField[]>> => {

@@ -9,7 +9,8 @@ export interface RegistrationDto {
 export interface LoginDto {
   mobile: string;
   password: string;
-  mfa_code: string;
+  code?: string;
+  type: number;
 }
 
 export interface RegistrationReq {
