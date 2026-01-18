@@ -12,6 +12,7 @@ import Image from "next/image";
 import {useLocale, useTranslations} from "use-intl";
 import {forgetPasswordReset, forgotPasswordSendSms, forgotPasswordVerifyCode} from "@/api/auth";
 import Link from "next/link";
+import {Eye, EyeOff} from "lucide-react";
 
 const STORAGE_KEY = "sms_countdown_end_at_find_password";
 
@@ -25,6 +26,7 @@ export default function FindPasswordPage() {
 
   // step: 1=短信验证 2=重置密码
   const [step, setStep] = useState<1 | 2>(1);
+  const [show, setShow] = useState(false);
 
   // ---------- Step1 form ----------
   const step1Schema = z.object({
@@ -275,14 +277,22 @@ export default function FindPasswordPage() {
                 {/* 密码 */}
                 <div className="flex justify-center items-center border-b border-gray-200">
                   <label className="w-1/4 text-gray-700" htmlFor={'password'}>{_t('register.password-label')}</label>
-                  <div className="w-3/4">
+                  <div className="w-3/4 relative">
                     <input
                       id="password"
-                      type="password"
+                      type={show ? "text" : 'password'}
                       {...step2Form.register("password")}
                       placeholder={_t('register.password-placeholder')}
                       className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                     />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShow(!show)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                    >
+                      {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
                   </div>
                 </div>
                 {step2Form.formState.errors.password && (
@@ -293,14 +303,22 @@ export default function FindPasswordPage() {
                 <div className="flex justify-center items-center">
                   <label className="w-1/4 text-gray-700"
                          htmlFor={'confirm_password'}>{_t('register.confirm_password-label')}</label>
-                  <div className="w-3/4">
+                  <div className="w-3/4 relative">
                     <input
                       id="confirm_password"
-                      type="password"
+                      type={show ? "text" : 'password'}
                       {...step2Form.register("confirm_password")}
                       placeholder={_t('register.confirm_password-placeholder')}
                       className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                     />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShow(!show)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                    >
+                      {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
                   </div>
                 </div>
                 {step2Form.formState.errors.confirm_password && (

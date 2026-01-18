@@ -14,6 +14,7 @@ import {cn} from "@/lib/utils";
 import TextSkeleton from "@/components/text-skeleton";
 import {getPasswordTip} from "@/api/common";
 import {useAuthStore} from "@/utils/storage/auth";
+import {Eye, EyeOff} from "lucide-react";
 
 // 倒计时页面刷新继续保持的存储key
 const STORAGE_KEY = "sms_countdown_end_at_register";
@@ -25,6 +26,7 @@ export default function RegisterPage() {
   const locale = params.locale as string;
   // 原样保留
   const queryString = searchParams.toString();
+  const [show, setShow] = useState(false);
 
   const schema = z.object({
     mobile: z.string().min(1, _t('register.mobile-placeholder')).regex(/^1[3-9]\d{9}$/, _t("register.mobile-regex")),
@@ -230,14 +232,22 @@ export default function RegisterPage() {
               {/* 密码 */}
               <div className="flex justify-center items-center border-b border-gray-200">
                 <label className="w-1/4 text-gray-700" htmlFor={'password'}>{_t('register.password-label')}</label>
-                <div className="w-3/4">
+                <div className="w-3/4 relative">
                   <input
                     id="password"
-                    type="password"
+                    type={show ? "text" : 'password'}
                     {...register("password")}
                     placeholder={_t('register.password-placeholder')}
                     className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShow(!show)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                  >
+                    {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </button>
                 </div>
               </div>
               {errors.password && (
@@ -247,14 +257,22 @@ export default function RegisterPage() {
               {/* 确认密码 */}
               <div className="flex justify-center items-center">
                 <label className="w-1/4 text-gray-700" htmlFor={'confirm_password'}>{_t('register.confirm_password-label')}</label>
-                <div className="w-3/4">
+                <div className="w-3/4 relative">
                   <input
                     id="confirm_password"
-                    type="password"
+                    type={show ? "text" : 'password'}
                     {...register("confirm_password")}
                     placeholder={_t('register.confirm_password-placeholder')}
                     className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
                   />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShow(!show)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                  >
+                    {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </button>
                 </div>
               </div>
               {errors.confirm_password && (

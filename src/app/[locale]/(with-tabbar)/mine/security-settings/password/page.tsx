@@ -15,6 +15,7 @@ import {SAFE_QUESTION_OPTIONS} from "@/constants/constants";
 import {useEffect, useState} from "react";
 import {getBlockByIdentifier} from "@/api/common";
 import TextSkeleton from "@/components/text-skeleton";
+import {Eye, EyeOff} from "lucide-react";
 
 export default function UpdateLoginPasswordPage() {
   // 页面需要登陆Hook
@@ -27,6 +28,7 @@ export default function UpdateLoginPasswordPage() {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [tipContent, setTipContent] = useState<string | null>(null);
+  const [show, setShow] = useState(false);
 
   const entryAnswerHit = _t("common.form.placeholder.enter") + _t("mine.toolcase.form-label.answer")
   // 表单验证
@@ -104,11 +106,22 @@ export default function UpdateLoginPasswordPage() {
                 </div>
                 <div className="flex items-center px-4 py-3 border-b">
                   <label className="w-2/7 text-gray-700" htmlFor="password">{_t("mine.security-settings.group-account.password.login-password")}</label>
-                  <input type="text" id="password"
-                         {...register("password")}
-                         placeholder={_t("mine.security-settings.group-account.password.login-password-placeholder")}
-                         className="text-gray-600 w-5/7 placeholder-gray-400 focus:outline-none h-10"
-                  />
+                  <div className="w-5/7 relative">
+                    <input id="password"
+                           type={show ? "text" : 'password'}
+                           {...register("password")}
+                           placeholder={_t("mine.security-settings.group-account.password.login-password-placeholder")}
+                           className="text-gray-600 placeholder-gray-400 focus:outline-none h-10"
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShow(!show)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                    >
+                      {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
+                  </div>
                 </div>
                 {errors.password && (
                   <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
@@ -117,11 +130,22 @@ export default function UpdateLoginPasswordPage() {
                   <label className="w-2/7 text-gray-700" htmlFor="confirm_password">
                     {_t("mine.security-settings.group-account.password.confirm-password")}
                   </label>
-                  <input type="text" id="confirm_password"
-                         {...register("confirm_password")}
-                         placeholder={_t("mine.security-settings.group-account.password.confirm-password-placeholder")}
-                         className="text-gray-600 w-5/7 placeholder-gray-400 focus:outline-none h-10"
-                  />
+                  <div className="w-5/7 relative">
+                    <input id="confirm_password"
+                           type={show ? "text" : 'password'}
+                           {...register("confirm_password")}
+                           placeholder={_t("mine.security-settings.group-account.password.confirm-password-placeholder")}
+                           className="text-gray-600 placeholder-gray-400 focus:outline-none h-10"
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShow(!show)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                    >
+                      {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
+                  </div>
                 </div>
                 {errors.confirm_password && (
                   <p className="mt-1 text-xs text-red-500">{errors.confirm_password.message}</p>

@@ -14,6 +14,7 @@ import {useAuthStore} from "@/utils/storage/auth";
 import Link from "next/link";
 import {useTranslations} from "use-intl";
 import {cn} from "@/lib/utils";
+import {Eye, EyeOff} from "lucide-react";
 
 // 倒计时页面刷新继续保持的存储key
 const STORAGE_KEY = "sms_countdown_end_at_login";
@@ -28,6 +29,7 @@ export default function LoginPage() {
   const locale = params.locale as string;
   // 登录方式
   const [loginType, setLoginType] = useState<number>(1);
+  const [show, setShow] = useState(false);
 
   // 提交数据
   const schema = z.object({
@@ -241,12 +243,22 @@ export default function LoginPage() {
                 <>
                   <div className="flex justify-center items-center">
                     <label className="w-1/4 text-gray-700">{_t('register.password-label')}</label>
-                    <input
-                      type="password"
-                      {...register("password")}
-                      placeholder={_t('register.password-placeholder')}
-                      className=" w-3/4 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
-                    />
+                    <div className="relative w-3/4">
+                      <input
+                        type={show ? "text" : 'password'}
+                        {...register("password")}
+                        placeholder={_t('register.password-placeholder')}
+                        className="text-gray-800 placeholder-gray-400 focus:outline-none h-12"
+                      />
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        onClick={() => setShow(!show)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                      >
+                        {show ? <Eye size={18} /> : <EyeOff size={18} />}
+                      </button>
+                    </div>
                   </div>
                   {errors.password && (
                     <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
