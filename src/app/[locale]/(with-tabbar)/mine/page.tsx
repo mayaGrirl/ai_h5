@@ -46,10 +46,8 @@ export default function Mine() {
 
   // banner
   const emblaSlides = [
-    {name: "01", src: "/mine/slide/01.png", href: ""},
-    {name: "02", src: "/mine/slide/01.png", href: ""},
-    {name: "03", src: "/mine/slide/01.png", href: ""},
-    {name: "04", src: "/mine/slide/01.png", href: ""}
+    {name: "01", src: "/mine/slide/01.jpeg", href: ""},
+    {name: "02", src: "/mine/slide/01.jpeg", href: ""}
   ];
   const [emblaRef] = useEmblaCarousel({loop: true}, [Autoplay({playOnInit: true, delay: 2000})])
 
@@ -249,7 +247,7 @@ export default function Mine() {
 
           {/* 账户信息：金币 / 存款 / 生态值 */}
           <section className="mt-3 px-3">
-            <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
+            <div className="grid grid-cols-3 rounded-md bg-white py-2 text-center border border-gray-200">
               <Link className="flex flex-col cursor-pointer" href={`/${locale}/mine/receipt-text`}>
                 <div className="text-gray-500">{_t('mine.account-points')}</div>
                 <div className="flex items-center justify-center mt-1 text-[13px] font-semibold text-[#ff3a00]">
@@ -285,21 +283,21 @@ export default function Mine() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">
-              <div className="flex flex-col">
-                <div className=" text-gray-500">{_t('mine.account-rank')}</div>
-                <div className="mt-1 text-[13px] font-semibold">500以外</div>
-              </div>
-              <div className="flex flex-col border-x border-gray-200">
-                <div className=" text-gray-500">{_t('mine.account-blessing')}</div>
-                <div className="mt-1 text-[13px] font-semibold text-gray-800">{memberCapital?.blessing ?? 0}</div>
-              </div>
-              <div className="flex flex-col">
-                <div className=" text-gray-500">{_t('mine.account-freeze')}</div>
-                <div
-                  className="mt-1 text-[13px] font-semibold text-[#ff3a00]">{format.number(memberCapital?.frozen ?? 0)}</div>
-              </div>
-            </div>
+            {/*<div className="grid grid-cols-3 rounded-t-md bg-white py-2 text-center border-t border-b border-gray-200">*/}
+              {/*<div className="flex flex-col">*/}
+              {/*  <div className=" text-gray-500">{_t('mine.account-rank')}</div>*/}
+              {/*  <div className="mt-1 text-[13px] font-semibold">500以外</div>*/}
+              {/*</div>*/}
+              {/*<div className="flex flex-col border-x border-gray-200">*/}
+              {/*  <div className=" text-gray-500">{_t('mine.account-blessing')}</div>*/}
+              {/*  <div className="mt-1 text-[13px] font-semibold text-gray-800">{memberCapital?.blessing ?? 0}</div>*/}
+              {/*</div>*/}
+              {/*<div className="flex flex-col">*/}
+              {/*  <div className=" text-gray-500">{_t('mine.account-freeze')}</div>*/}
+              {/*  <div*/}
+              {/*    className="mt-1 text-[13px] font-semibold text-[#ff3a00]">{format.number(memberCapital?.frozen ?? 0)}</div>*/}
+              {/*</div>*/}
+            {/*</div>*/}
           </section>
 
           {/* 昨日亏损 + 今日首充返利 + 今日亏损返利 区域 */}

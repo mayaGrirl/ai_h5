@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import {useRequireLogin} from "@/hooks/useRequireLogin";
 import Image from "next/image";
 import Link from "next/link";
-import {PageHeader} from "@/components/page-header";
 import {useFormatter, useLocale, useTranslations} from "use-intl";
 import {LOCALE_CURRENCY_MAP} from "@/i18n/routing";
 import {ChevronRight} from "lucide-react";
@@ -16,6 +15,8 @@ import {SAFE_QUESTION_OPTIONS} from "@/constants/constants";
 import TextSkeleton from "@/components/text-skeleton";
 import {cardExchange, cardDetail} from "@/api/shop";
 import {CardDetailResponse} from "@/types/shop.type";
+import Decimal from "decimal.js";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 // 手续费
 const free = 0.02;
@@ -42,6 +43,8 @@ export default function ShopPage() {
   const [isSubmit, setIsSubmit] = useState<boolean>(true);
   // 免除手续费的可领取金豆
   const [exemptCommissionBankPoints, setExemptCommissionBankPoints] = useState<number>(0);
+  // 免除手续费的可领取金豆
+  const [amountPoints, setAmountPoints] = useState<number>(0);
 
   const fetchData = async (isTip: boolean) => {
     // 查询兑换需要的明细数据
@@ -108,6 +111,7 @@ export default function ShopPage() {
     handleSubmit,
     setValue,
     reset,
+    clearErrors,
     formState: {isSubmitting, errors},
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -121,7 +125,7 @@ export default function ShopPage() {
       return;
     }
     const result = await cardExchange({
-      amount: values.amount,
+      amount: amountPoints,
       commission: 0,
       safe_ask: values.safe_ask,
       answer: values.answer,
@@ -222,7 +226,7 @@ export default function ShopPage() {
         <form onSubmit={onSubmit} key={formKey} className="w-full bg-gray-100 px-3 pb-8">
           <div className="bg-white rounded-lg mb-3 overflow-hidden">
             {/* 金额 */}
-            <div className="flex items-center px-4 py-3">
+            <div className="flex items-center px-4 pt-3">
               <label className="w-2/7 text-gray-700" htmlFor="amount">{_t('shop.form-label-1')}</label>
               <input type="text" id="amount"
                      pattern="[0-9]*"
@@ -231,14 +235,20 @@ export default function ShopPage() {
                        valueAsNumber: true,
                      })}
                      placeholder={_t('shop.form-placeholder-1')}
-                     className="text-gray-600 w-5/7 placeholder-gray-400 focus:outline-none h-10"
+                     className="w-5/7 text-gray-600 placeholder-gray-400 focus:outline-none h-10"
                      onChange={(e) => {
                        // 只保留数字
                        const _v = Number(e.target.value.replace(/[^\d]/g, ""));
                        setValue("amount", _v);
 
-                       const commission = (_v - exemptCommissionBankPoints) * free;
-                       console.log(Math.max(0, commission))
+                       // 输入金额转换成金豆
+                       const _p = _v * 1000;
+                       setAmountPoints(_p);
+
+                       // 公式：会员输入的金额 - 可抵消手续费的金豆 * 手续费比例 / 1000(转换成金额)
+                       // (_p - exemptCommissionBankPoints) * free / 1000;
+                       const commission = new Decimal(_p).sub(exemptCommissionBankPoints).mul(free).div(1000).ceil().toNumber();
+
                        setValue("commission", Math.max(0, commission));
                      }}
                      autoComplete="off"
@@ -249,6 +259,21 @@ export default function ShopPage() {
             {errors.amount && (
               <p className="mt-1 text-xs text-red-500">{errors.amount.message}</p>
             )}
+
+            {/* 折合金豆 */}
+            <div className="flex items-center px-4 pt-3 text-[#cccccc]">
+              <div className="w-2/7">折合金豆</div>
+              <div className="w-5/7">
+                <Image
+                  src="/ranking/coin.png"
+                  alt="gold"
+                  width={13}
+                  height={13}
+                  className="inline-block ml-1 w-[13px] h-[13px] mr-1"
+                />
+                {amountPoints > 0 ? format.number(amountPoints) : 0}
+              </div>
+            </div>
 
             {/* 手续费 */}
             <div className="flex items-center px-4 py-3">
@@ -265,15 +290,22 @@ export default function ShopPage() {
             {/* 密保问题 */}
             <div className="flex items-center px-4 py-3">
               <label className="w-2/7 text-gray-700" htmlFor="amount">{_t("mine.toolcase.form-label.question")}</label>
-              <select {...register("safe_ask")}
-                      className="text-gray-600 w-5/7 placeholder-gray-400 focus:outline-none h-10">
-                <option value="">{_t("mine.toolcase.question-options.default")}</option>
-                {SAFE_QUESTION_OPTIONS.map(({value, i18nKey}) => (
-                  <option key={`safe-option-key-${value}`} value={value}>
-                    {_t(i18nKey)}
-                  </option>
-                ))}
-              </select>
+              <Select {...register("safe_ask")} onValueChange={(v) => {
+                setValue('safe_ask', v);
+                clearErrors('safe_ask');
+              }}>
+                <SelectTrigger className="w-5/7" id="uid">
+                  <SelectValue placeholder={loading ? _t('common.loading') : _t('mine.toolcase.question-options.default')}/>
+                </SelectTrigger>
+                <SelectContent className="max-h-[60vh] overflow-y-auto touch-pan-y">
+                  {SAFE_QUESTION_OPTIONS.map(({value, i18nKey}) => (
+                    <SelectItem key={`safe-option-key-${value}`} value={String(value)}>
+                      {_t(i18nKey)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
             </div>
             {errors.safe_ask && (
               <p className="mt-1 text-xs text-red-500">{errors.safe_ask.message}</p>
@@ -315,19 +347,21 @@ export default function ShopPage() {
           </div>
 
           {/* 确认按钮 */}
-          <button
-            disabled={isSubmitting || isSubmit}
-            className={`h-12 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
+          <div className="fixed bottom-14 left-1/2 -translate-x-1/2 w-full max-w-xl px-3 py-2">
+            <button
+              disabled={isSubmitting || isSubmit}
+              className={`h-12 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
                   font-medium tracking-wide
                   ${(isSubmitting || isSubmit) ? "opacity-60 cursor-not-allowed" : "cursor-pointer transition transform active:scale-95"}`
-            }
-          >
-            {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
-          </button>
+              }
+            >
+              {isSubmitting ? _t("common.form.button.submitting") : _t("common.form.button.submit")}
+            </button>
+          </div>
         </form>
 
         {/* 底部占位（给 TabBar 留空间） */}
-        <div className="h-14"/>
+        <div className="h-18"/>
       </div>
     </div>
   );
