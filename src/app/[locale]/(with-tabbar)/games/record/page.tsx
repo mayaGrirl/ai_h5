@@ -130,18 +130,25 @@ export default function RecordPage() {
     return [];
   };
 
-  // 获取状态文本
+  // 获取状态文本 status: 0未结算 1已结算 2已回滚 3已删除
   const getStatusInfo = (item: BetRecordItem): { text: string; color: string } => {
-    if (item.status === "00" || item.is_opened === 0) {
-      return { text: "待开奖", color: "text-orange-600 bg-orange-50" };
+    const status = Number(item.status);
+    switch (status) {
+      case 0:
+        return { text: "未结算", color: "text-orange-600 bg-orange-50" };
+      case 1:
+        // 已结算时根据是否中奖显示不同状态
+        if (item.is_win === 2) {
+          return { text: "已中奖", color: "text-red-600 bg-red-50" };
+        }
+        return { text: "未中奖", color: "text-gray-600 bg-gray-100" };
+      case 2:
+        return { text: "已回滚", color: "text-yellow-600 bg-yellow-50" };
+      case 3:
+        return { text: "已删除", color: "text-gray-400 bg-gray-100" };
+      default:
+        return { text: "--", color: "text-gray-500" };
     }
-    if (item.is_win === 2) {
-      return { text: "已中奖", color: "text-red-600 bg-red-50" };
-    }
-    if (item.is_win === 3) {
-      return { text: "未中奖", color: "text-gray-600 bg-gray-100" };
-    }
-    return { text: "--", color: "text-gray-500" };
   };
 
   return (
