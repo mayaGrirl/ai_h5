@@ -8,7 +8,7 @@ import {useFormatter, useLocale, useTranslations} from "use-intl";
 import {LOCALE_CURRENCY_MAP} from "@/i18n/routing";
 import {ChevronRight} from "lucide-react";
 import {toast} from "sonner";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {SAFE_QUESTION_OPTIONS} from "@/constants/constants";
@@ -112,6 +112,7 @@ export default function ShopPage() {
     setValue,
     reset,
     clearErrors,
+    control,
     formState: {isSubmitting, errors},
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -290,21 +291,42 @@ export default function ShopPage() {
             {/* 密保问题 */}
             <div className="flex items-center px-4 py-3">
               <label className="w-2/7 text-gray-700" htmlFor="amount">{_t("mine.toolcase.form-label.question")}</label>
-              <Select {...register("safe_ask")} onValueChange={(v) => {
-                setValue('safe_ask', v);
-                clearErrors('safe_ask');
-              }}>
-                <SelectTrigger className="w-5/7" id="uid">
-                  <SelectValue placeholder={loading ? _t('common.loading') : _t('mine.toolcase.question-options.default')}/>
-                </SelectTrigger>
-                <SelectContent className="max-h-[60vh] overflow-y-auto touch-pan-y">
-                  {SAFE_QUESTION_OPTIONS.map(({value, i18nKey}) => (
-                    <SelectItem key={`safe-option-key-${value}`} value={String(value)}>
-                      {_t(i18nKey)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="safe_ask"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      field.onChange(v)
+                      clearErrors("safe_ask")
+                    }}
+                  >
+                    <SelectTrigger className="h-11 w-full">
+                      <SelectValue
+                        placeholder={
+                          loading
+                            ? _t("common.loading")
+                            : _t("mine.toolcase.question-options.default")
+                        }
+                      />
+                    </SelectTrigger>
+
+                    <SelectContent
+                      position="popper"
+                      avoidCollisions
+                      collisionPadding={16}
+                      className="max-h-[60vh] overflow-y-auto"
+                    >
+                      {SAFE_QUESTION_OPTIONS.map(({ value, i18nKey }) => (
+                        <SelectItem key={value} value={String(value)}>
+                          {_t(i18nKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
 
             </div>
             {errors.safe_ask && (
