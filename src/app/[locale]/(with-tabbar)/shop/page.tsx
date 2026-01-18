@@ -314,8 +314,8 @@ export default function ShopPage() {
 
                     <SelectContent
                       position="popper"
-                      avoidCollisions
-                      collisionPadding={16}
+                      // avoidCollisions
+                      // collisionPadding={16}
                       className="max-h-[60vh] overflow-y-auto"
                     >
                       {SAFE_QUESTION_OPTIONS.map(({ value, i18nKey }) => (
