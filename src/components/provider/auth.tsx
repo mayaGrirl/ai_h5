@@ -18,6 +18,7 @@ export default function AuthProvider({children}: { children: React.ReactNode }) 
   const locales = routing.locales;
   const localePattern = new RegExp(`^/(${locales.join("|")})(/|$)`);
   const pathname = usePathname().replace(localePattern, "/")
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const initAuth = async () => {
@@ -30,10 +31,10 @@ export default function AuthProvider({children}: { children: React.ReactNode }) 
     };
 
     // 无需登录的页面路由
-    if (!NOT_LOGIN_WHITELIST.includes(pathname)) {
+    if (!NOT_LOGIN_WHITELIST.includes(pathname) && !isHome) {
       void initAuth();
     }
-  }, [pathname, setCurrentCustomer]);
+  }, [isHome, pathname, setCurrentCustomer]);
 
   return children;
 }
