@@ -3,7 +3,7 @@
 import Image from "next/image";
 import {useEffect, useRef, useState} from "react";
 import {useTranslations} from "use-intl";
-import {receiveSalaryZ, salaryZRecords} from "@/api/customer";
+import {receiveSalaryZ, receiveSalaryZAll, salaryZRecords} from "@/api/customer";
 import {toast} from "sonner";
 import {SalaryZRecordField} from "@/types/customer.type";
 import dayjs from "@/lib/dayjs";
@@ -107,8 +107,51 @@ export default function ReceivePage() {
       });
     }
   };
+  const [receivingAll, setReceivingAll] = useState(false);
+  // 一键领取
+
+  /**
+   * 一键领取工资
+   * @param t
+   * @param setLoading
+   */
+  const handleReceiveAll = async (
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setLoading(true);
+    try {
+      const {code, message} = await receiveSalaryZAll();
+      if (code === 200) {
+        toast.success(message);
+        // 可选：刷新列表
+        setList([]);
+        setPage(1);
+        fetchData(1).then(() => {});
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : _t('common.catch-error');
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
+      <div className="grid px-3">
+        {list.length > 0 && (
+          <button
+            onClick={() => handleReceiveAll(setReceivingAll)}
+            disabled={receivingAll}
+            className={`mb-1 h-9 w-full rounded-full bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] text-white
+          font-medium transition active:scale-95 ${receivingAll ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+          >
+            {receivingAll ? _t("common.form.button.submitting") : _t("mine.salary.receive-all-btn")}
+          </button>
+        )}
+      </div>
       {list.map((item, index) => (
         <div
           key={`all-key-${index}`}

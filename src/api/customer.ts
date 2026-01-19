@@ -282,6 +282,13 @@ export const receiveSalaryZ = (id: number): Promise<HttpRes<SalaryZRecordField>>
 };
 
 /**
+ * 一键领取工资
+ */
+export const receiveSalaryZAll = (): Promise<HttpRes<[]>> => {
+  return http.post(`/api/app/v1/salary-z/receive-all`, {});
+};
+
+/**
  * 签到统计
  */
 export const signStat = (): Promise<HttpRes<SignInStatisticsField>> => {

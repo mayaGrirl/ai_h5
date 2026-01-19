@@ -205,6 +205,7 @@
       "receive-grid-1": "Statistics period: {start} to {end}",
       "receive-grid-2": "Salary",
       "receive-grid-btn": "Receive",
+      "receive-all-btn": "Receive All",
       "receive-grid-3": "Received",
       "record-grid-1": "Type",
       "record-grid-2": "Calculated Amount",
