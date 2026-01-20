@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useGameStore } from '@/stores/game'
 import { useLocalized } from '@/composables/useLocalized'
 
+const { t } = useI18n()
 const gameStore = useGameStore()
 const { localize } = useLocalized()
 
@@ -41,7 +43,7 @@ const groupName = computed(() => {
       <template v-if="currentGroup">
         <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
           {{ groupName }}
-          <span class="text-sm font-normal text-gray-500 ml-2">游戏规则</span>
+          <span class="text-sm font-normal text-gray-500 ml-2">{{ t('games.rules.title') }}</span>
         </h2>
 
         <div
@@ -57,11 +59,11 @@ const groupName = computed(() => {
           </div>
         </div>
 
-        <div v-else class="text-center text-gray-400 py-8">暂无游戏规则</div>
+        <div v-else class="text-center text-gray-400 py-8">{{ t('games.rules.no-data') }}</div>
       </template>
 
       <template v-else>
-        <div class="text-center py-12 text-gray-500">请选择游戏分组</div>
+        <div class="text-center py-12 text-gray-500">{{ t('games.rules.select-group') }}</div>
       </template>
     </div>
   </div>

@@ -140,7 +140,7 @@ onMounted(() => {
           </div>
         </section>
 
-        <!-- 最新游戏 -->
+        <!-- 最新游戏 (暂时隐藏)
         <section class="mb-2 flex items-center justify-between text-[13px]">
           <div class="flex items-center gap-2">
             <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
@@ -166,6 +166,7 @@ onMounted(() => {
             暂无最新游戏
           </div>
         </section>
+        -->
 
         <!-- 底部操作按钮 -->
         <section v-if="!configLoading && siteConfig" class="space-y-3">

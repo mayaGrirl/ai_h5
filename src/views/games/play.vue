@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ChevronUp, ChevronDown } from 'lucide-vue-next'
 import { useGameStore } from '@/stores/game'
 import { useAuthStore } from '@/stores/auth'
@@ -8,6 +9,7 @@ import { playAll, betGame, fetchExpectInfo as fetchExpectInfoAPI, modeList, betR
 import { toast } from '@/composables/useToast'
 import type { ExpectInfo, GamePlay, GamePlayMapItem, ModeItem, BetNoItem } from '@/types/game.type'
 
+const { t } = useI18n()
 const route = useRoute()
 const gameStore = useGameStore()
 const authStore = useAuthStore()
@@ -78,19 +80,75 @@ let isInitialLoad = true
 // 支持快捷选择的玩法分组ID
 const quickSelectGroupIds = [1, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24]
 
-// 快捷选择按钮配置
-const quickButtons1 = ['全包', '单', '大单', '小单', '单边', '双']
-const quickButtons2 = ['大双', '小双', '双边', '大', '小', '中']
-const quickButtons3 = ['边', '大边', '小边']
-const specialButtons = ['上期', '反选', '清空']
+// 快捷选择按钮配置 (内部值 -> i18n key)
+const quickButtons1 = computed(() => [
+  { value: '全包', label: t('games.play.all') },
+  { value: '单', label: t('games.play.odd') },
+  { value: '大单', label: t('games.play.big-odd') },
+  { value: '小单', label: t('games.play.small-odd') },
+  { value: '单边', label: t('games.play.odd-side') },
+  { value: '双', label: t('games.play.even') }
+])
+const quickButtons2 = computed(() => [
+  { value: '大双', label: t('games.play.big-even') },
+  { value: '小双', label: t('games.play.small-even') },
+  { value: '双边', label: t('games.play.even-side') },
+  { value: '大', label: t('games.play.big') },
+  { value: '小', label: t('games.play.small') },
+  { value: '中', label: t('games.play.middle') }
+])
+const quickButtons3 = computed(() => [
+  { value: '边', label: t('games.play.side') },
+  { value: '大边', label: t('games.play.big-side') },
+  { value: '小边', label: t('games.play.small-side') }
+])
+const specialButtons = computed(() => [
+  { value: '上期', label: t('games.play.last-period') },
+  { value: '反选', label: t('games.play.reverse') },
+  { value: '清空', label: t('games.play.clear') }
+])
+const genericButtons = computed(() => [
+  { value: '全包', label: t('games.play.all') },
+  { value: '上期', label: t('games.play.last-period') },
+  { value: '反选', label: t('games.play.reverse') },
+  { value: '清空', label: t('games.play.clear') }
+])
 
 // 尾数按钮
-const tailButtons = ['0尾', '1尾', '2尾', '3尾', '4尾', '5尾', '6尾', '7尾', '8尾', '9尾', '小尾', '大尾']
+const tailButtons = computed(() => [
+  { value: '0尾', label: t('games.play.tail-0') },
+  { value: '1尾', label: t('games.play.tail-1') },
+  { value: '2尾', label: t('games.play.tail-2') },
+  { value: '3尾', label: t('games.play.tail-3') },
+  { value: '4尾', label: t('games.play.tail-4') },
+  { value: '5尾', label: t('games.play.tail-5') },
+  { value: '6尾', label: t('games.play.tail-6') },
+  { value: '7尾', label: t('games.play.tail-7') },
+  { value: '8尾', label: t('games.play.tail-8') },
+  { value: '9尾', label: t('games.play.tail-9') },
+  { value: '小尾', label: t('games.play.tail-small') },
+  { value: '大尾', label: t('games.play.tail-big') }
+])
 
 // 余数按钮
-const mod3Buttons = ['3余0', '3余1', '3余2']
-const mod4Buttons = ['4余0', '4余1', '4余2', '4余3']
-const mod5Buttons = ['5余0', '5余1', '5余2', '5余3', '5余4']
+const mod3Buttons = computed(() => [
+  { value: '3余0', label: t('games.play.mod3-0') },
+  { value: '3余1', label: t('games.play.mod3-1') },
+  { value: '3余2', label: t('games.play.mod3-2') }
+])
+const mod4Buttons = computed(() => [
+  { value: '4余0', label: t('games.play.mod4-0') },
+  { value: '4余1', label: t('games.play.mod4-1') },
+  { value: '4余2', label: t('games.play.mod4-2') },
+  { value: '4余3', label: t('games.play.mod4-3') }
+])
+const mod5Buttons = computed(() => [
+  { value: '5余0', label: t('games.play.mod5-0') },
+  { value: '5余1', label: t('games.play.mod5-1') },
+  { value: '5余2', label: t('games.play.mod5-2') },
+  { value: '5余3', label: t('games.play.mod5-3') },
+  { value: '5余4', label: t('games.play.mod5-4') }
+])
 
 // 倍数按钮
 const multiplierButtons1 = [0.1, 0.5, 0.8, 1.2, 1.5, 2]
@@ -221,7 +279,7 @@ const fetchMyBetRecords = async (expectNo: string) => {
 // 获取上期投注并回显
 const fetchPreviousPeriodBets = async () => {
   if (!gameStore.activeGame?.id || !activeGroupIdRef || !lastExpect.value?.expect_no) {
-    toast.error('无法获取上期投注记录')
+    toast.error(t('games.play.load-last-failed'))
     return
   }
 
@@ -237,7 +295,7 @@ const fetchPreviousPeriodBets = async () => {
     if (res.code === 200 && res.data) {
       const list = res.data.list || []
       if (list.length === 0) {
-        toast.info('上期没有投注记录')
+        toast.info(t('games.play.no-last-bets'))
         return
       }
 
@@ -258,7 +316,7 @@ const fetchPreviousPeriodBets = async () => {
 
       const playNames = Object.keys(prevBets)
       if (playNames.length === 0) {
-        toast.info('上期没有投注记录')
+        toast.info(t('games.play.no-last-bets'))
         return
       }
 
@@ -268,13 +326,13 @@ const fetchPreviousPeriodBets = async () => {
         newAmounts[name] = String(prevBets[name])
       })
       playAmounts.value = newAmounts
-      toast.success(`已加载上期 ${playNames.length} 个投注`)
+      toast.success(t('games.play.loaded-last-bets', { count: playNames.length }))
     } else {
-      toast.info('上期没有投注记录')
+      toast.info(t('games.play.no-last-bets'))
     }
   } catch (error) {
     console.error('获取上期投注记录失败', error)
-    toast.error('获取上期投注记录失败')
+    toast.error(t('games.play.load-last-failed'))
   }
 }
 
@@ -368,11 +426,11 @@ const fetchPlayMethods = async () => {
         isInitialLoad = false
       }
     } else if (res.code !== 3001) {
-      toast.error(res.message || '获取玩法列表失败')
+      toast.error(res.message || t('games.play.load-plays-failed'))
     }
   } catch (error) {
     console.error('获取玩法列表失败', error)
-    toast.error('获取玩法列表失败，请稍后重试')
+    toast.error(t('games.play.load-plays-failed-retry'))
   } finally {
     isLoadingPlays.value = false
   }
@@ -432,12 +490,12 @@ const fetchExpectInfo = async (groupIdOverride?: number) => {
       shouldStopFetching = false
     } else {
       shouldStopFetching = true
-      toast.error(res.message || '获取开奖信息失败')
+      toast.error(res.message || t('games.play.load-expect-failed'))
     }
   } catch (error) {
     console.error('获取开奖信息失败', error)
     shouldStopFetching = true
-    toast.error('获取开奖信息失败，请稍后重试')
+    toast.error(t('games.play.load-expect-failed-retry'))
   }
 }
 
@@ -934,7 +992,7 @@ const handleApplyMode = (mode: ModeItem) => {
   playAmounts.value = newPlayAmounts
   selectedMode.value = mode
   showModeSelector.value = false
-  toast.success(`已应用模式: ${mode.mode_name}`)
+  toast.success(t('games.play.mode-applied', { name: mode.mode_name }))
 }
 
 // 梭哈（全部投入）
@@ -985,7 +1043,7 @@ const handleAmountMultiplier = (play: string, multiplier: number) => {
 // 提交投注
 const handleSubmit = async () => {
   if (!activeGroup.value) {
-    toast.error('请选择玩法分组')
+    toast.error(t('games.play.select-group'))
     return
   }
 
@@ -1003,11 +1061,11 @@ const handleSubmit = async () => {
   const total_gold = selectedPlays.value.reduce((sum, p) => sum + (parseInt(playAmounts.value[p] || '0', 10) || 0), 0)
 
   if (!bet_expect_no) {
-    toast.error('期号信息缺失，请稍后重试')
+    toast.error(t('games.play.expect-missing'))
     return
   }
   if (total_gold <= 0) {
-    toast.error('请输入投注金额')
+    toast.error(t('games.play.enter-amount'))
     return
   }
 
@@ -1024,7 +1082,7 @@ const handleSubmit = async () => {
   try {
     const res = await betGame(payload)
     if (res.code === 200) {
-      toast.success('投注成功！')
+      toast.success(t('games.play.bet-success'))
 
       // 更新本地已投注显示
       const updated = { ...myBetAmounts.value }
@@ -1042,11 +1100,11 @@ const handleSubmit = async () => {
       activeQuick.value = null
       refreshUserPoints()
     } else if (res.code !== 3001) {
-      toast.error(res.message || '投注失败，请稍后重试')
+      toast.error(res.message || t('games.play.bet-failed-retry'))
     }
   } catch (error) {
     console.error('投注失败：', error)
-    toast.error('投注失败，请稍后重试')
+    toast.error(t('games.play.bet-failed-retry'))
   }
 }
 
@@ -1100,16 +1158,16 @@ onUnmounted(() => {
         <div class="grid grid-cols-6 gap-2 mb-2">
           <button
             v-for="btn in quickButtons1"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             :class="[
               'py-1.5 text-xs rounded border',
-              activeQuick === btn
+              activeQuick === btn.value
                 ? 'bg-red-600 text-white border-red-600'
                 : 'bg-white text-gray-700 border-red-300 hover:border-red-500'
             ]"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
 
@@ -1117,16 +1175,16 @@ onUnmounted(() => {
         <div class="grid grid-cols-6 gap-2 mb-2">
           <button
             v-for="btn in quickButtons2"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             :class="[
               'py-1.5 text-xs rounded border',
-              activeQuick === btn
+              activeQuick === btn.value
                 ? 'bg-red-600 text-white border-red-600'
                 : 'bg-white text-gray-700 border-red-300 hover:border-red-500'
             ]"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
 
@@ -1134,24 +1192,24 @@ onUnmounted(() => {
         <div class="grid grid-cols-6 gap-2">
           <button
             v-for="btn in quickButtons3"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             :class="[
               'py-1.5 text-xs rounded border',
-              activeQuick === btn
+              activeQuick === btn.value
                 ? 'bg-red-600 text-white border-red-600'
                 : 'bg-white text-gray-700 border-red-300 hover:border-red-500'
             ]"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
           <button
             v-for="btn in specialButtons"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             class="py-1.5 text-xs rounded bg-red-600 text-white"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
       </template>
@@ -1160,12 +1218,12 @@ onUnmounted(() => {
       <template v-else>
         <div class="grid grid-cols-4 gap-2">
           <button
-            v-for="btn in ['全包', '上期', '反选', '清空']"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            v-for="btn in genericButtons"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             class="py-1.5 text-xs rounded bg-red-600 text-white"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
       </template>
@@ -1178,52 +1236,52 @@ onUnmounted(() => {
           <div>
             <div class="flex items-center mb-2">
               <span class="text-xs text-gray-500">—</span>
-              <span class="text-xs text-gray-600 mx-1">追加尾数</span>
+              <span class="text-xs text-gray-600 mx-1">{{ t('games.play.add-tail') }}</span>
               <span class="text-xs text-gray-500 flex-1">———</span>
             </div>
             <div class="grid grid-cols-4 gap-1">
               <button
                 v-for="btn in tailButtons.slice(0, 4)"
-                :key="btn"
-                @click="handleQuickSelect(btn)"
+                :key="btn.value"
+                @click="handleQuickSelect(btn.value)"
                 :class="[
                   'py-1 text-[10px] rounded border',
-                  activeQuick === btn
+                  activeQuick === btn.value
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-700 border-red-300'
                 ]"
               >
-                {{ btn }}
+                {{ btn.label }}
               </button>
             </div>
             <div class="grid grid-cols-4 gap-1 mt-1">
               <button
                 v-for="btn in tailButtons.slice(4, 8)"
-                :key="btn"
-                @click="handleQuickSelect(btn)"
+                :key="btn.value"
+                @click="handleQuickSelect(btn.value)"
                 :class="[
                   'py-1 text-[10px] rounded border',
-                  activeQuick === btn
+                  activeQuick === btn.value
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-700 border-red-300'
                 ]"
               >
-                {{ btn }}
+                {{ btn.label }}
               </button>
             </div>
             <div class="grid grid-cols-4 gap-1 mt-1">
               <button
                 v-for="btn in tailButtons.slice(8)"
-                :key="btn"
-                @click="handleQuickSelect(btn)"
+                :key="btn.value"
+                @click="handleQuickSelect(btn.value)"
                 :class="[
                   'py-1 text-[10px] rounded border',
-                  activeQuick === btn
+                  activeQuick === btn.value
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-700 border-red-300'
                 ]"
               >
-                {{ btn }}
+                {{ btn.label }}
               </button>
             </div>
           </div>
@@ -1232,52 +1290,52 @@ onUnmounted(() => {
           <div>
             <div class="flex items-center mb-2">
               <span class="text-xs text-gray-500">—</span>
-              <span class="text-xs text-gray-600 mx-1">追加余数</span>
+              <span class="text-xs text-gray-600 mx-1">{{ t('games.play.add-mod') }}</span>
               <span class="text-xs text-gray-500 flex-1">———</span>
             </div>
             <div class="grid grid-cols-3 gap-1">
               <button
                 v-for="btn in mod3Buttons"
-                :key="btn"
-                @click="handleQuickSelect(btn)"
+                :key="btn.value"
+                @click="handleQuickSelect(btn.value)"
                 :class="[
                   'py-1 text-[10px] rounded border',
-                  activeQuick === btn
+                  activeQuick === btn.value
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-700 border-red-300'
                 ]"
               >
-                {{ btn }}
+                {{ btn.label }}
               </button>
             </div>
             <div class="grid grid-cols-4 gap-1 mt-1">
               <button
                 v-for="btn in mod4Buttons"
-                :key="btn"
-                @click="handleQuickSelect(btn)"
+                :key="btn.value"
+                @click="handleQuickSelect(btn.value)"
                 :class="[
                   'py-1 text-[10px] rounded border',
-                  activeQuick === btn
+                  activeQuick === btn.value
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-700 border-red-300'
                 ]"
               >
-                {{ btn }}
+                {{ btn.label }}
               </button>
             </div>
             <div class="grid grid-cols-5 gap-1 mt-1">
               <button
                 v-for="btn in mod5Buttons"
-                :key="btn"
-                @click="handleQuickSelect(btn)"
+                :key="btn.value"
+                @click="handleQuickSelect(btn.value)"
                 :class="[
                   'py-1 text-[10px] rounded border',
-                  activeQuick === btn
+                  activeQuick === btn.value
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-700 border-red-300'
                 ]"
               >
-                {{ btn }}
+                {{ btn.label }}
               </button>
             </div>
           </div>
@@ -1287,7 +1345,7 @@ onUnmounted(() => {
         <div class="mt-4">
           <div class="flex items-center mb-2">
             <span class="text-xs text-gray-500">——</span>
-            <span class="text-xs text-gray-600 mx-2">倍数投注</span>
+            <span class="text-xs text-gray-600 mx-2">{{ t('games.play.multiplier') }}</span>
             <span class="text-xs text-gray-500 flex-1">——————————</span>
           </div>
           <div class="grid grid-cols-6 gap-2">
@@ -1302,7 +1360,7 @@ onUnmounted(() => {
                   : 'bg-white text-gray-700 border-red-300'
               ]"
             >
-              {{ mult }}倍
+              {{ mult }}{{ t('games.play.times') }}
             </button>
           </div>
           <div class="grid grid-cols-6 gap-2 mt-2">
@@ -1317,7 +1375,7 @@ onUnmounted(() => {
                   : 'bg-white text-gray-700 border-red-300'
               ]"
             >
-              {{ mult }}倍
+              {{ mult }}{{ t('games.play.times') }}
             </button>
           </div>
         </div>
@@ -1328,7 +1386,7 @@ onUnmounted(() => {
         @click="isExpanded = !isExpanded"
         class="w-full mt-3 py-2 bg-orange-500 text-white rounded-lg flex items-center justify-center gap-1"
       >
-        {{ isExpanded ? '收起' : '展开' }}
+        {{ isExpanded ? t('games.play.collapse') : t('games.play.expand') }}
         <ChevronUp v-if="isExpanded" :size="16" />
         <ChevronDown v-else :size="16" />
       </button>
@@ -1339,13 +1397,13 @@ onUnmounted(() => {
           @click="handleModeClick"
           class="py-2 border border-gray-300 rounded-lg text-sm text-gray-600 flex items-center justify-center gap-1"
         >
-          自定义模式 <ChevronDown :size="14" />
+          {{ t('games.play.custom-mode') }} <ChevronDown :size="14" />
         </button>
         <button
           @click="handleAllIn"
           class="py-2 border border-gray-300 rounded-lg text-sm text-gray-600"
         >
-          梭哈
+          {{ t('games.play.all-in') }}
         </button>
       </div>
 
@@ -1365,13 +1423,13 @@ onUnmounted(() => {
           type="number"
           v-model="quickAmount"
           class="w-20 h-8 px-2 border border-gray-300 rounded text-sm flex-shrink-0"
-          placeholder="金额"
+          :placeholder="t('games.play.amount')"
         />
         <button
           @click="handleFixedAllIn"
           class="h-8 px-2 bg-red-600 text-white text-xs rounded flex-shrink-0 whitespace-nowrap"
         >
-          定额梭哈
+          {{ t('games.play.fixed-all-in') }}
         </button>
       </div>
     </div>
@@ -1380,9 +1438,9 @@ onUnmounted(() => {
     <div class="bg-white mx-3 mt-3 mb-[50px] rounded-lg shadow">
       <!-- 表头 -->
       <div class="grid grid-cols-[80px_1fr_100px_90px] text-xs text-gray-500 border-b px-3 py-2">
-        <span>号码</span>
-        <span class="text-center">我的已投注</span>
-        <span class="text-center">投注</span>
+        <span>{{ t('games.play.number') }}</span>
+        <span class="text-center">{{ t('games.play.my-bet') }}</span>
+        <span class="text-center">{{ t('games.play.bet') }}</span>
         <span></span>
       </div>
 
@@ -1391,7 +1449,7 @@ onUnmounted(() => {
         <div
           class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
         ></div>
-        <span class="ml-2 text-gray-600">加载中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.play.loading') }}</span>
       </div>
 
       <div v-else-if="activeGroup" class="divide-y">
@@ -1448,7 +1506,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div v-else class="text-center py-8 text-gray-500">暂无玩法数据</div>
+      <div v-else class="text-center py-8 text-gray-500">{{ t('games.play.no-plays') }}</div>
     </div>
 
     <!-- 底部固定操作栏 -->
@@ -1456,7 +1514,7 @@ onUnmounted(() => {
       <!-- 上期开奖结果 -->
       <div v-if="lastExpect" class="flex items-center justify-between px-4 py-1.5 bg-gray-50 border-b text-xs">
         <div class="flex items-center gap-2">
-          <span class="text-gray-500">上期:</span>
+          <span class="text-gray-500">{{ t('games.play.last-period-label') }}</span>
           <span class="text-blue-700 font-medium">{{ lastExpect.expect_no || '--' }}</span>
         </div>
         <div class="flex items-center gap-2">
@@ -1470,14 +1528,14 @@ onUnmounted(() => {
       <!-- 投注统计 -->
       <div class="flex justify-between px-4 py-2 border-b">
         <div class="flex items-center text-sm">
-          <span class="text-gray-600">已投注</span>
+          <span class="text-gray-600">{{ t('games.play.total-bet') }}</span>
           <span class="text-red-600 font-bold ml-1">
             {{ Object.values(myBetAmounts).reduce((sum, amt) => sum + amt, 0).toLocaleString() }}
           </span>
           <img alt="coin" class="inline-block w-4 h-4 ml-0.5" src="/ranking/coin.png" />
         </div>
         <div class="flex items-center text-sm">
-          <span class="text-gray-600">本次投注</span>
+          <span class="text-gray-600">{{ t('games.play.this-bet') }}</span>
           <span class="text-red-600 font-bold ml-1">{{ totalBetAmount.toLocaleString() }}</span>
           <img alt="coin" class="inline-block w-4 h-4 ml-0.5" src="/ranking/coin.png" />
         </div>
@@ -1489,15 +1547,15 @@ onUnmounted(() => {
           @click="handleCancel"
           class="bg-blue-600 text-white font-bold flex items-center justify-center gap-1"
         >
-          <span class="text-lg">&lt;</span> 取消
+          <span class="text-lg">&lt;</span> {{ t('games.play.cancel') }}
         </button>
         <button class="bg-white text-gray-700 font-bold flex flex-col items-center justify-center border-x">
           <template v-if="remainingClose > 0">
-            <span class="text-xs text-gray-500">截止投注</span>
+            <span class="text-xs text-gray-500">{{ t('games.play.close-countdown') }}</span>
             <span class="text-red-600 font-bold">{{ formatTime(remainingClose) }}</span>
           </template>
           <template v-else>
-            <span class="text-xs text-gray-500">开奖倒计时</span>
+            <span class="text-xs text-gray-500">{{ t('games.play.open-countdown') }}</span>
             <span class="text-orange-600 font-bold">{{ formatTime(remainingOpen) }}</span>
           </template>
         </button>
@@ -1511,7 +1569,7 @@ onUnmounted(() => {
               : 'bg-red-600 text-white'
           ]"
         >
-          <span class="text-lg">&#10003;</span> 投注
+          <span class="text-lg">&#10003;</span> {{ t('games.play.submit-bet') }}
         </button>
       </div>
     </div>
@@ -1524,19 +1582,19 @@ onUnmounted(() => {
         @click.self="showModeSelector = false"
       >
         <div class="mx-4 w-full max-w-sm rounded-lg bg-white flex flex-col max-h-[70vh]">
-          <div class="p-3 border-b font-medium">选择投注模式</div>
+          <div class="p-3 border-b font-medium">{{ t('games.play.select-mode') }}</div>
 
           <div class="flex-1 overflow-y-auto">
             <div v-if="isLoadingModes" class="flex justify-center items-center py-8">
               <div
                 class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-red-600 border-r-transparent"
               ></div>
-              <span class="ml-2 text-gray-600">加载中...</span>
+              <span class="ml-2 text-gray-600">{{ t('games.play.loading') }}</span>
             </div>
 
             <div v-else-if="modes.length === 0" class="text-center py-8 text-gray-500">
-              <p>暂无模式</p>
-              <p class="text-sm mt-2">请先在"模式"页面创建投注模式</p>
+              <p>{{ t('games.play.no-modes') }}</p>
+              <p class="text-sm mt-2">{{ t('games.play.create-mode-hint') }}</p>
             </div>
 
             <div v-else class="divide-y">
@@ -1560,7 +1618,7 @@ onUnmounted(() => {
               @click="showModeSelector = false"
               class="w-full py-2 bg-gray-200 text-gray-700 rounded-lg"
             >
-              关闭
+              {{ t('games.play.close') }}
             </button>
           </div>
         </div>

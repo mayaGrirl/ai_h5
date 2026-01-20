@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { gameAll, playAll } from '@/api/game'
 import { toast } from '@/composables/useToast'
 import { useLocalized } from '@/composables/useLocalized'
 import type { Game, GamePlayGroup, GameTypeMapItem } from '@/types/game.type'
 
+const { t } = useI18n()
 const { localize } = useLocalized()
 
 interface GameSeries {
@@ -98,10 +100,10 @@ const fetchGameAll = async () => {
         await fetchPlayAll(defaultGame.id)
       }
     } else {
-      toast.error(res.message || '获取游戏列表失败')
+      toast.error(res.message || t('games.load-failed'))
     }
   } catch (error) {
-    toast.error('获取游戏列表失败，请稍后重试')
+    toast.error(t('games.load-failed-retry'))
   } finally {
     isLoadingGames.value = false
   }
@@ -125,11 +127,11 @@ const fetchPlayAll = async (lotteryId: number) => {
 
       playMethodGroups.value = groups
     } else {
-      toast.error(res.message || '获取玩法分组失败')
+      toast.error(res.message || t('games.group-load-failed'))
       playMethodGroups.value = []
     }
   } catch (error) {
-    toast.error('获取玩法分组失败，请稍后重试')
+    toast.error(t('games.group-load-failed-retry'))
     playMethodGroups.value = []
   } finally {
     isLoadingPlays.value = false
@@ -165,16 +167,16 @@ onMounted(() => {
   <div v-if="isLoadingGames" class="flex min-h-screen justify-center items-center bg-zinc-50">
     <div class="text-center">
       <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-red-600 border-r-transparent"></div>
-      <p class="mt-3 text-gray-600">加载游戏列表中...</p>
+      <p class="mt-3 text-gray-600">{{ t('games.loading') }}</p>
     </div>
   </div>
 
   <!-- 无数据 -->
   <div v-else-if="!activeSeries || !activeGame" class="flex min-h-screen justify-center items-center bg-zinc-50">
     <div class="text-center">
-      <p class="text-gray-600">暂无游戏数据</p>
+      <p class="text-gray-600">{{ t('games.no-data') }}</p>
       <button @click="fetchGameAll" class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">
-        重新加载
+        {{ t('games.reload') }}
       </button>
     </div>
   </div>
@@ -184,7 +186,7 @@ onMounted(() => {
     <main class="w-full max-w-3xl bg-white">
       <!-- 头部 -->
       <header class="h-16 flex items-center justify-center bg-red-600 text-white">
-        <span class="text-white text-2xl font-black tracking-wide">游戏大厅</span>
+        <span class="text-white text-2xl font-black tracking-wide">{{ t('games.hall') }}</span>
       </header>
 
       <!-- 系列横向 -->
@@ -233,11 +235,11 @@ onMounted(() => {
 
           <div v-if="isLoadingPlays" class="flex justify-center items-center py-8">
             <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-            <span class="ml-2 text-gray-600">加载玩法分组中...</span>
+            <span class="ml-2 text-gray-600">{{ t('games.group-loading') }}</span>
           </div>
 
           <div v-else-if="playMethodGroups.length === 0" class="text-center py-8 text-gray-500">
-            暂无玩法分组数据
+            {{ t('games.group-no-data') }}
           </div>
 
           <div v-else class="grid grid-cols-2 gap-3">

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { profitLoss } from '@/api/game'
 import { toast } from '@/composables/useToast'
 import type { ProfitLossItem, ProfitLossSummary } from '@/types/game.type'
 
+const { t } = useI18n()
 const route = useRoute()
 
 const statList = ref<ProfitLossItem[]>([])
@@ -45,11 +47,11 @@ const fetchProfitLoss = async (pageNum: number = 1, reset: boolean = false) => {
       hasMore.value = list.length >= pageSize
       page.value = pageNum
     } else {
-      toast.error(res.message || '获取盈亏统计失败')
+      toast.error(res.message || t('games.stat.load-failed'))
       if (reset) statList.value = []
     }
   } catch (error) {
-    toast.error('获取盈亏统计失败，请稍后重试')
+    toast.error(t('games.stat.load-failed-retry'))
     if (reset) statList.value = []
   } finally {
     isLoading.value = false
@@ -79,22 +81,22 @@ onMounted(() => {
   <div class="bg-gray-100 pb-16">
     <!-- 汇总卡片 -->
     <div class="bg-white mx-3 my-3 rounded-lg shadow p-4">
-      <div class="text-sm text-gray-600 mb-2">总计（当前游戏/分组）</div>
+      <div class="text-sm text-gray-600 mb-2">{{ t('games.stat.summary') }}</div>
       <div class="grid grid-cols-3 gap-3 text-center">
         <div class="bg-blue-50 rounded-lg p-3">
-          <div class="text-xs text-gray-500">投注金额</div>
+          <div class="text-xs text-gray-500">{{ t('games.stat.bet-amount') }}</div>
           <div class="text-lg font-bold text-blue-600">
             {{ (summary.bet_gold || 0).toLocaleString() }}
           </div>
         </div>
         <div class="bg-green-50 rounded-lg p-3">
-          <div class="text-xs text-gray-500">中奖金额</div>
+          <div class="text-xs text-gray-500">{{ t('games.stat.prize-amount') }}</div>
           <div class="text-lg font-bold text-green-600">
             {{ (summary.win_gold || 0).toLocaleString() }}
           </div>
         </div>
         <div :class="[(summary.profit || 0) >= 0 ? 'bg-red-50' : 'bg-gray-100', 'rounded-lg p-3']">
-          <div class="text-xs text-gray-500">盈亏</div>
+          <div class="text-xs text-gray-500">{{ t('games.stat.profit-loss') }}</div>
           <div :class="['text-lg font-bold', (summary.profit || 0) >= 0 ? 'text-red-600' : 'text-green-600']">
             {{ (summary.profit || 0) >= 0 ? '+' : '' }}{{ (summary.profit || 0).toLocaleString() }}
           </div>
@@ -106,19 +108,19 @@ onMounted(() => {
     <div class="bg-white mx-3 my-3 rounded-lg shadow">
       <!-- 表头 -->
       <div class="grid grid-cols-4 text-xs text-gray-500 border-b bg-gray-50 px-3 py-2 gap-2 rounded-t-lg">
-        <span>日期</span>
-        <span class="text-right">投注/中奖</span>
-        <span class="text-center">自动/次数</span>
-        <span class="text-right">盈亏</span>
+        <span>{{ t('games.stat.date') }}</span>
+        <span class="text-right">{{ t('games.stat.bet-win') }}</span>
+        <span class="text-center">{{ t('games.stat.auto-count') }}</span>
+        <span class="text-right">{{ t('games.stat.profit-loss') }}</span>
       </div>
 
       <div v-if="isLoading && statList.length === 0" class="flex justify-center items-center py-8">
         <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-        <span class="ml-2 text-gray-600">加载盈亏统计中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.stat.loading') }}</span>
       </div>
 
       <div v-else-if="statList.length === 0" class="text-center py-8 text-gray-500">
-        暂无盈亏记录
+        {{ t('games.stat.no-data') }}
       </div>
 
       <div v-else class="divide-y">
@@ -152,7 +154,7 @@ onMounted(() => {
                 <span v-else class="text-red-500">×</span>
               </div>
               <div class="text-[10px] text-gray-400">
-                {{ item.bet_count || 0 }}次
+                {{ item.bet_count || 0 }}{{ t('games.stat.times') }}
               </div>
             </div>
 
@@ -172,12 +174,12 @@ onMounted(() => {
             :disabled="isLoading"
             class="px-6 py-2 bg-red-600 text-white text-sm rounded-lg disabled:opacity-50"
           >
-            {{ isLoading ? '加载中...' : '加载更多' }}
+            {{ isLoading ? t('common.loading') : t('games.stat.load-more') }}
           </button>
         </div>
 
         <div v-if="!hasMore && statList.length > 0" class="py-4 text-center text-gray-400 text-sm">
-          没有更多数据了
+          {{ t('games.stat.no-more') }}
         </div>
       </div>
     </div>

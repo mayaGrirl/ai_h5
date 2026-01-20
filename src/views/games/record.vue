@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { betRecords } from '@/api/game'
 import { toast } from '@/composables/useToast'
 import type { BetRecordItem, BetNoItem } from '@/types/game.type'
 
+const { t } = useI18n()
 const route = useRoute()
 
 const recordList = ref<BetRecordItem[]>([])
@@ -43,11 +45,11 @@ const fetchBetRecords = async (pageNum: number = 1, reset: boolean = false) => {
       hasMore.value = list.length >= pageSize
       page.value = pageNum
     } else {
-      toast.error(res.message || '获取投注记录失败')
+      toast.error(res.message || t('games.record.load-failed'))
       if (reset) recordList.value = []
     }
   } catch (error) {
-    toast.error('获取投注记录失败，请稍后重试')
+    toast.error(t('games.record.load-failed-retry'))
     if (reset) recordList.value = []
   } finally {
     isLoadingRecords.value = false
@@ -86,16 +88,16 @@ const getStatusInfo = (item: BetRecordItem): { text: string; color: string } => 
   const status = Number(item.status)
   switch (status) {
     case 0:
-      return { text: '未结算', color: 'text-orange-600 bg-orange-50' }
+      return { text: t('games.record.unsettled'), color: 'text-orange-600 bg-orange-50' }
     case 1:
       if (item.is_win === 2) {
-        return { text: '已中奖', color: 'text-red-600 bg-red-50' }
+        return { text: t('games.record.won'), color: 'text-red-600 bg-red-50' }
       }
-      return { text: '未中奖', color: 'text-gray-600 bg-gray-100' }
+      return { text: t('games.record.not-won'), color: 'text-gray-600 bg-gray-100' }
     case 2:
-      return { text: '已回滚', color: 'text-yellow-600 bg-yellow-50' }
+      return { text: t('games.record.rolled-back'), color: 'text-yellow-600 bg-yellow-50' }
     case 3:
-      return { text: '已删除', color: 'text-gray-400 bg-gray-100' }
+      return { text: t('games.record.deleted'), color: 'text-gray-400 bg-gray-100' }
     default:
       return { text: '--', color: 'text-gray-500' }
   }
@@ -120,18 +122,18 @@ onMounted(() => {
     <div class="bg-white mx-3 my-3 rounded-lg shadow">
       <!-- 表头 -->
       <div class="grid grid-cols-[1.2fr_1.5fr_1fr] text-xs text-gray-500 border-b bg-gray-50 px-3 py-2 gap-2 rounded-t-lg">
-        <span>期号/时间</span>
-        <span class="text-center">投注详情</span>
-        <span class="text-center">金额/状态</span>
+        <span>{{ t('games.record.period-time') }}</span>
+        <span class="text-center">{{ t('games.record.bet-details') }}</span>
+        <span class="text-center">{{ t('games.record.amount-status') }}</span>
       </div>
 
       <div v-if="isLoadingRecords && recordList.length === 0" class="flex justify-center items-center py-8">
         <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-        <span class="ml-2 text-gray-600">加载投注记录中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.record.loading') }}</span>
       </div>
 
       <div v-else-if="recordList.length === 0" class="text-center py-8 text-gray-500">
-        暂无投注记录
+        {{ t('games.record.no-data') }}
       </div>
 
       <div v-else class="divide-y">
@@ -150,7 +152,7 @@ onMounted(() => {
                 {{ item.bet_time || item.created_at || '' }}
               </div>
               <div class="text-[10px] mt-1">
-                <span class="text-gray-500">自动：</span>
+                <span class="text-gray-500">{{ t('games.record.auto') }}</span>
                 <span :class="item.is_auto === 1 ? 'text-green-600' : 'text-red-500'">
                   {{ item.is_auto === 1 ? '√' : '×' }}
                 </span>
@@ -184,13 +186,13 @@ onMounted(() => {
             <!-- 金额/状态 -->
             <div class="text-center">
               <div class="text-blue-600 font-medium">
-                投:{{ (item.bet_gold || 0).toLocaleString() }}
+                {{ t('games.record.bet-amount') }}{{ (item.bet_gold || 0).toLocaleString() }}
               </div>
               <div
                 v-if="item.is_opened === 1"
                 :class="item.win_gold && item.win_gold > 0 ? 'text-red-600 font-medium' : 'text-gray-400'"
               >
-                中:{{ (item.win_gold || 0).toLocaleString() }}
+                {{ t('games.record.win-amount') }}{{ (item.win_gold || 0).toLocaleString() }}
               </div>
               <div :class="['inline-block px-2 py-0.5 rounded text-[10px] mt-1', getStatusInfo(item).color]">
                 {{ getStatusInfo(item).text }}
@@ -201,10 +203,10 @@ onMounted(() => {
           <!-- 盈亏信息 -->
           <div v-if="item.is_opened === 1" class="mt-2 pt-2 border-t border-dashed flex justify-between items-center text-xs">
             <span class="text-gray-500">
-              共{{ item.bet_num || getBetNoList(item).length }}注
+              {{ t('games.record.total') }}{{ item.bet_num || getBetNoList(item).length }}{{ t('games.record.bets') }}
             </span>
             <span :class="(item.win_loss || 0) >= 0 ? 'text-red-600 font-medium' : 'text-green-600 font-medium'">
-              盈亏: {{ (item.win_loss || 0) >= 0 ? '+' : '' }}{{ (item.win_loss || 0).toLocaleString() }}
+              {{ t('games.record.profit-loss') }} {{ (item.win_loss || 0) >= 0 ? '+' : '' }}{{ (item.win_loss || 0).toLocaleString() }}
             </span>
           </div>
         </div>
@@ -216,12 +218,12 @@ onMounted(() => {
             :disabled="isLoadingRecords"
             class="px-6 py-2 bg-red-600 text-white text-sm rounded-lg disabled:opacity-50"
           >
-            {{ isLoadingRecords ? '加载中...' : '加载更多' }}
+            {{ isLoadingRecords ? t('common.loading') : t('games.record.load-more') }}
           </button>
         </div>
 
         <div v-if="!hasMore && recordList.length > 0" class="py-4 text-center text-gray-400 text-sm">
-          没有更多数据了
+          {{ t('games.record.no-more') }}
         </div>
       </div>
     </div>

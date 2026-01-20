@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { lotteryRecord } from '@/api/game'
 import type { LotteryResultItem, MemberBetItem } from '@/types/game.type'
 
+const { t } = useI18n()
 const route = useRoute()
 
 const lotteryList = ref<LotteryResultItem[]>([])
@@ -101,11 +103,11 @@ const getOddEven = (item: LotteryResultItem): string => {
 const getShape = (item: LotteryResultItem): string => {
   const shape = item.final_res?.shape || '--'
   const shapeMap: Record<string, string> = {
-    bao: '豹子',
-    shun: '顺子',
-    ban: '半顺',
-    dui: '对子',
-    za: '杂六'
+    bao: t('games.open.leopard'),
+    shun: t('games.open.straight'),
+    ban: t('games.open.half-straight'),
+    dui: t('games.open.pair'),
+    za: t('games.open.mixed')
   }
   return shapeMap[shape] || '--'
 }
@@ -114,12 +116,12 @@ const getShape = (item: LotteryResultItem): string => {
 const getShapeLungFuPao = (item: LotteryResultItem): string => {
   const lungFuPao = item.final_res?.lungFuPao || '--'
   const map: Record<string, string> = {
-    Dragon: '龙',
-    dragon: '龙',
-    Tiger: '虎',
-    tiger: '虎',
-    Leopard: '豹子',
-    leopard: '豹子'
+    Dragon: t('games.open.dragon'),
+    dragon: t('games.open.dragon'),
+    Tiger: t('games.open.tiger'),
+    tiger: t('games.open.tiger'),
+    Leopard: t('games.open.leopard'),
+    leopard: t('games.open.leopard')
   }
   return map[lungFuPao] || '--'
 }
@@ -173,21 +175,21 @@ onMounted(() => {
     <div class="bg-white mx-3 my-3 rounded-lg shadow">
       <!-- 表头 -->
       <div class="grid grid-cols-[1.5fr_1fr_0.8fr_1fr] text-xs text-gray-500 border-b bg-gray-50 px-3 py-2 gap-2 rounded-t-lg">
-        <span>期号/号码</span>
-        <span class="text-center">和值/大小</span>
-        <span class="text-center">形态</span>
-        <span class="text-center">投注/中奖</span>
+        <span>{{ t('games.open.period-numbers') }}</span>
+        <span class="text-center">{{ t('games.open.sum-size') }}</span>
+        <span class="text-center">{{ t('games.open.shape') }}</span>
+        <span class="text-center">{{ t('games.open.bet-win') }}</span>
       </div>
 
       <!-- 加载状态 -->
       <div v-if="isLoading && lotteryList.length === 0" class="flex justify-center items-center py-8">
         <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-        <span class="ml-2 text-gray-600">加载开奖记录中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.open.loading') }}</span>
       </div>
 
       <!-- 空状态 -->
       <div v-else-if="lotteryList.length === 0" class="text-center py-8 text-gray-500">
-        暂无开奖记录
+        {{ t('games.open.no-data') }}
       </div>
 
       <!-- 列表 -->
@@ -252,10 +254,10 @@ onMounted(() => {
             <!-- 投注/中奖 -->
             <div class="text-center">
               <div class="text-blue-600 font-medium">
-                投:{{ getMemberBetInfo(item).bet.toLocaleString() }}
+                {{ t('games.open.bet') }}{{ getMemberBetInfo(item).bet.toLocaleString() }}
               </div>
               <div :class="getMemberBetInfo(item).win > 0 ? 'text-red-600 font-medium' : 'text-gray-400 mt-2'">
-                中:{{ getMemberBetInfo(item).win.toLocaleString() }}
+                {{ t('games.open.win') }}{{ getMemberBetInfo(item).win.toLocaleString() }}
               </div>
             </div>
           </div>
@@ -268,13 +270,13 @@ onMounted(() => {
             :disabled="isLoading"
             class="px-6 py-2 bg-red-600 text-white text-sm rounded-lg disabled:opacity-50"
           >
-            {{ isLoading ? '加载中...' : '加载更多' }}
+            {{ isLoading ? t('common.loading') : t('games.open.load-more') }}
           </button>
         </div>
 
         <!-- 没有更多 -->
         <div v-if="!hasMore && lotteryList.length > 0" class="py-4 text-center text-gray-400 text-sm">
-          没有更多数据了
+          {{ t('games.open.no-more') }}
         </div>
       </div>
     </div>

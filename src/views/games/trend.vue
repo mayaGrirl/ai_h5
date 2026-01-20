@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { RefreshCw } from 'lucide-vue-next'
 import { lotteryRecord } from '@/api/game'
 import { toast } from '@/composables/useToast'
@@ -9,6 +10,7 @@ import type { LotteryResultItem } from '@/types/game.type'
 
 type TrendTab = 'nums' | 'bigSmall' | 'shape' | 'mod'
 
+const { t } = useI18n()
 const route = useRoute()
 
 const trendTab = ref<TrendTab>('nums')
@@ -40,11 +42,11 @@ const fetchTrendData = async (count: number = 30) => {
     if (res.code === 200 && res.data) {
       trendList.value = res.data.list || []
     } else {
-      toast.error(res.message || '获取走势数据失败')
+      toast.error(res.message || t('games.trend.load-failed'))
       trendList.value = []
     }
   } catch (error) {
-    toast.error('获取走势数据失败，请稍后重试')
+    toast.error(t('games.trend.load-failed-retry'))
     trendList.value = []
   } finally {
     isLoadingTrend.value = false
@@ -78,12 +80,12 @@ const getSum = (item: LotteryResultItem): number | string => {
   return item.final_res?.sum ?? '--'
 }
 
-const trendTabs = [
-  { key: 'nums' as TrendTab, label: '号码' },
-  { key: 'bigSmall' as TrendTab, label: '大小单双' },
-  { key: 'mod' as TrendTab, label: '取模' },
-  { key: 'shape' as TrendTab, label: '形态' }
-]
+const trendTabs = computed(() => [
+  { key: 'nums' as TrendTab, label: t('games.trend.tab-numbers') },
+  { key: 'bigSmall' as TrendTab, label: t('games.trend.tab-size-parity') },
+  { key: 'mod' as TrendTab, label: t('games.trend.tab-mod') },
+  { key: 'shape' as TrendTab, label: t('games.trend.tab-shape') }
+])
 
 const filteredTrendList = () => {
   return trendList.value.filter((item) => {
@@ -113,13 +115,13 @@ onMounted(() => {
       <!-- 顶部控制栏 -->
       <div class="flex justify-between items-center px-3 py-2 border-b bg-gray-50">
         <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-600">显示</span>
+          <span class="text-sm text-gray-600">{{ t('games.trend.show') }}</span>
           <select
             v-model="periodCount"
             @change="handlePeriodChange(periodCount)"
             class="px-2 py-1 text-sm border border-gray-300 rounded bg-white"
           >
-            <option v-for="opt in periodOptions" :key="opt" :value="opt">{{ opt }}期</option>
+            <option v-for="opt in periodOptions" :key="opt" :value="opt">{{ opt }}{{ t('games.trend.periods') }}</option>
           </select>
         </div>
         <button
@@ -128,7 +130,7 @@ onMounted(() => {
           class="flex items-center gap-1 text-sm text-gray-600 hover:text-red-600 disabled:opacity-50"
         >
           <RefreshCw :size="14" :class="isLoadingTrend ? 'animate-spin' : ''" />
-          刷新
+          {{ t('games.trend.refresh') }}
         </button>
       </div>
 
@@ -151,40 +153,40 @@ onMounted(() => {
 
       <!-- 表头 -->
       <div class="flex text-xs bg-gray-100 border-b font-medium">
-        <div class="w-16 py-2 text-center border-r flex-shrink-0">期号</div>
+        <div class="w-16 py-2 text-center border-r flex-shrink-0">{{ t('games.trend.period') }}</div>
 
         <!-- 号码表头 -->
         <template v-if="trendTab === 'nums'">
           <div class="flex-1 flex">
-            <div class="flex-1 py-2 text-center border-r text-gray-600">开奖号码</div>
-            <div class="w-12 py-2 text-center text-gray-600">和值</div>
+            <div class="flex-1 py-2 text-center border-r text-gray-600">{{ t('games.trend.lottery-numbers') }}</div>
+            <div class="w-12 py-2 text-center text-gray-600">{{ t('games.trend.sum') }}</div>
           </div>
         </template>
 
         <!-- 大小单双表头 -->
         <template v-if="trendTab === 'bigSmall'">
           <div class="flex-1 flex text-center">
-            <div class="flex-1 py-2 border-r text-red-600">大</div>
-            <div class="flex-1 py-2 border-r text-green-600">小</div>
-            <div class="flex-1 py-2 border-r text-orange-600">单</div>
-            <div class="flex-1 py-2 border-r text-blue-600">双</div>
-            <div class="flex-1 py-2 border-r text-purple-600">中</div>
-            <div class="flex-1 py-2 text-cyan-600">边</div>
+            <div class="flex-1 py-2 border-r text-red-600">{{ t('games.trend.big') }}</div>
+            <div class="flex-1 py-2 border-r text-green-600">{{ t('games.trend.small') }}</div>
+            <div class="flex-1 py-2 border-r text-orange-600">{{ t('games.trend.odd') }}</div>
+            <div class="flex-1 py-2 border-r text-blue-600">{{ t('games.trend.even') }}</div>
+            <div class="flex-1 py-2 border-r text-purple-600">{{ t('games.trend.middle') }}</div>
+            <div class="flex-1 py-2 text-cyan-600">{{ t('games.trend.side') }}</div>
           </div>
         </template>
 
         <!-- 形态表头 -->
         <template v-if="trendTab === 'shape'">
           <div class="flex-1 flex text-center">
-            <div class="flex-1 py-2 border-r text-pink-600">豹子</div>
-            <div class="flex-1 py-2 border-r text-red-600">顺子</div>
-            <div class="flex-1 py-2 border-r text-orange-600">半顺</div>
-            <div class="flex-1 py-2 border-r text-blue-600">对子</div>
-            <div class="flex-1 py-2 border-r text-gray-600">杂六</div>
+            <div class="flex-1 py-2 border-r text-pink-600">{{ t('games.trend.leopard') }}</div>
+            <div class="flex-1 py-2 border-r text-red-600">{{ t('games.trend.straight') }}</div>
+            <div class="flex-1 py-2 border-r text-orange-600">{{ t('games.trend.half-straight') }}</div>
+            <div class="flex-1 py-2 border-r text-blue-600">{{ t('games.trend.pair') }}</div>
+            <div class="flex-1 py-2 border-r text-gray-600">{{ t('games.trend.mixed') }}</div>
             <div class="w-px bg-gray-300"></div>
-            <div class="flex-1 py-2 border-r text-red-600">龙</div>
-            <div class="flex-1 py-2 border-r text-blue-600">虎</div>
-            <div class="flex-1 py-2 text-purple-600">豹</div>
+            <div class="flex-1 py-2 border-r text-red-600">{{ t('games.trend.dragon') }}</div>
+            <div class="flex-1 py-2 border-r text-blue-600">{{ t('games.trend.tiger') }}</div>
+            <div class="flex-1 py-2 text-purple-600">{{ t('games.trend.leopard-short') }}</div>
           </div>
         </template>
 
@@ -192,9 +194,9 @@ onMounted(() => {
         <template v-if="trendTab === 'mod'">
           <div class="flex-1 flex flex-col">
             <div class="flex border-b">
-              <div class="flex-[3] py-1 text-center border-r bg-gray-200 font-bold">模3</div>
-              <div class="flex-[4] py-1 text-center border-r bg-amber-100 font-bold">模4</div>
-              <div class="flex-[5] py-1 text-center bg-teal-100 font-bold">模5</div>
+              <div class="flex-[3] py-1 text-center border-r bg-gray-200 font-bold">{{ t('games.trend.mod3') }}</div>
+              <div class="flex-[4] py-1 text-center border-r bg-amber-100 font-bold">{{ t('games.trend.mod4') }}</div>
+              <div class="flex-[5] py-1 text-center bg-teal-100 font-bold">{{ t('games.trend.mod5') }}</div>
             </div>
             <div class="flex">
               <div v-for="n in [0, 1, 2]" :key="`m3-${n}`" class="flex-1 py-1 text-center border-r text-gray-600">{{ n }}</div>
@@ -208,11 +210,11 @@ onMounted(() => {
       <!-- 数据列表 -->
       <div v-if="isLoadingTrend" class="flex justify-center items-center py-8">
         <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-red-600 border-r-transparent"></div>
-        <span class="ml-2 text-gray-600">加载走势数据中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.trend.loading') }}</span>
       </div>
 
       <div v-else-if="trendList.length === 0" class="text-center py-8 text-gray-500">
-        暂无走势数据
+        {{ t('games.trend.no-data') }}
       </div>
 
       <div v-else class="max-h-[60vh] overflow-y-auto">
@@ -250,22 +252,22 @@ onMounted(() => {
           <template v-if="trendTab === 'bigSmall'">
             <div class="flex-1 flex text-center">
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.bigSmall === '大' && 'bg-red-100')">
-                <span v-if="item.final_res?.bigSmall === '大'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">大</span>
+                <span v-if="item.final_res?.bigSmall === '大'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">{{ t('games.trend.big') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.bigSmall === '小' && 'bg-green-100')">
-                <span v-if="item.final_res?.bigSmall === '小'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white text-xs font-bold">小</span>
+                <span v-if="item.final_res?.bigSmall === '小'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white text-xs font-bold">{{ t('games.trend.small') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.oddEven === '单' && 'bg-orange-100')">
-                <span v-if="item.final_res?.oddEven === '单'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-white text-xs font-bold">单</span>
+                <span v-if="item.final_res?.oddEven === '单'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-white text-xs font-bold">{{ t('games.trend.odd') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.oddEven === '双' && 'bg-blue-100')">
-                <span v-if="item.final_res?.oddEven === '双'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold">双</span>
+                <span v-if="item.final_res?.oddEven === '双'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold">{{ t('games.trend.even') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.middleSide === '中' && 'bg-purple-100')">
-                <span v-if="item.final_res?.middleSide === '中'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-purple-500 text-white text-xs font-bold">中</span>
+                <span v-if="item.final_res?.middleSide === '中'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-purple-500 text-white text-xs font-bold">{{ t('games.trend.middle') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 flex items-center justify-center', item.final_res?.middleSide === '边' && 'bg-cyan-100')">
-                <span v-if="item.final_res?.middleSide === '边'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-white text-xs font-bold">边</span>
+                <span v-if="item.final_res?.middleSide === '边'" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-white text-xs font-bold">{{ t('games.trend.side') }}</span>
               </div>
             </div>
           </template>
@@ -274,29 +276,29 @@ onMounted(() => {
           <template v-if="trendTab === 'shape'">
             <div class="flex-1 flex text-center">
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.shape === 'bao' && 'bg-pink-100')">
-                <span v-if="item.final_res?.shape === 'bao'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">豹</span>
+                <span v-if="item.final_res?.shape === 'bao'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">{{ t('games.trend.leopard-short') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.shape === 'shun' && 'bg-red-100')">
-                <span v-if="item.final_res?.shape === 'shun'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">顺</span>
+                <span v-if="item.final_res?.shape === 'shun'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">{{ t('games.trend.straight') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.shape === 'ban' && 'bg-orange-100')">
-                <span v-if="item.final_res?.shape === 'ban'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-[10px] font-bold">半</span>
+                <span v-if="item.final_res?.shape === 'ban'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-[10px] font-bold">{{ t('games.trend.half-straight') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.shape === 'dui' && 'bg-blue-100')">
-                <span v-if="item.final_res?.shape === 'dui'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold">对</span>
+                <span v-if="item.final_res?.shape === 'dui'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold">{{ t('games.trend.pair') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', item.final_res?.shape === 'za' && 'bg-gray-200')">
-                <span v-if="item.final_res?.shape === 'za'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-white text-[10px] font-bold">杂</span>
+                <span v-if="item.final_res?.shape === 'za'" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-white text-[10px] font-bold">{{ t('games.trend.mixed') }}</span>
               </div>
               <div class="w-px bg-gray-300"></div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', ['Dragon', 'dragon'].includes(item.final_res?.lungFuPao || '') && 'bg-red-100')">
-                <span v-if="['Dragon', 'dragon'].includes(item.final_res?.lungFuPao || '')" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">龙</span>
+                <span v-if="['Dragon', 'dragon'].includes(item.final_res?.lungFuPao || '')" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">{{ t('games.trend.dragon') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 border-r flex items-center justify-center', ['Tiger', 'tiger'].includes(item.final_res?.lungFuPao || '') && 'bg-blue-100')">
-                <span v-if="['Tiger', 'tiger'].includes(item.final_res?.lungFuPao || '')" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold">虎</span>
+                <span v-if="['Tiger', 'tiger'].includes(item.final_res?.lungFuPao || '')" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold">{{ t('games.trend.tiger') }}</span>
               </div>
               <div :class="cn('flex-1 py-2.5 flex items-center justify-center', ['Leopard', 'leopard'].includes(item.final_res?.lungFuPao || '') && 'bg-purple-100')">
-                <span v-if="['Leopard', 'leopard'].includes(item.final_res?.lungFuPao || '')" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-white text-[10px] font-bold">豹</span>
+                <span v-if="['Leopard', 'leopard'].includes(item.final_res?.lungFuPao || '')" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-white text-[10px] font-bold">{{ t('games.trend.leopard-short') }}</span>
               </div>
             </div>
           </template>

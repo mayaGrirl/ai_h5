@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { cn } from '@/utils'
 import { playAll, setMode, modeList, gameAll } from '@/api/game'
 import { toast } from '@/composables/useToast'
 import type { GamePlay, GamePlayMapItem, Game, ModeItem } from '@/types/game.type'
+
+const { t } = useI18n()
 
 interface PlayItem {
   id: number
@@ -30,7 +33,7 @@ const group_id = computed(() => route.query.group_id as string || '')
 const mode_id = computed(() => route.query.mode_id as string || '')
 const isEdit = computed(() => !!mode_id.value && mode_id.value !== '0')
 
-const gameName = ref('加载中...')
+const gameName = ref('')
 const groupName = ref('')
 const modeName = ref('')
 const groups = ref<PlayGroup[]>([])
@@ -40,14 +43,68 @@ const isSubmitting = ref(false)
 
 // 快捷选择相关
 const quickSelectGroupIds = [1, 2, 3, 10, 14, 18, 22, 4, 26, 5, 16, 23, 6, 15, 24]
-const quickButtons1 = ['全包', '单', '大单', '小单', '单边', '双']
-const quickButtons2 = ['大双', '小双', '双边', '大', '小', '中']
-const quickButtons3 = ['边', '大边', '小边']
-const specialButtons = ['反选', '清空']
-const tailButtons = ['0尾', '1尾', '2尾', '3尾', '4尾', '5尾', '6尾', '7尾', '8尾', '9尾', '小尾', '大尾']
-const mod3Buttons = ['3余0', '3余1', '3余2']
-const mod4Buttons = ['4余0', '4余1', '4余2', '4余3']
-const mod5Buttons = ['5余0', '5余1', '5余2', '5余3', '5余4']
+const quickButtons1 = computed(() => [
+  { value: '全包', label: t('games.play.all') },
+  { value: '单', label: t('games.play.odd') },
+  { value: '大单', label: t('games.play.big-odd') },
+  { value: '小单', label: t('games.play.small-odd') },
+  { value: '单边', label: t('games.play.odd-side') },
+  { value: '双', label: t('games.play.even') }
+])
+const quickButtons2 = computed(() => [
+  { value: '大双', label: t('games.play.big-even') },
+  { value: '小双', label: t('games.play.small-even') },
+  { value: '双边', label: t('games.play.even-side') },
+  { value: '大', label: t('games.play.big') },
+  { value: '小', label: t('games.play.small') },
+  { value: '中', label: t('games.play.middle') }
+])
+const quickButtons3 = computed(() => [
+  { value: '边', label: t('games.play.side') },
+  { value: '大边', label: t('games.play.big-side') },
+  { value: '小边', label: t('games.play.small-side') }
+])
+const specialButtons = computed(() => [
+  { value: '反选', label: t('games.play.reverse') },
+  { value: '清空', label: t('games.play.clear') }
+])
+const genericButtons = computed(() => [
+  { value: '全包', label: t('games.play.all') },
+  { value: '反选', label: t('games.play.reverse') },
+  { value: '清空', label: t('games.play.clear') }
+])
+const tailButtons = computed(() => [
+  { value: '0尾', label: t('games.play.tail-0') },
+  { value: '1尾', label: t('games.play.tail-1') },
+  { value: '2尾', label: t('games.play.tail-2') },
+  { value: '3尾', label: t('games.play.tail-3') },
+  { value: '4尾', label: t('games.play.tail-4') },
+  { value: '5尾', label: t('games.play.tail-5') },
+  { value: '6尾', label: t('games.play.tail-6') },
+  { value: '7尾', label: t('games.play.tail-7') },
+  { value: '8尾', label: t('games.play.tail-8') },
+  { value: '9尾', label: t('games.play.tail-9') },
+  { value: '小尾', label: t('games.play.tail-small') },
+  { value: '大尾', label: t('games.play.tail-big') }
+])
+const mod3Buttons = computed(() => [
+  { value: '3余0', label: t('games.play.mod3-0') },
+  { value: '3余1', label: t('games.play.mod3-1') },
+  { value: '3余2', label: t('games.play.mod3-2') }
+])
+const mod4Buttons = computed(() => [
+  { value: '4余0', label: t('games.play.mod4-0') },
+  { value: '4余1', label: t('games.play.mod4-1') },
+  { value: '4余2', label: t('games.play.mod4-2') },
+  { value: '4余3', label: t('games.play.mod4-3') }
+])
+const mod5Buttons = computed(() => [
+  { value: '5余0', label: t('games.play.mod5-0') },
+  { value: '5余1', label: t('games.play.mod5-1') },
+  { value: '5余2', label: t('games.play.mod5-2') },
+  { value: '5余3', label: t('games.play.mod5-3') },
+  { value: '5余4', label: t('games.play.mod5-4') }
+])
 const multiplierButtons1 = [0.1, 0.5, 0.8, 1.2, 1.5, 2]
 const multiplierButtons2 = [5, 10, 20, 30, 50, 100]
 
@@ -142,7 +199,7 @@ const fetchPlayMethods = async () => {
     }
   } catch (error) {
     console.error('获取玩法列表失败', error)
-    toast.error('获取玩法列表失败，请稍后重试')
+    toast.error(t('games.mode.load-play-failed-retry'))
   } finally {
     isLoadingPlays.value = false
   }
@@ -209,7 +266,7 @@ const loadModeData = async (playGroups: PlayGroup[]) => {
     }
   } catch (error) {
     console.error('加载模式数据失败', error)
-    toast.error('加载模式数据失败')
+    toast.error(t('games.mode.load-mode-data-failed'))
   } finally {
     isLoadingMode.value = false
   }
@@ -470,7 +527,7 @@ const handleQuickSelect = (type: string) => {
 const handleMultiplierSelect = (multiplier: number) => {
   selectedMultiplier.value = multiplier
   if (selectedPlays.value.length === 0) {
-    toast.info('请先选择玩法')
+    toast.info(t('games.mode.select-play-first'))
     return
   }
   const newAmounts = { ...playAmounts.value }
@@ -502,17 +559,17 @@ const handleCancel = () => {
 // 提交保存模式
 const handleSubmit = async () => {
   if (!activeGroup.value) {
-    toast.error('请选择玩法分组')
+    toast.error(t('games.play.select-group'))
     return
   }
 
   if (!modeName.value.trim()) {
-    toast.error('请输入模式名称')
+    toast.error(t('games.mode.name-required'))
     return
   }
 
   if (selectedPlays.value.length === 0) {
-    toast.error('请选择至少一个玩法')
+    toast.error(t('games.mode.select-play'))
     return
   }
 
@@ -525,7 +582,7 @@ const handleSubmit = async () => {
   const total_gold = selectedPlays.value.reduce((sum, p) => sum + (parseInt(playAmounts.value[p] || '0', 10) || 0), 0)
 
   if (total_gold <= 0) {
-    toast.error('请输入投注金额')
+    toast.error(t('games.mode.amount-required'))
     return
   }
 
@@ -545,14 +602,14 @@ const handleSubmit = async () => {
     isSubmitting.value = true
     const res = await setMode(payload)
     if (res.code === 200) {
-      toast.success(isEdit.value ? '模式更新成功' : '模式保存成功')
+      toast.success(isEdit.value ? t('games.mode.update-success') : t('games.mode.save-success'))
       router.back()
     } else {
-      toast.error(res.message || '保存失败')
+      toast.error(res.message || t('games.mode.save-failed'))
     }
   } catch (error) {
     console.error('保存模式失败：', error)
-    toast.error('保存失败，请稍后重试')
+    toast.error(t('games.mode.save-failed-retry'))
   } finally {
     isSubmitting.value = false
   }
@@ -571,66 +628,66 @@ const totalBetAmount = computed(() =>
         <div class="grid grid-cols-6 gap-2 mb-2">
           <button
             v-for="btn in quickButtons1"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             :class="cn(
               'py-1.5 text-xs rounded border',
-              activeQuick === btn
+              activeQuick === btn.value
                 ? 'bg-red-600 text-white border-red-600'
                 : 'bg-white text-gray-700 border-red-300 hover:border-red-500'
             )"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
         <div class="grid grid-cols-6 gap-2 mb-2">
           <button
             v-for="btn in quickButtons2"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             :class="cn(
               'py-1.5 text-xs rounded border',
-              activeQuick === btn
+              activeQuick === btn.value
                 ? 'bg-red-600 text-white border-red-600'
                 : 'bg-white text-gray-700 border-red-300 hover:border-red-500'
             )"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
         <div class="grid grid-cols-6 gap-2">
           <button
             v-for="btn in quickButtons3"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             :class="cn(
               'py-1.5 text-xs rounded border',
-              activeQuick === btn
+              activeQuick === btn.value
                 ? 'bg-red-600 text-white border-red-600'
                 : 'bg-white text-gray-700 border-red-300 hover:border-red-500'
             )"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
           <button
             v-for="btn in specialButtons"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             class="py-1.5 text-xs rounded bg-red-600 text-white"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
       </template>
       <template v-else>
         <div class="grid grid-cols-4 gap-2">
           <button
-            v-for="btn in ['全包', '反选', '清空']"
-            :key="btn"
-            @click="handleQuickSelect(btn)"
+            v-for="btn in genericButtons"
+            :key="btn.value"
+            @click="handleQuickSelect(btn.value)"
             class="py-1.5 text-xs rounded bg-red-600 text-white"
           >
-            {{ btn }}
+            {{ btn.label }}
           </button>
         </div>
       </template>
@@ -642,52 +699,52 @@ const totalBetAmount = computed(() =>
             <div>
               <div class="flex items-center mb-2">
                 <span class="text-xs text-gray-500">—</span>
-                <span class="text-xs text-gray-600 mx-1">追加尾数</span>
+                <span class="text-xs text-gray-600 mx-1">{{ t('games.play.add-tail') }}</span>
                 <span class="text-xs text-gray-500 flex-1">———</span>
               </div>
               <div class="grid grid-cols-4 gap-1">
                 <button
                   v-for="btn in tailButtons.slice(0, 4)"
-                  :key="btn"
-                  @click="handleQuickSelect(btn)"
+                  :key="btn.value"
+                  @click="handleQuickSelect(btn.value)"
                   :class="cn(
                     'py-1 text-[10px] rounded border',
-                    activeQuick === btn
+                    activeQuick === btn.value
                       ? 'bg-red-600 text-white border-red-600'
                       : 'bg-white text-gray-700 border-red-300'
                   )"
                 >
-                  {{ btn }}
+                  {{ btn.label }}
                 </button>
               </div>
               <div class="grid grid-cols-4 gap-1 mt-1">
                 <button
                   v-for="btn in tailButtons.slice(4, 8)"
-                  :key="btn"
-                  @click="handleQuickSelect(btn)"
+                  :key="btn.value"
+                  @click="handleQuickSelect(btn.value)"
                   :class="cn(
                     'py-1 text-[10px] rounded border',
-                    activeQuick === btn
+                    activeQuick === btn.value
                       ? 'bg-red-600 text-white border-red-600'
                       : 'bg-white text-gray-700 border-red-300'
                   )"
                 >
-                  {{ btn }}
+                  {{ btn.label }}
                 </button>
               </div>
               <div class="grid grid-cols-4 gap-1 mt-1">
                 <button
                   v-for="btn in tailButtons.slice(8)"
-                  :key="btn"
-                  @click="handleQuickSelect(btn)"
+                  :key="btn.value"
+                  @click="handleQuickSelect(btn.value)"
                   :class="cn(
                     'py-1 text-[10px] rounded border',
-                    activeQuick === btn
+                    activeQuick === btn.value
                       ? 'bg-red-600 text-white border-red-600'
                       : 'bg-white text-gray-700 border-red-300'
                   )"
                 >
-                  {{ btn }}
+                  {{ btn.label }}
                 </button>
               </div>
             </div>
@@ -695,52 +752,52 @@ const totalBetAmount = computed(() =>
             <div>
               <div class="flex items-center mb-2">
                 <span class="text-xs text-gray-500">—</span>
-                <span class="text-xs text-gray-600 mx-1">追加余数</span>
+                <span class="text-xs text-gray-600 mx-1">{{ t('games.play.add-mod') }}</span>
                 <span class="text-xs text-gray-500 flex-1">———</span>
               </div>
               <div class="grid grid-cols-3 gap-1">
                 <button
                   v-for="btn in mod3Buttons"
-                  :key="btn"
-                  @click="handleQuickSelect(btn)"
+                  :key="btn.value"
+                  @click="handleQuickSelect(btn.value)"
                   :class="cn(
                     'py-1 text-[10px] rounded border',
-                    activeQuick === btn
+                    activeQuick === btn.value
                       ? 'bg-red-600 text-white border-red-600'
                       : 'bg-white text-gray-700 border-red-300'
                   )"
                 >
-                  {{ btn }}
+                  {{ btn.label }}
                 </button>
               </div>
               <div class="grid grid-cols-4 gap-1 mt-1">
                 <button
                   v-for="btn in mod4Buttons"
-                  :key="btn"
-                  @click="handleQuickSelect(btn)"
+                  :key="btn.value"
+                  @click="handleQuickSelect(btn.value)"
                   :class="cn(
                     'py-1 text-[10px] rounded border',
-                    activeQuick === btn
+                    activeQuick === btn.value
                       ? 'bg-red-600 text-white border-red-600'
                       : 'bg-white text-gray-700 border-red-300'
                   )"
                 >
-                  {{ btn }}
+                  {{ btn.label }}
                 </button>
               </div>
               <div class="grid grid-cols-5 gap-1 mt-1">
                 <button
                   v-for="btn in mod5Buttons"
-                  :key="btn"
-                  @click="handleQuickSelect(btn)"
+                  :key="btn.value"
+                  @click="handleQuickSelect(btn.value)"
                   :class="cn(
                     'py-1 text-[10px] rounded border',
-                    activeQuick === btn
+                    activeQuick === btn.value
                       ? 'bg-red-600 text-white border-red-600'
                       : 'bg-white text-gray-700 border-red-300'
                   )"
                 >
-                  {{ btn }}
+                  {{ btn.label }}
                 </button>
               </div>
             </div>
@@ -751,7 +808,7 @@ const totalBetAmount = computed(() =>
         <div class="mt-4">
           <div class="flex items-center mb-2">
             <span class="text-xs text-gray-500">——</span>
-            <span class="text-xs text-gray-600 mx-2">倍数投注</span>
+            <span class="text-xs text-gray-600 mx-2">{{ t('games.play.multiplier') }}</span>
             <span class="text-xs text-gray-500 flex-1">——————————</span>
           </div>
           <div class="grid grid-cols-6 gap-2">
@@ -766,7 +823,7 @@ const totalBetAmount = computed(() =>
                   : 'bg-white text-gray-700 border-red-300'
               )"
             >
-              {{ mult }}倍
+              {{ mult }}{{ t('games.play.times') }}
             </button>
           </div>
           <div class="grid grid-cols-6 gap-2 mt-2">
@@ -781,7 +838,7 @@ const totalBetAmount = computed(() =>
                   : 'bg-white text-gray-700 border-red-300'
               )"
             >
-              {{ mult }}倍
+              {{ mult }}{{ t('games.play.times') }}
             </button>
           </div>
         </div>
@@ -792,7 +849,7 @@ const totalBetAmount = computed(() =>
         @click="isExpanded = !isExpanded"
         class="w-full mt-3 py-2 bg-orange-500 text-white rounded-lg flex items-center justify-center gap-1"
       >
-        {{ isExpanded ? '收起' : '展开' }}
+        {{ isExpanded ? t('games.play.collapse') : t('games.play.expand') }}
         <ChevronUp v-if="isExpanded" :size="16" />
         <ChevronDown v-else :size="16" />
       </button>
@@ -802,16 +859,16 @@ const totalBetAmount = computed(() =>
     <div class="bg-white mx-3 mt-3 mb-[20px] rounded-lg shadow">
       <!-- 表头 -->
       <div class="grid grid-cols-[80px_1fr_100px_90px] text-xs text-gray-500 border-b px-3 py-2">
-        <span>号码</span>
-        <span class="text-center">赔率</span>
-        <span class="text-center">投注</span>
+        <span>{{ t('games.play.number') }}</span>
+        <span class="text-center">{{ t('games.play.odds') }}</span>
+        <span class="text-center">{{ t('games.play.bet') }}</span>
         <span></span>
       </div>
 
       <!-- 号码列表 -->
       <div v-if="isLoadingPlays || isLoadingMode" class="flex justify-center items-center py-8">
         <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-        <span class="ml-2 text-gray-600">加载中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.play.loading') }}</span>
       </div>
       <div v-else-if="activeGroup" class="divide-y">
         <div
@@ -881,7 +938,7 @@ const totalBetAmount = computed(() =>
           </div>
         </div>
       </div>
-      <div v-else class="text-center py-8 text-gray-500">暂无玩法数据</div>
+      <div v-else class="text-center py-8 text-gray-500">{{ t('games.play.no-plays') }}</div>
     </div>
 
     <!-- 底部固定操作栏 -->
@@ -891,12 +948,12 @@ const totalBetAmount = computed(() =>
         <input
           type="text"
           v-model="modeName"
-          placeholder="填写模式名称"
+          :placeholder="t('games.mode.enter-name')"
           class="flex-1 h-8 px-3 text-sm border border-gray-300 rounded mr-3"
           maxlength="20"
         />
         <div class="flex items-center text-sm flex-shrink-0">
-          <span class="text-gray-600">总投入</span>
+          <span class="text-gray-600">{{ t('games.mode.total-input') }}</span>
           <span class="text-red-600 font-bold ml-1">{{ totalBetAmount.toLocaleString() }}</span>
           <img
             alt="coin"
@@ -912,7 +969,7 @@ const totalBetAmount = computed(() =>
           @click="handleCancel"
           class="bg-white text-gray-700 font-bold flex items-center justify-center gap-1 border-r"
         >
-          <span class="text-lg">&lt;</span> 取消
+          <span class="text-lg">&lt;</span> {{ t('common.cancel') }}
         </button>
         <button
           @click="handleSubmit"
@@ -924,7 +981,7 @@ const totalBetAmount = computed(() =>
               : 'bg-blue-600 text-white'
           )"
         >
-          <span class="text-lg">✓</span> 保存模式
+          <span class="text-lg">✓</span> {{ t('games.mode.save') }}
         </button>
       </div>
     </div>

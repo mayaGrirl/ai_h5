@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Plus, Edit2, Trash2 } from 'lucide-vue-next'
 import { modeList, setMode } from '@/api/game'
 import { toast } from '@/composables/useToast'
 import type { ModeItem } from '@/types/game.type'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
@@ -81,13 +83,13 @@ const handleDelete = async () => {
     })
 
     if (res.code === 200) {
-      toast.success('删除成功')
+      toast.success(t('games.mode.delete-success'))
       modes.value = modes.value.filter(m => m.id !== deletingMode.value?.id)
     } else {
-      toast.error(res.message || '删除失败')
+      toast.error(res.message || t('games.mode.delete-failed'))
     }
   } catch (error) {
-    toast.error('删除失败，请稍后重试')
+    toast.error(t('games.mode.delete-failed-retry'))
   } finally {
     showDeleteConfirm.value = false
     deletingMode.value = null
@@ -134,7 +136,7 @@ onMounted(() => {
         class="w-full flex items-center justify-center gap-2 py-4 text-red-600 hover:bg-red-50"
       >
         <Plus :size="20" />
-        <span>创建新模式</span>
+        <span>{{ t('games.mode.create') }}</span>
       </button>
     </div>
 
@@ -142,18 +144,18 @@ onMounted(() => {
     <div class="bg-white mx-3 my-3 rounded-lg shadow">
       <!-- 表头 -->
       <div class="grid grid-cols-[1fr_80px_80px] text-xs text-gray-500 border-b bg-gray-50 px-3 py-2 gap-2 rounded-t-lg">
-        <span>模式名称</span>
-        <span class="text-center">总金豆</span>
-        <span class="text-center">操作</span>
+        <span>{{ t('games.mode.name') }}</span>
+        <span class="text-center">{{ t('games.mode.total-coins') }}</span>
+        <span class="text-center">{{ t('games.mode.operations') }}</span>
       </div>
 
       <div v-if="isLoadingModes && modes.length === 0" class="flex justify-center items-center py-8">
         <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-        <span class="ml-2 text-gray-600">加载模式列表中...</span>
+        <span class="ml-2 text-gray-600">{{ t('games.mode.loading') }}</span>
       </div>
 
       <div v-else-if="modes.length === 0" class="text-center py-8 text-gray-500">
-        暂无模式，点击上方按钮创建
+        {{ t('games.mode.no-data') }}
       </div>
 
       <div v-else class="divide-y">
@@ -179,14 +181,14 @@ onMounted(() => {
               <button
                 @click="goToEdit(mode)"
                 class="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
-                title="编辑"
+                :title="t('games.mode.edit')"
               >
                 <Edit2 :size="16" />
               </button>
               <button
                 @click="confirmDelete(mode)"
                 class="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                title="删除"
+                :title="t('games.mode.delete')"
               >
                 <Trash2 :size="16" />
               </button>
@@ -196,11 +198,11 @@ onMounted(() => {
           <!-- 投注详情（折叠显示） -->
           <div class="mt-2 text-xs text-gray-500">
             <div class="flex items-start gap-1">
-              <span class="text-gray-400 flex-shrink-0">玩法:</span>
+              <span class="text-gray-400 flex-shrink-0">{{ t('games.mode.play-method') }}</span>
               <span class="line-clamp-2 break-all">{{ mode.bet_no }}</span>
             </div>
             <div class="flex items-start gap-1 mt-1">
-              <span class="text-gray-400 flex-shrink-0">金豆:</span>
+              <span class="text-gray-400 flex-shrink-0">{{ t('games.mode.coins') }}</span>
               <span class="line-clamp-1 break-all">{{ mode.bet_no_gold }}</span>
             </div>
           </div>
@@ -213,12 +215,12 @@ onMounted(() => {
             :disabled="isLoadingModes"
             class="px-6 py-2 bg-red-600 text-white text-sm rounded-lg disabled:opacity-50"
           >
-            {{ isLoadingModes ? '加载中...' : '加载更多' }}
+            {{ isLoadingModes ? t('common.loading') : t('games.mode.load-more') }}
           </button>
         </div>
 
         <div v-if="!hasMore && modes.length > 0" class="py-4 text-center text-gray-400 text-sm">
-          没有更多数据了
+          {{ t('games.mode.no-more') }}
         </div>
       </div>
     </div>
@@ -231,22 +233,22 @@ onMounted(() => {
         @click.self="showDeleteConfirm = false"
       >
         <div class="mx-4 w-full max-w-sm rounded-lg bg-white p-4">
-          <div class="text-lg font-medium mb-2">确认删除</div>
+          <div class="text-lg font-medium mb-2">{{ t('games.mode.delete-confirm') }}</div>
           <div class="text-gray-600 mb-4">
-            确定要删除模式 "{{ deletingMode?.mode_name }}" 吗？
+            {{ t('games.mode.delete-confirm-msg') }} "{{ deletingMode?.mode_name }}"?
           </div>
           <div class="flex gap-3">
             <button
               @click="showDeleteConfirm = false"
               class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg"
             >
-              取消
+              {{ t('common.cancel') }}
             </button>
             <button
               @click="handleDelete"
               class="flex-1 py-2 bg-red-600 text-white rounded-lg"
             >
-              确认删除
+              {{ t('games.mode.delete-confirm') }}
             </button>
           </div>
         </div>
