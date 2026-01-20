@@ -19,6 +19,12 @@ const ruleContent = computed(() => {
   )
 })
 
+// 是否包含 HTML 标签
+const isHtml = computed(() => {
+  if (!ruleContent.value) return false
+  return /<\/?[a-z][\s\S]*>/i.test(ruleContent.value)
+})
+
 // 获取本地化的分组名称
 const groupName = computed(() => {
   if (!currentGroup.value) return ''
@@ -37,13 +43,23 @@ const groupName = computed(() => {
           {{ groupName }}
           <span class="text-sm font-normal text-gray-500 ml-2">游戏规则</span>
         </h2>
+
         <div
           v-if="ruleContent"
           class="text-sm text-gray-700 leading-relaxed break-words overflow-hidden prose prose-sm max-w-none"
-          v-html="ruleContent"
-        />
+        >
+          <!-- 有 HTML -->
+          <div v-if="isHtml" v-html="ruleContent"></div>
+
+          <!-- 纯文本 -->
+          <div v-else class="whitespace-pre-line">
+            {{ ruleContent }}
+          </div>
+        </div>
+
         <div v-else class="text-center text-gray-400 py-8">暂无游戏规则</div>
       </template>
+
       <template v-else>
         <div class="text-center py-12 text-gray-500">请选择游戏分组</div>
       </template>
@@ -62,7 +78,8 @@ const groupName = computed(() => {
   width: 100%;
   border-collapse: collapse;
 }
-:deep(td), :deep(th) {
+:deep(td),
+:deep(th) {
   border: 1px solid #d1d5db;
   padding: 0.5rem;
   font-size: 0.75rem;

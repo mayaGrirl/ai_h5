@@ -1,1 +1,0 @@
-import{_ as o}from"./index-BvHA6CJ8.js";import{A as t,q as r,v as c,f as n}from"./vue-vendor-ntQnFNWs.js";import"./utils-vendor-CbLx3nH2.js";const s={},a={class:"min-h-screen bg-white"};function _(i,m){const e=t("RouterView");return c(),r("div",a,[n(e)])}const d=o(s,[["render",_]]);export{d as default};
