@@ -393,12 +393,22 @@ VITE_APP_TITLE=顶峰28
 
 ## 部署指南
 
-### Nginx 配置示例
+### Nginx 配置示例 (宝塔面板)
+
+在宝塔面板中，进入 **网站 → 对应站点 → 设置 → 配置文件**，添加以下配置：
+
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
-    root /var/www/ai_h5/dist;
+    listen 443 ssl http2;
+    server_name m.your-domain.com;
+
+    # SSL 证书 (宝塔自动生成，无需修改)
+    # ssl_certificate /www/server/panel/vhost/cert/...
+    # ssl_certificate_key /www/server/panel/vhost/cert/...
+
+    # 网站根目录
+    root /www/wwwroot/m.your-domain.com/dist;
     index index.html;
 
     # Gzip 压缩
@@ -406,33 +416,96 @@ server {
     gzip_vary on;
     gzip_min_length 1024;
     gzip_proxied expired no-cache no-store private auth;
-    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml application/javascript;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml application/javascript application/json;
+
+    # ============================================
+    # API 代理转发 (重要：必须放在 location / 之前)
+    # ============================================
+    location /api/ {
+        # 后端 API 地址，根据实际情况修改
+        proxy_pass https://api.your-domain.com;
+
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+
+        # 超时设置
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
 
     # 静态资源缓存
-    location /assets {
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 
-    # SPA 路由支持
+    # SPA 路由支持 (放在最后)
     location / {
         try_files $uri $uri/ /index.html;
     }
 
-    # API 代理 (如需要)
-    location /api {
-        proxy_pass http://backend-server;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+    # 禁止访问隐藏文件
+    location ~ /\. {
+        deny all;
     }
 }
 ```
 
-### 部署步骤
+### 宝塔面板配置步骤
+
+1. **创建网站**
+   - 进入宝塔面板 → 网站 → 添加站点
+   - 填写域名：`m.your-domain.com`
+   - 选择纯静态
+
+2. **上传文件**
+   - 本地执行：`npm run build`
+   - 将 `dist` 目录内容上传至网站根目录
+
+3. **配置反向代理**
+   - 方式一：在 **设置 → 配置文件** 中直接编辑（推荐，参考上方配置）
+   - 方式二：使用宝塔的 **反向代理** 功能：
+     - 点击 **设置 → 反向代理 → 添加反向代理**
+     - 代理名称：`api`
+     - 代理目录：`/api`
+     - 目标URL：`https://api.your-domain.com`（你的后端 API 地址）
+     - 勾选 **发送域名**
+
+4. **配置 SSL 证书**
+   - 点击 **设置 → SSL**
+   - 选择 Let's Encrypt 或上传证书
+   - 开启 **强制 HTTPS**
+
+5. **重载配置**
+   ```bash
+   nginx -t          # 测试配置
+   nginx -s reload   # 重载配置
+   ```
+
+### 常见问题
+
+#### API 请求返回 404
+- 检查 `location /api/` 是否在 `location /` 之前
+- 检查 `proxy_pass` 地址是否正确
+
+#### API 请求返回 405 Method Not Allowed
+- 确保 `location /api/` 配置正确，不要被 `try_files` 拦截
+- 添加 `proxy_http_version 1.1;`
+
+#### 页面刷新后 404
+- 确保 `location /` 中有 `try_files $uri $uri/ /index.html;`
+
+### 部署步骤总结
 1. 执行生产构建：`npm run build`
-2. 将 `dist` 目录上传至服务器
-3. 配置 Nginx 指向 `dist` 目录
-4. 重启 Nginx：`nginx -s reload`
+2. 将 `dist` 目录内容上传至服务器网站根目录
+3. 在宝塔面板配置 Nginx（参考上方配置）
+4. 配置 SSL 证书（可选但推荐）
+5. 重载 Nginx：`nginx -s reload`
 
 ## API 接口规范
 
