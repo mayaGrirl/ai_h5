@@ -158,6 +158,11 @@ export interface CustomerProfile {
   "member_capital": MemberCapital;
 }
 
+// 个人中心VIP会员领取状态
+export interface VipReceiveState {
+  "vip_receive_state": number;
+}
+
 // 用户基础信息
 export interface CustomerField {
   id?: number;

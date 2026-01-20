@@ -19,7 +19,7 @@ import {
   UpdateNicknameDto,
   UpdatePasswordDto,
   UpdateProfileDto,
-  ViewCardVerifyTypeDto, WagesCzRecordField, WagesRecordField
+  ViewCardVerifyTypeDto, VipReceiveState, WagesCzRecordField, WagesRecordField
 } from "@/types/customer.type";
 
 /**
@@ -158,6 +158,16 @@ export const customerReceiveSms = (): Promise<HttpRes<unknown>> => {
  */
 export const customerProfile = (): Promise<HttpRes<CustomerProfile>> => {
   return http.get('/api/app/v1/customer/mine', {});
+};
+
+/**
+ * VIP会员领取福利状态
+ * 0 没有领取资格
+ * 1 可以领取
+ * 2 已领取
+ */
+export const vipReceiveState = (): Promise<HttpRes<VipReceiveState>> => {
+  return http.get('/api/app/v1/customer/vip/receive-state', {});
 };
 
 /**

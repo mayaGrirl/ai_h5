@@ -22,7 +22,7 @@ import {
   PencilLine
 } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
-import { customerProfile, vipReceiveWelfare } from '@/api/customer'
+import { customerProfile, vipReceiveState, vipReceiveWelfare } from '@/api/customer'
 import { logout } from '@/api/auth'
 import { toast } from '@/composables/useToast'
 import type { CustomerProfile } from '@/types/customer.type'
@@ -36,6 +36,7 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const profile = ref<CustomerProfile | null>(null)
 const isReceivingWelfare = ref(false)
+const memberVipReceiveState = ref(0) // 0: 没有领取资格, 1: 可以领取, 2: 已领取
 
 // 设置抽屉状态
 const showSettingDrawer = ref(false)
@@ -71,6 +72,14 @@ const settingItems = [
 const loadProfile = async () => {
   try {
     loading.value = true
+
+    // 获取 VIP 领取状态
+    const stateRes = await vipReceiveState()
+    if (stateRes.code === 200) {
+      memberVipReceiveState.value = stateRes.data.vip_receive_state
+    }
+
+    // 获取用户资料
     const res = await customerProfile()
     if (res.code === 200) {
       profile.value = res.data
@@ -90,6 +99,7 @@ const handleReceiveWelfare = async () => {
   try {
     const res = await vipReceiveWelfare()
     if (res.code === 200) {
+      memberVipReceiveState.value = 2 // 标记已领取
       toast.success(res.message || '领取成功')
     } else {
       toast.error(res.message || '领取失败')
@@ -261,21 +271,36 @@ onMounted(() => {
         {{ t('mine.vip_title') }}
       </div>
       <div class="flex items-center justify-evenly rounded-b-md bg-gradient-to-r from-[#ff8e4a] to-[#ff3a00] px-4 py-3 text-center text-white min-h-20">
-        <div class="min-h-6 font-semibold">
-          {{ (profile?.customer && profile.customer.vip > 0) ? profile.customer.vip_label : t('mine.vip_not_found') }}
-        </div>
-        <div v-if="profile?.customer && profile.customer.vip > 0" class="w-xs">
-          <button
-            :class="[
-              'w-full h-11 rounded-full bg-white text-orange-500 font-medium shadow-md active:scale-95 transition px-4',
-              isReceivingWelfare ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
-            ]"
-            @click="handleReceiveWelfare"
-            :disabled="isReceivingWelfare"
-          >
-            {{ isReceivingWelfare ? t('common.form.button.submitting') : t('mine.vip-btn-receive') }}
-          </button>
-        </div>
+        <template v-if="loading">
+          <div class="min-h-6 font-semibold">{{ t('common.loading') }}</div>
+        </template>
+        <template v-else>
+          <div class="min-h-6 font-semibold">
+            {{ (profile?.customer && profile.customer.vip > 0) ? profile.customer.vip_label : t('mine.vip_not_found') }}
+          </div>
+          <!-- 可以领取 -->
+          <div v-if="memberVipReceiveState === 1" class="w-xs">
+            <button
+              :class="[
+                'w-full h-11 rounded-full bg-white text-orange-500 font-medium shadow-md active:scale-95 transition px-4',
+                isReceivingWelfare ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+              ]"
+              @click="handleReceiveWelfare"
+              :disabled="isReceivingWelfare"
+            >
+              {{ isReceivingWelfare ? t('common.form.button.submitting') : t('mine.vip-btn-receive') }}
+            </button>
+          </div>
+          <!-- 已领取 -->
+          <div v-if="memberVipReceiveState === 2" class="w-xs">
+            <button
+              class="w-full h-11 rounded-full bg-white text-orange-500 font-medium shadow-md transition px-4 opacity-60 cursor-not-allowed"
+              disabled
+            >
+              {{ t('mine.vip-btn-received') }}
+            </button>
+          </div>
+        </template>
       </div>
     </section>
 
@@ -283,12 +308,17 @@ onMounted(() => {
     <section class="mt-3 px-3">
       <div class="w-full rounded-lg border border-[#c7e6ff] bg-[#f4fbff] px-3 py-2 text-[12px] text-[#4b84b6] flex items-center min-h-9">
         <MapPin class="w-3 h-3 mr-1 text-[#4b84b6]" />
-        <span v-if="authStore.currentCustomer">
-          {{ t('mine.last-login-msg-1') }}
-          {{ authStore.currentCustomer.last_login_address }}
-          ({{ formatTime(authStore.currentCustomer.last_login_time) }})
-          {{ t('mine.last-login-msg-2') }}
-        </span>
+        <template v-if="loading">
+          <span>{{ t('common.loading') }}</span>
+        </template>
+        <template v-else>
+          <span v-if="authStore.currentCustomer">
+            {{ t('mine.last-login-msg-1') }}
+            {{ authStore.currentCustomer.last_login_address }}
+            ({{ formatTime(authStore.currentCustomer.last_login_time) }})
+            {{ t('mine.last-login-msg-2') }}
+          </span>
+        </template>
       </div>
     </section>
 
