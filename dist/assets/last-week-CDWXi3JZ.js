@@ -1,0 +1,1 @@
+import{d as s,o as a,B as n,q as r,l as o,v as c}from"./vue-vendor-ntQnFNWs.js";const l={class:"min-h-screen bg-gray-50 flex items-center justify-center"},m=s({__name:"last-week",setup(i){const t=n();return a(()=>{t.replace("/ranking?tab=last-week")}),(u,e)=>(c(),r("div",l,[...e[0]||(e[0]=[o("div",{class:"text-gray-500"},"跳转中...",-1)])]))}});export{m as default};

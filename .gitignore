@@ -18,9 +18,9 @@ node_modules
 !.yarn/versions
 
 # Build output
-dist
-dist-ssr
-*.local
+#dist
+#dist-ssr
+#*.local
 
 # Editor directories and files
 .vscode/*
