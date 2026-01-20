@@ -1,13 +1,12 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./app/**/*.{ts,tsx,js,jsx}",
-    "./components/**/*.{ts,tsx,js,jsx}",
-    "./src/**/*.{ts,tsx,js,jsx,css}"
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}"
   ],
   theme: {
     fontFamily: {
-      sans: ['Inter', 'sans-serif'],
+      sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       mono: [
         'Monaco',
         'ui-monospace',
@@ -30,9 +29,26 @@ module.exports = {
         slate: {
           850: 'hsl(222deg 47% 16%)'
         },
-        primary: '#5fc3e7'
+        primary: {
+          DEFAULT: '#dc2626',
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+        },
+        accent: '#5fc3e7'
+      },
+      spacing: {
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-top': 'env(safe-area-inset-top)',
       }
     }
   },
   plugins: []
-};
+}

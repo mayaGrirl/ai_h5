@@ -1,72 +1,55 @@
-import request from './request';
-import {AxiosRequestConfig} from 'axios';
+import request from './request'
+import type { AxiosRequestConfig } from 'axios'
 
 /**
- * get
- * @param url
- * @param params
- * @param config
- * @returns
+ * GET 请求
  */
-
 const httpGet = <R, T = unknown>(
   url: string,
   params: T,
-  config?: AxiosRequestConfig<T>,
+  config?: AxiosRequestConfig<T>
 ) => {
-  return request.get<T, R>(url, {params, ...config});
-};
+  return request.get<T, R>(url, { params, ...config })
+}
 
 /**
- * post
- * @param url
- * @param data
- * @param config
- * @returns
+ * POST 请求
  */
 const httpPost = <R, T = unknown>(
   url: string,
   data: T,
-  config?: AxiosRequestConfig<T>,
+  config?: AxiosRequestConfig<T>
 ) => {
-  return request.post<T, R>(url, data, {...config});
-};
+  return request.post<T, R>(url, data, { ...config })
+}
 
 /**
- * put
- * @param url
- * @param data
- * @param config
- * @returns
+ * PUT 请求
  */
 const httpPut = <R, T = unknown>(
   url: string,
   data: T,
-  config?: AxiosRequestConfig<T>,
+  config?: AxiosRequestConfig<T>
 ) => {
-  return request.put<T, R>(url, data, {...config});
-};
+  return request.put<T, R>(url, data, { ...config })
+}
 
 /**
- * del
- * @param url
- * @param data
- * @param config
- * @returns
+ * DELETE 请求
  */
 const httpDelete = <R, T = unknown>(
   url: string,
   data: T,
-  config?: AxiosRequestConfig<T>,
+  config?: AxiosRequestConfig<T>
 ) => {
-  return request.delete<T, R>(url, {data, ...config});
-};
+  return request.delete<T, R>(url, { data, ...config })
+}
 
 const http = {
   post: httpPost,
   get: httpGet,
   delete: httpDelete,
-  put: httpPut,
-};
+  put: httpPut
+}
 
-export default http;
+export default http

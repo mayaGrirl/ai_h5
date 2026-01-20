@@ -1,0 +1,437 @@
+{
+  "WebApp": {
+    "name": "Ding Feng 28"
+  },
+  "tab": {
+    "home": "Accueil",
+    "games": "Jeux",
+    "ranking": "Classement",
+    "shop": "Boutique",
+    "mine": "Mon compte"
+  },
+  "home": {
+    "announcement": "Annonces",
+    "events": "Événements",
+    "rewards": "Récompenses",
+    "partners": "Partenaires",
+    "hot-games": "Jeux populaires",
+    "new-games": "Nouveaux jeux"
+  },
+  "mine": {
+    "vip_title": "Ma carte de membre",
+    "vip_not_found": "Aucune carte trouvée",
+    "last-login-msg-1": "Dernière connexion à",
+    "last-login-msg-2": "Connecté",
+    "account-points": "Pièces",
+    "account-bank-points": "Dépôt",
+    "account-experience": "Écosystème",
+    "account-rank": "Classement du jour",
+    "account-blessing": "Points",
+    "account-freeze": "Gelé",
+    "yesterday_loss": "Perte d'hier",
+    "yesterday_loss_btn": "Réclamer la récompense de perte",
+    "recharge_rebate": "Remise de recharge",
+    "recharge_rebate_btn": "Réclamer la remise",
+    "vip-btn-receive": "Réclamer les avantages",
+    "btn-tasks": "Tâches nouveau membre",
+    "btn-sign_in": "Connexion",
+    "setting": {
+      "title": "Menu",
+      "mail": "Mes messages",
+      "receipt-text": "Historique du compte",
+      "profile": "Mon profil",
+      "toolcase": "Mes accessoires",
+      "gift": "Mes enveloppes rouges",
+      "landmark": "Services bancaires",
+      "repeat": "Historique des prix",
+      "salary": "Mon salaire",
+      "hand-coins": "Échange gratuit",
+      "message-circle-more": "Mes commentaires",
+      "security-settings": "Paramètres de sécurité",
+      "edit-password": "Changer le mot de passe",
+      "edit-pay-password": "Changer le mot de passe de paiement",
+      "edit-nickname": "Changer le pseudonyme",
+      "x": "Déconnexion"
+    },
+    "quick": {
+      "mail": "Messages",
+      "challenge": "Défi",
+      "relief": "Recevoir l'aide",
+      "salary": "Recevoir le salaire",
+      "commission": "Recevoir la commission"
+    },
+    "profile": {
+      "edit-nickname": "Modifier le pseudonyme",
+      "alert": "Le contenu ci-dessus ne peut pas être modifié après soumission, veuillez remplir avec soin",
+      "validation": {
+        "realname": "Le nom réel ne peut pas dépasser 50 caractères",
+        "qq": "Format du numéro QQ incorrect",
+        "alipay": "Le compte Alipay ne peut pas dépasser 50 caractères",
+        "wchat": "Le compte WeChat ne peut pas dépasser 50 caractères",
+        "address": "L'adresse ne peut pas dépasser 150 caractères",
+        "signature": "La signature ne peut pas dépasser 200 caractères"
+      },
+      "form-label": {
+        "nickname": "Pseudonyme",
+        "email": "Email",
+        "mobile": "Téléphone",
+        "realname": "Nom réel",
+        "qq": "QQ",
+        "alipay": "Compte AliPay",
+        "wchat": "Compte WeChat",
+        "address": "Adresse",
+        "signature": "Signature"
+      }
+    },
+    "bind-email": {
+      "title": "Lier l'email",
+      "alert": "Après liaison, il ne peut pas être modifié. Veuillez remplir avec soin"
+    },
+    "edit-nickname": {
+      "alert": "Changer le pseudonyme coûte 200"
+    },
+    "toolcase": {
+      "record-grid-1": "Numéro de carte",
+      "record-grid-2": "Mot de passe",
+      "record-grid-3": "Pièces",
+      "record-grid-4": "Date de réception",
+      "record-grid-5": "Action",
+      "record-title": "Liste des codes de carte",
+      "record-copied": "Copié",
+      "record-copy-all": "Copier tout",
+      "record-copy-one": "Copier",
+      "record-refresh-pending": "Actualisation...",
+      "record-refresh": "Actualiser",
+      "form-label": {
+        "question": "Question de sécurité",
+        "answer": "Réponse"
+      },
+      "question-options": {
+        "default": "Veuillez sélectionner une question de sécurité",
+        "1": "Quel est le nom de mon père ?",
+        "2": "Quel est le nom de ma mère ?",
+        "3": "Quel est le nom de mon grand-père ?",
+        "4": "Quel est le nom de ma grand-mère ?",
+        "5": "Quel est le nom de ma sœur aînée ?",
+        "6": "Quel est le nom de ma sœur cadette ?",
+        "7": "Quel est le nom de mon frère aîné ?",
+        "8": "Quel est le nom de mon frère cadet ?",
+        "9": "Quel est le nom de ma petite amie ?",
+        "10": "Quel est le nom de mon petit ami ?",
+        "11": "Quel est le nom de mon premier amour ?",
+        "12": "Quelle est ma célébrité préférée ?",
+        "13": "Quelle est la chose la plus inspirante qui me soit arrivée ?",
+        "14": "Quel est le nom de mon chien ?",
+        "15": "Qui est mon mentor ?",
+        "16": "Quel est le nom de mon fils ?",
+        "17": "Quel est le nom de ma fille ?",
+        "18": "Quel est le héros que j'admire le plus ?",
+        "19": "Quel est mon plus grand rêve ?"
+      }
+    },
+    "security-settings": {
+      "group-account": {
+        "title": "Sécurité du compte",
+        "login": "Mot de passe de connexion",
+        "address": "Vérification de l'emplacement de connexion",
+        "sms": "Vérification SMS de connexion",
+        "password": {
+          "login-password": "Mot de passe de connexion",
+          "login-password-placeholder": "Veuillez entrer le nouveau mot de passe",
+          "login-password-min": "Le mot de passe doit contenir au moins 8 caractères",
+          "confirm-password": "Confirmer le mot de passe",
+          "confirm-password-placeholder": "Veuillez confirmer le mot de passe",
+          "confirm-password-eq": "Les deux mots de passe ne correspondent pas",
+          "answer-max": "La réponse ne peut pas dépasser 50 caractères",
+          "safe-ask-valid": "Validation de sécurité",
+          "tip": "Rappel"
+        },
+        "pay-password": {
+          "password": "Mot de passe de paiement",
+          "password-placeholder": "Veuillez entrer le mot de passe de paiement",
+          "password-min": "Le mot de passe doit contenir au moins 8 caractères",
+          "confirm-password": "Confirmer le mot de passe",
+          "confirm-password-placeholder": "Veuillez confirmer le mot de passe"
+        },
+        "question": {
+          "tip-1": "Les questions de sécurité seront utilisées pour voir les codes de carte, changer le mot de passe de connexion, changer le mot de passe secondaire, etc.",
+          "tip-2": "Les questions de sécurité ne peuvent être définies qu'une seule fois. Veuillez les définir avec soin."
+        },
+        "login-location": {
+          "title": "Paramètres de restriction de localisation",
+          "enabled-label": "Activer la restriction",
+          "address1-label": "Emplacement de connexion 1",
+          "address1-max": "Maximum 20 caractères",
+          "address1-empty": "Au moins un emplacement de connexion doit être rempli après activation",
+          "address2-label": "Emplacement de connexion 2",
+          "alert-1": "Pour restreindre une ville comme Shanghai, entrez \"Shanghai\"",
+          "alert-2": "Pour restreindre une province comme Guangdong, entrez \"Guangdong\""
+        },
+        "login-sms": {
+          "title": "Vérification SMS de connexion",
+          "option-1": "Aucun",
+          "option-2": "Vérification SMS à chaque connexion",
+          "option-3": "Vérification SMS pour les connexions depuis un autre emplacement"
+        },
+        "redeem": {
+          "option-2": "Vérification de sécurité",
+          "option-3": "Vérification par email"
+        }
+      },
+      "group-pay": {
+        "title": "Sécurité des paiements",
+        "pay": "Mot de passe secondaire",
+        "security": "Questions de sécurité"
+      },
+      "group-other": {
+        "title": "Autres vérifications de permission",
+        "redeem": "Échange de récompenses",
+        "card": "Affichage du code de carte"
+      }
+    },
+    "relief": {
+      "table-header-1": "Niveau",
+      "table-header-2": "Pièces réclamables",
+      "table-header-3": "Solde",
+      "table-row-hit": "Lorsque le solde est inférieur à {point}, vous pouvez réclamer {limit} par jour",
+      "button": "Il reste {remaining} fois, réclamez maintenant",
+      "receive-limit-hit": "Vous avez déjà tout réclamé aujourd'hui. Revenez demain"
+    },
+    "salary": {
+      "tab-1": "Aperçu du salaire",
+      "tab-2": "Recevoir le salaire",
+      "tab-3": "Historique des salaires",
+      "intro-accumulated-salary": "Salaire accumulé cette semaine",
+      "receive-grid-1": "Période de statistiques : {start} à {end}",
+      "receive-grid-2": "Salaire",
+      "receive-grid-btn": "Recevoir",
+      "receive-all-btn": "Tout recevoir",
+      "receive-grid-3": "Reçu",
+      "record-grid-1": "Type",
+      "record-grid-2": "Montant calculé",
+      "record-grid-3": "Salaire gagné",
+      "record-grid-4": "Date d'enregistrement"
+    },
+    "transfer": {
+      "type-label": "Type d'opération",
+      "type-option-1": "Dépôt",
+      "type-option-2": "Retrait",
+      "amount-label": "Montant",
+      "amount-placeholder": "Veuillez entrer un entier positif",
+      "amount-verify-int": "Doit être un entier",
+      "amount-verify-gt0": "Le montant doit être supérieur à 0",
+      "amount-verify-max": "Le montant dépasse la limite",
+      "pay_password-verify-out": "Un mot de passe secondaire est requis pour les retraits"
+    },
+    "sign-in": {
+      "sign-stat-1": "Connexions aujourd'hui : <win>{count}</win> utilisateurs, total <win>{points}</win> points donnés, <coin>{beans}</coin> pièces",
+      "sign-stat-2": "Vous vous êtes connecté pendant <win>{day1}</win> jours consécutifs, total des connexions : <win>{day2}</win> jours",
+      "sign-btn-1": "Se connecter maintenant",
+      "sign-btn-2": "Déjà connecté",
+      "tab-1": "Connexion",
+      "tab-2": "Règles de connexion",
+      "tab-3": "Historique des connexions",
+      "intro-table-header-1": "Niveau écosystème",
+      "intro-table-header-2": "Récompenses de connexion",
+      "intro-table-desc-1": "Connectez-vous pour recevoir",
+      "intro-table-desc-2": "Points coffre : {points} × jours de connexion consécutifs",
+      "intro-table-desc-3": "Pièces : {points} × jours de connexion consécutifs",
+      "record-table-header-1": "Pièces",
+      "record-table-header-2": "Points",
+      "record-table-header-3": "Date de connexion"
+    }
+  },
+  "common": {
+    "points": "Points",
+    "empty-description": "Aucune donnée disponible",
+    "loading": "Chargement...",
+    "header": {
+      "back": "Retour"
+    },
+    "form": {
+      "placeholder": {
+        "enter": "Veuillez entrer ",
+        "select": "Veuillez sélectionner "
+      },
+      "button": {
+        "submit": "Soumettre",
+        "submitting": "Soumission..."
+      }
+    },
+    "catch-error": "Une erreur s'est produite, veuillez réessayer plus tard",
+    "loading-hit": "Tirez vers le haut pour charger plus",
+    "loading-list-empty": "Plus de données",
+    "sms-verify_code-label": "Code de vérification",
+    "sms-verify_code-placeholder": "Veuillez entrer le code de vérification",
+    "sms-verify_code-max": "Code de vérification invalide",
+    "sms-verify_code-send-failed": "Échec de l'envoi. Veuillez réessayer plus tard",
+    "sms-verify_code-sending": "Envoi...",
+    "sms-verify_code-send-btn": "Envoyer le code SMS",
+    "confirm": "Confirmer"
+  },
+  "actions": {
+    "pc": "Version PC",
+    "support": "Support"
+  },
+  "login": {
+    "submit-btn": "Connexion",
+    "forgot-password-btn": "Mot de passe oublié ?",
+    "register-btn": "S'inscrire"
+  },
+  "register": {
+    "mobile-label": "Téléphone",
+    "mobile-placeholder": "Veuillez entrer votre numéro de téléphone",
+    "mobile-regex": "Téléphone invalide",
+    "mobile-max": "Numéro de téléphone invalide",
+    "password-label": "Mot de passe",
+    "password-placeholder": "Veuillez entrer votre mot de passe",
+    "confirm_password-label": "Confirmer le mot de passe",
+    "confirm_password-placeholder": "Veuillez confirmer votre mot de passe",
+    "confirm_password-eq": "Les deux mots de passe ne correspondent pas",
+    "form-submit-button": "Inscription gratuite",
+    "back-login": "Vous avez déjà un compte ? Connectez-vous"
+  },
+  "forgot-password": {
+    "submit-btn1": "Étape suivante",
+    "submit-btn2": "Enregistrer le nouveau mot de passe",
+    "submit-btn3": "Retour",
+    "submit-step1": "Vérifier le numéro de téléphone",
+    "submit-step2": "Réinitialiser le mot de passe"
+  },
+  "recommend": {
+    "header-title": "Promotion",
+    "tab-1": "Aperçu de la promotion",
+    "tab-2": "Promouvoir maintenant",
+    "tab-3": "Gains récents",
+    "intro-table-header-1": "Niveau ami",
+    "intro-table-header-2": "Valeur écosystème requise",
+    "intro-table-header-3": "Récompense de mise à niveau",
+    "intro-table-header-4": "Commission de paris",
+    "promotion-title": "Texte promotionnel",
+    "promotion-desc": "Ci-dessous se trouve votre lien de promotion exclusif. Vous pouvez le partager avec vos amis via WeChat, QQ, MSN, et plus !",
+    "promotion-btn-1": "Copié avec succès",
+    "promotion-btn-2": "Copier le lien de promotion",
+    "copied-text": "Découvrez le tout nouveau système de salaire — jouez et gagnez un salaire ! De plus, des récompenses chanceuses quotidiennes avec des dizaines de millions de pièces. Les utilisateurs chanceux peuvent également recevoir un bonus supplémentaire de 10% à la connexion ! Qu'attendez-vous ? Passez à l'action maintenant ! Votre lien de promotion : {link}",
+    "record-table-header-1": "Pseudonyme",
+    "record-table-header-2": "Valeur écosystème",
+    "record-table-header-3": "Commission aujourd'hui",
+    "record-table-header-4": "Commission totale",
+    "record-receive-btn-1": "Réclamer les récompenses de mise à niveau en un clic",
+    "record-receive-btn-2": "Réclamer les récompenses de paris en un clic"
+  },
+  "capital-record": {
+    "tab-1": "Points",
+    "tab-2": "Dépôt",
+    "table-header-1": "Type",
+    "table-header-2": "Montant avant",
+    "table-header-3": "Montant",
+    "table-header-4": "Montant après"
+  },
+  "gift": {
+    "title": "Réclamer le paquet rouge",
+    "code-label": "Code du paquet rouge",
+    "code-max": "Maximum 20 caractères",
+    "code-regex": "Code de paquet rouge invalide. Seuls les lettres et les chiffres sont autorisés",
+    "code-placeholder": "Veuillez entrer le code du paquet rouge"
+  },
+  "rebate": {
+    "header-title": "Remise",
+    "tab-1": "Recharge",
+    "tab-2": "Perte",
+    "recharge-table-header-1": "Date",
+    "recharge-table-header-2": "Rotation valide",
+    "recharge-table-header-3": "Recharge",
+    "recharge-table-header-4": "Remise",
+    "recharge-table-header-5": "Statut",
+    "recharge-receive-btn": "Réclamer la remise",
+    "loss-table-header-1": "Date",
+    "loss-table-header-2": "Perte",
+    "loss-table-header-3": "Recharge",
+    "loss-table-header-4": "Remise",
+    "loss-table-header-5": "Statut"
+  },
+  "shop": {
+    "tab-1": "Historique des échanges",
+    "tab-2": "Mes codes de carte",
+    "items-1": "Solde bancaire",
+    "items-2": "Déposer maintenant",
+    "items-3": "Équivalent",
+    "items-4": "Mes pièces",
+    "items-5": "Rotation des 7 derniers jours",
+    "form-label-1": "Montant de l'échange",
+    "form-placeholder-1": "Veuillez entrer un multiple de 100",
+    "form-amount-verify-max": "Le montant de l'échange ne peut pas dépasser le solde bancaire",
+    "form-label-2": "Frais de traitement",
+    "verify-is-allowed-exchange": "Vous êtes {text} et n'êtes pas autorisé à échanger",
+    "record-grid-1": "Heure de l'échange",
+    "record-grid-2": "Pièces déduites",
+    "record-grid-3": "Solde bancaire"
+  },
+  "agent": {
+    "quick-menu-1": "Profil de l'agent",
+    "quick-menu-2": "Recharge de l'agent",
+    "quick-menu-3": "Recycler les cartes d'essai",
+    "quick-menu-4": "Transfert de solde",
+    "quick-menu-5": "Journaux d'opération",
+    "quick-menu-6": "Statistiques",
+    "quick-menu-7": "Déconnexion",
+    "profile": {
+      "label-1": "ID de l'agent",
+      "label-2": "Nom de l'agent",
+      "label-3": "Réduction sur l'achat de cartes",
+      "label-4": "Réduction sur le rachat de cartes",
+      "label-5": "Profit du rachat de cartes",
+      "label-6": "Part de distribution",
+      "label-7": "Statut"
+    },
+    "recharge": {
+      "form-check-hit": "ID : {aid}, Pseudonyme : {nickname}, Bénéficiaire : {realname}",
+      "form-uid-label": "ID utilisateur",
+      "form-uid-check-btn": "Vérifier",
+      "form-uid-placeholder": "Veuillez entrer l'ID utilisateur",
+      "form-amount-label": "Montant de recharge",
+      "form-amount-placeholder": "Veuillez entrer le montant de recharge",
+      "form-amount-min": "Solde insuffisant, impossible de recharger",
+      "head-bank-point": "Solde bancaire",
+      "head-rate": "Réduction",
+      "head-rate-unit": "de réduction",
+      "record-title": "Historique des recharges",
+      "record-grid-1": "Heure",
+      "record-grid-2": "Pièces",
+      "record-grid-3": "Détails de l'opération"
+    },
+    "log": {
+      "grid-1": "Type d'opération",
+      "grid-2": "Pièces",
+      "grid-3": "Solde des pièces",
+      "grid-4": "Heure de l'opération",
+      "grid-5": "Détails"
+    },
+    "conversion": {
+      "form-uid-label": "Agent de transfert",
+      "form-uid-placeholder": "Veuillez sélectionner un agent pour le transfert",
+      "form-amount-label": "Montant du transfert",
+      "form-amount-placeholder": "Veuillez entrer le montant du transfert",
+      "form-amount-min": "Montant insuffisant, transfert non autorisé"
+    },
+    "recycle": {
+      "head-rate": "Réduction sur le rachat de cartes",
+      "form-card-label": "Code de carte",
+      "form-card-placeholder": "Veuillez entrer le code de carte",
+      "form-btn-1": "Vérifier la disponibilité",
+      "form-btn-2": "Historique du recyclage",
+      "form-btn-3": "Confirmer",
+      "form-btn-4": "Annuler",
+      "check-result-title": "Résultat",
+      "result-grid-1": "Numéro de carte",
+      "result-grid-2": "Pièces",
+      "result-grid-3": "Statut",
+      "result-grid-4": "Remarques"
+    }
+  },
+  "rank": {
+    "tab-1": "Classement du jour",
+    "tab-2": "Classement d'hier",
+    "tab-3": "Classement de la semaine dernière"
+  }
+}

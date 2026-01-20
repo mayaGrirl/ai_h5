@@ -26,7 +26,9 @@ export interface IndexInfoDto {
 }
 
 export interface IndexGameDto {
-  limit: number;
+  limit?: number;
+  hot_count?: number;
+  new_count?: number;
 }
 
 export interface IndexDetailDto {

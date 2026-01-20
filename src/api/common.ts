@@ -1,7 +1,7 @@
 import {HttpRes} from "@/types/http.type";
 import {BlockField} from "@/types/customer.type";
 import http from "@/utils/request";
-import {CustomerLevelField} from "@/types/common.type";
+import {CustomerLevelField, RKey} from "@/types/common.type";
 
 /**
  * 获取Block数据
@@ -22,4 +22,11 @@ export const getPasswordTip = (): Promise<HttpRes<BlockField>> => {
  */
 export const getCustomerLevelOptions = (): Promise<HttpRes<CustomerLevelField[]>> => {
   return http.get(`/api/app/v1/customer-level/options`, {});
+};
+
+/**
+ * 获取公钥key
+ */
+export const httpConfigRKey = (): Promise<HttpRes<RKey>> => {
+  return http.get(`/api/app/v1/r-key`, {});
 };

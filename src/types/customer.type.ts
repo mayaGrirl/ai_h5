@@ -166,6 +166,7 @@ export interface CustomerField {
   mobile?: string | null;
   securitypass?: string | null;
   email?: string | null;
+  spread_code?: string | null;
   gid?: number;
   gid_label?: string | null;
   level?: number;
@@ -344,4 +345,26 @@ export interface SignInRecord {
   reward_points: number;
   reward_base_coin: number;
   created_at: string;
+}
+
+// 签到记录字段（别名）
+export type SignRecordField = SignInRecord;
+
+// 推广记录
+export interface SpreadRecordField {
+  id?: number;
+  member_id?: number;
+  username?: string | null;
+  addtime?: number;
+  status?: number;
+  status_label?: string | null;
+}
+
+// 道具记录
+export interface ToolcaseRecordField {
+  id?: number;
+  member_id?: number;
+  name?: string | null;
+  num?: number;
+  addtime?: number;
 }

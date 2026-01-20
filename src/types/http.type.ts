@@ -20,10 +20,13 @@ export interface HttpTotalRes<T> extends HttpRes<T> {
 // 分页请求
 export interface PageRequest {
   search?: unknown;
-  pagination: {
+  pagination?: {
     page: number;
     size: number;
   };
+  // 扁平格式的分页参数（兼容）
+  page?: number;
+  pageSize?: number;
 }
 
 // SSE 推送

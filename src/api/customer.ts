@@ -15,6 +15,7 @@ import {
   SetSecurityPassDto,
   SettingLoginAddressDto,
   SettingLoginSmsDto, SignInRecord, SignInStatisticsField,
+  SpreadRecordField, ToolcaseRecordField,
   UpdateNicknameDto,
   UpdatePasswordDto,
   UpdateProfileDto,
@@ -307,4 +308,18 @@ export const signRecords = (data: PageRequest): Promise<HttpRes<SignInRecord[]>>
  */
 export const signIn = (): Promise<HttpRes<SignInStatisticsField>> => {
   return http.post('/api/app/v1/customer/sign-in', {});
+};
+
+/**
+ * 推广记录
+ */
+export const spreadRecords = (data: { pagination: { page: number; size: number } }): Promise<HttpRes<SpreadRecordField[]>> => {
+  return http.post('/api/app/v1/spread/records', data);
+};
+
+/**
+ * 道具记录
+ */
+export const toolcaseRecords = (data: { pagination: { page: number; size: number } }): Promise<HttpRes<ToolcaseRecordField[]>> => {
+  return http.post('/api/app/v1/toolcase/records', data);
 };

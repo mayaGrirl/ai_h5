@@ -10,3 +10,7 @@ export interface CustomerLevelField {
   sign_in_points: number;
   sign_in_blessing: number;
 }
+
+export interface RKey {
+  key: string;
+}

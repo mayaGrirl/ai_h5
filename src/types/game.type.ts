@@ -313,13 +313,14 @@ export interface ModeListDto {
 
 // 设置模式请求参数
 export interface SetModeDto {
-  lottery_id: number | string;
-  game_group_id: number | string;
-  lottery_played_id: string;  // 玩法ID（逗号分隔）
-  bet_no: string;             // 投注号码（逗号分隔）
-  bet_gold: string;           // 投注金额（逗号分隔）
-  total_gold: number;         // 总金额
-  mode_name: string;          // 模式名称
+  id?: number;                // 模式ID（用于删除操作）
+  lottery_id?: number | string;
+  game_group_id?: number | string;
+  lottery_played_id?: string;  // 玩法ID（逗号分隔）
+  bet_no?: string;             // 投注号码（逗号分隔）
+  bet_gold?: string;           // 投注金额（逗号分隔）
+  total_gold?: number;         // 总金额
+  mode_name?: string;          // 模式名称
   mode_id?: number;           // 模式ID（0或不传=新增，>0=编辑）
   status?: number;            // 状态（0=删除，1=正常）
 }
