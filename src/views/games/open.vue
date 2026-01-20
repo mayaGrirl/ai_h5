@@ -89,14 +89,34 @@ const getSum = (item: LotteryResultItem): string => {
   return sum !== undefined && sum !== null ? String(sum) : '--'
 }
 
-// 获取大小
-const getBigSmall = (item: LotteryResultItem): string => {
+// 获取大小原始值 (用于样式判断)
+const getBigSmallRaw = (item: LotteryResultItem): string => {
   return item.final_res?.bigSmall || '--'
 }
 
-// 获取单双
-const getOddEven = (item: LotteryResultItem): string => {
+// 获取大小 (翻译接口返回的中文值)
+const getBigSmall = (item: LotteryResultItem): string => {
+  const value = getBigSmallRaw(item)
+  const map: Record<string, string> = {
+    '大': t('games.open.big'),
+    '小': t('games.open.small')
+  }
+  return map[value] || value
+}
+
+// 获取单双原始值 (用于样式判断)
+const getOddEvenRaw = (item: LotteryResultItem): string => {
   return item.final_res?.oddEven || '--'
+}
+
+// 获取单双 (翻译接口返回的中文值)
+const getOddEven = (item: LotteryResultItem): string => {
+  const value = getOddEvenRaw(item)
+  const map: Record<string, string> = {
+    '单': t('games.open.odd'),
+    '双': t('games.open.even')
+  }
+  return map[value] || value
 }
 
 // 获取形态
@@ -228,13 +248,13 @@ onMounted(() => {
               <div class="flex justify-center gap-1">
                 <span :class="[
                   'text-xs font-medium',
-                  getBigSmall(item) === '大' ? 'text-red-600' : getBigSmall(item) === '小' ? 'text-green-600' : 'text-gray-500'
+                  getBigSmallRaw(item) === '大' ? 'text-red-600' : getBigSmallRaw(item) === '小' ? 'text-green-600' : 'text-gray-500'
                 ]">
                   {{ getBigSmall(item) }}
                 </span>
                 <span :class="[
                   'text-xs font-medium',
-                  getOddEven(item) === '单' ? 'text-orange-600' : getOddEven(item) === '双' ? 'text-blue-600' : 'text-gray-500'
+                  getOddEvenRaw(item) === '单' ? 'text-orange-600' : getOddEvenRaw(item) === '双' ? 'text-blue-600' : 'text-gray-500'
                 ]">
                   {{ getOddEven(item) }}
                 </span>
