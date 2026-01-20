@@ -27,7 +27,11 @@ export const SAFE_QUESTION_OPTIONS = [
  * 不需要登录的页面路由
  */
 export const NOT_LOGIN_WHITELIST = [
+  '/',
   '/auth/register',
   '/auth/login',
-  '/auth/forgot-password'
+  '/auth/forgot-password',
+  '/index/announce',
+  '/index/activities',
+  '/index/partners'
 ]

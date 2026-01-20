@@ -1,0 +1,21 @@
+import{d as x,q as i,l as n,M as g,c as p,F as _,t as b,I as M,B as w,v as r,x as c,r as I,k as z,J as C,y as B,z as H}from"./vue-vendor-ntQnFNWs.js";import{c as u,a as A,u as S}from"./index-CFMypmBh.js";import{U as V}from"./user-DKpU-hBG.js";/**
+ * @license lucide-vue-next v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const q=u("Gamepad2Icon",[["line",{x1:"6",x2:"10",y1:"11",y2:"11",key:"1gktln"}],["line",{x1:"8",x2:"8",y1:"9",y2:"13",key:"qnk9ow"}],["line",{x1:"15",x2:"15.01",y1:"12",y2:"12",key:"krot7o"}],["line",{x1:"18",x2:"18.01",y1:"10",y2:"10",key:"1lcuu1"}],["path",{d:"M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z",key:"mfqc10"}]]);/**
+ * @license lucide-vue-next v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const $=u("HouseIcon",[["path",{d:"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8",key:"5wwlr5"}],["path",{d:"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",key:"1d0kgt"}]]);/**
+ * @license lucide-vue-next v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const L=u("ShoppingBagIcon",[["path",{d:"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z",key:"hou9p0"}],["path",{d:"M3 6h18",key:"d0wm0j"}],["path",{d:"M16 10a4 4 0 0 1-8 0",key:"1ltviw"}]]);/**
+ * @license lucide-vue-next v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const T=u("TrophyIcon",[["path",{d:"M6 9H4.5a2.5 2.5 0 0 1 0-5H6",key:"17hqa7"}],["path",{d:"M18 9h1.5a2.5 2.5 0 0 0 0-5H18",key:"lmptdp"}],["path",{d:"M4 22h16",key:"57wxv0"}],["path",{d:"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22",key:"1nw9bq"}],["path",{d:"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22",key:"1np0yb"}],["path",{d:"M18 2H6v7a6 6 0 0 0 12 0V2Z",key:"u46fv3"}]]),j={class:"fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg shadow-[0_-2px_20px_rgba(0,0,0,0.08)] tab-bar-nav"},N={class:"flex h-14 items-center justify-around relative"},D=["onClick"],F={class:"relative z-10"},G={key:0,class:"absolute -inset-1 bg-red-500/20 rounded-full blur-md -z-10"},W=x({__name:"TabBar",setup(R){const m=M(),f=w(),{t:s}=A(),y=S(),h=I(null),l=p(()=>[{name:s("tab.home"),href:"",icon:$,auth:!1},{name:s("tab.shop"),href:"shop",icon:L,auth:!0},{name:s("tab.games"),href:"games",icon:q,auth:!0},{name:s("tab.ranking"),href:"ranking",icon:T,auth:!0},{name:s("tab.mine"),href:"mine",icon:V,auth:!0}]),o=t=>{const a=m.path;return t===""?a==="/"||a==="":a.startsWith(`/${t}`)},v=p(()=>l.value.findIndex(t=>o(t.href))),k=(t,a)=>{h.value=a,setTimeout(()=>{h.value=null},150);let e=`/${t.href}`;t.auth&&!y.isLogin&&(e="/auth/login"),f.push(e)};return(t,a)=>(r(),i("nav",j,[n("div",{class:"absolute top-0 h-0.5 bg-gradient-to-r from-[#ff6a3a] to-[#ff1020] transition-all duration-300 ease-out rounded-full",style:g({width:`${100/l.value.length}%`,left:`${v.value*100/l.value.length}%`})},null,4),n("ul",N,[(r(!0),i(_,null,b(l.value,(e,d)=>(r(),i("li",{key:e.href,class:"flex-1"},[n("button",{onClick:U=>k(e,d),class:c(["relative flex w-full flex-col items-center justify-center py-1 transition-all duration-200",h.value===d?"scale-90":"scale-100"])},[n("div",{class:c(["absolute inset-x-2 inset-y-0 rounded-xl transition-all duration-300",o(e.href)?"bg-red-50":"bg-transparent"])},null,2),n("div",F,[(r(),z(B(e.icon),{class:c(["h-5 w-5 transition-all duration-300",o(e.href)?"text-red-600 scale-110":"text-gray-400"])},null,8,["class"])),o(e.href)?(r(),i("div",G)):C("",!0)]),n("span",{class:c(["relative z-10 text-[10px] mt-1 font-medium transition-all duration-300",o(e.href)?"text-red-600":"text-gray-400"])},H(e.name),3)],10,D)]))),128))])]))}});export{W as _};

@@ -6,6 +6,7 @@ import { getLocale } from '@/i18n'
 
 // 创建 axios 实例
 const service = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '',
   timeout: 300000,
   headers: {
     Accept: 'application/json',

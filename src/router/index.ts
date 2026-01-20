@@ -25,31 +25,31 @@ const routes: RouteRecordRaw[] = [
         path: 'index/announce',
         name: 'Announcements',
         component: () => import('@/views/index/announce/index.vue'),
-        meta: { title: 'announce' }
+        meta: { title: 'announce', requiresAuth: false }
       },
       {
         path: 'index/announce/:id',
         name: 'AnnouncementDetail',
         component: () => import('@/views/index/announce/detail.vue'),
-        meta: { title: 'announce-detail' }
+        meta: { title: 'announce-detail', requiresAuth: false }
       },
       {
         path: 'index/activities',
         name: 'Activities',
         component: () => import('@/views/index/activities/index.vue'),
-        meta: { title: 'activities' }
+        meta: { title: 'activities', requiresAuth: false }
       },
       {
         path: 'index/activities/:id',
         name: 'ActivityDetail',
         component: () => import('@/views/index/activities/detail.vue'),
-        meta: { title: 'activity-detail' }
+        meta: { title: 'activity-detail', requiresAuth: false }
       },
       {
         path: 'index/partners',
         name: 'Partners',
         component: () => import('@/views/index/partners/index.vue'),
-        meta: { title: 'partners' }
+        meta: { title: 'partners', requiresAuth: false }
       },
       // 排行榜
       {
