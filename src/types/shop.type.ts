@@ -35,6 +35,15 @@ export interface CardDetailResponse {
   block_content: string;
 }
 
+/**
+ * 免费兑换
+ */
+export interface CardCashFree {
+  total_water?: number;
+  received?: number;
+  remaining?: number;
+}
+
 // 兑换的卡密字段
 export interface CardRecordField {
   id?: number;

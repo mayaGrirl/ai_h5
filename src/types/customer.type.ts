@@ -331,6 +331,10 @@ export interface SalaryRecordField {
   status?: number;
   status_label?: string | null;
 }
+// 本周累计工资
+export interface SalaryWekdayTotal {
+  coin: number;
+}
 
 // 签到统计
 export interface SignInStatisticsField {

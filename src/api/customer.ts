@@ -11,7 +11,7 @@ import {
   RecommendCustomer,
   RecommendLinkKey,
   RedeemGiftVerifyTypeDto,
-  ReliefResponse, SalaryRecordField, SalaryZRecordField,
+  ReliefResponse, SalaryRecordField, SalaryWekdayTotal, SalaryZRecordField,
   SetSecurityPassDto,
   SettingLoginAddressDto,
   SettingLoginSmsDto, SignInRecord, SignInStatisticsField,
@@ -268,6 +268,13 @@ export const receiveWages = (id: number): Promise<HttpRes<WagesRecordField>> => 
  */
 export const vipReceiveWelfare = (): Promise<HttpRes<unknown>> => {
   return http.post(`/api/app/v1/vip/receive-welfare`, {});
+};
+
+/**
+ * 本周累计工资
+ */
+export const salaryWeeklyTotal = (): Promise<HttpRes<SalaryWekdayTotal>> => {
+  return http.get('/api/app/v1/salary/weekly-total', {});
 };
 
 /**

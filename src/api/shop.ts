@@ -1,6 +1,6 @@
 import {HttpRes, PageRequest} from "@/types/http.type";
 import http from "@/utils/request";
-import {CardDetailResponse, CardExchangeDto, CardRecordField} from "@/types/shop.type";
+import {CardCashFree, CardDetailResponse, CardExchangeDto, CardRecordField} from "@/types/shop.type";
 
 
 /**
@@ -22,4 +22,11 @@ export const cardDetail = (): Promise<HttpRes<CardDetailResponse>> => {
  */
 export const cardExchange = (data: CardExchangeDto): Promise<HttpRes<unknown>> => {
   return http.post('/api/app/v1/card/exchange', data);
+};
+
+/**
+ * 免费兑换额度
+ */
+export const cardCashFree = (): Promise<HttpRes<CardCashFree>> => {
+  return http.get('/api/app/v1/card/cash-free', {});
 };

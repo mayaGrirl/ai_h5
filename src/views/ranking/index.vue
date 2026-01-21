@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { today, yesterday, lastWeek } from '@/api/rank'
 import { toast } from '@/composables/useToast'
-import type { TodayField } from '@/types/rank.type'
+import type { TodayField, LastWeekField } from '@/types/rank.type'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -23,9 +23,12 @@ const tabs = [
   { key: 'last-week', i18Key: 'rank.tab-3' }
 ]
 
-// 排行数据
-const rankList = ref<TodayField[]>([])
+// 排行数据 - 今日/昨日使用详细字段，上周使用简单字段
+const rankList = ref<TodayField[] | LastWeekField[]>([])
 const isLoading = ref(false)
+
+// 判断是否为上周榜（使用简单字段格式）
+const isLastWeek = computed(() => currentTab.value === 'last-week')
 
 // 获取排行数据
 const fetchRankData = async (tab: string) => {
@@ -144,44 +147,71 @@ onMounted(() => {
           暂无排行数据
         </div>
 
-        <div
-          v-else
-          v-for="item in rankList"
-          :key="item.rank"
-          class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-b-0"
-        >
-          <!-- 左侧：排名 + 图标 + 名称 -->
-          <div class="flex items-center space-x-3">
-            <!-- 奖牌 -->
-            <span :class="getMedalClass(item.rank)">
-              {{ item.rank }}
-            </span>
-
-            <!-- VIP等级图标 -->
-            <img
-              :src="`/ranking/vip/${item.level}.png`"
-              :alt="`VIP${item.level}`"
-              class="w-5 h-5"
-              @error="($event.target as HTMLImageElement).style.display = 'none'"
-            />
-
-            <!-- 名称 -->
-            <span class="text-gray-800 text-sm">{{ item.name }}</span>
+        <!-- 上周榜（简单字段格式） -->
+        <template v-if="isLastWeek">
+          <div
+            v-for="item in (rankList as LastWeekField[])"
+            :key="item.rank"
+            class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-b-0"
+          >
+            <div class="flex items-center space-x-3">
+              <span :class="getMedalClass(item.rank)">
+                {{ item.rank }}
+              </span>
+              <img
+                :src="`/ranking/vip/${item.level}.png`"
+                :alt="`VIP${item.level}`"
+                class="w-5 h-5"
+                @error="($event.target as HTMLImageElement).style.display = 'none'"
+              />
+              <span class="text-gray-800 text-sm">{{ item.name }}</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="text-red-500 font-semibold text-sm">
+                {{ item.score.toLocaleString() }}
+              </span>
+              <img
+                src="/ranking/coin.png"
+                alt="gold"
+                class="w-[13px] h-[13px]"
+                @error="($event.target as HTMLImageElement).style.display = 'none'"
+              />
+            </div>
           </div>
+        </template>
 
-          <!-- 右侧：分数 -->
-          <div class="flex items-center space-x-1">
-            <span class="text-red-500 font-semibold text-sm">
-              {{ item.score.toLocaleString() }}
-            </span>
-            <img
-              src="/ranking/coin.png"
-              alt="gold"
-              class="w-[13px] h-[13px]"
-              @error="($event.target as HTMLImageElement).style.display = 'none'"
-            />
+        <!-- 今日/昨日榜（详细字段格式） -->
+        <template v-else>
+          <div
+            v-for="(item, index) in (rankList as TodayField[])"
+            :key="item.id"
+            class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-b-0"
+          >
+            <div class="flex items-center space-x-3">
+              <span :class="getMedalClass(index + 1)">
+                {{ index + 1 }}
+              </span>
+              <img
+                :src="`/ranking/vip/${item.member?.level || 1}.png`"
+                :alt="`VIP${item.member?.level || 1}`"
+                class="w-5 h-5"
+                @error="($event.target as HTMLImageElement).style.display = 'none'"
+              />
+              <span class="text-gray-800 text-sm">{{ item.member_field?.nickname }}</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="text-red-500 font-semibold text-sm">
+                {{ item.profit.toLocaleString() }}
+              </span>
+              <img
+                src="/ranking/coin.png"
+                alt="gold"
+                class="w-[13px] h-[13px]"
+                @error="($event.target as HTMLImageElement).style.display = 'none'"
+              />
+            </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
