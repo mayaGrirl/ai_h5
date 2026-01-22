@@ -27,7 +27,7 @@ export default class SodiumEncryptor {
 
     const cipher = sodium.crypto_box_seal(message, publicKey);
 
-    // 返回 base64
-    return sodium.to_base64(cipher);
+    // 返回 URL-safe base64 (服务器端使用 URLSAFE_NO_PADDING 解码)
+    return sodium.to_base64(cipher, sodium.base64_variants.URLSAFE_NO_PADDING);
   }
 }

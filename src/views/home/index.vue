@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Bell, Star, Gift, UsersRound, X } from 'lucide-vue-next'
-import { getBanners, getHomePopup, indexGameHotNew, getWebConfig } from '@/api/home'
+import { getBanners, getHomePopup, indexGameHotNew, getWebConfig, getGameNotice, getIndexDetail } from '@/api/home'
 import { useLocalized } from '@/composables/useLocalized'
 import type { IndexDataItem, IndexGameItem, webConfig } from '@/types/index.type'
 import PageLoading from '@/components/PageLoading.vue'
@@ -21,6 +21,21 @@ const popupAnnouncement = ref<IndexDataItem | null>(null)
 const showPopup = ref(false)
 const siteConfig = ref<webConfig | null>(null)
 
+// 滚动公告 (type=7)
+const gameNotices = ref<IndexDataItem[]>([])
+const currentNoticeIndex = ref(0)
+const needsScroll = ref(false)
+const noticeContainerRef = ref<HTMLDivElement | null>(null)
+const noticeTextRef = ref<HTMLSpanElement | null>(null)
+
+// 滚动公告详情弹框
+const noticeDialogOpen = ref(false)
+const selectedNotice = ref<IndexDataItem | null>(null)
+const noticeDetailLoading = ref(false)
+
+// 定时器
+let noticeTimer: ReturnType<typeof setTimeout> | null = null
+
 // 快捷入口
 const quickLinks = computed(() => [
   { name: t('home.announcement'), icon: Bell, color: 'bg-[#ffb84d]', href: '/index/announce' },
@@ -35,10 +50,11 @@ const loadData = async () => {
     loading.value = true
     configLoading.value = true
 
-    const [bannersRes, gameRes, configRes] = await Promise.all([
+    const [bannersRes, gameRes, configRes, noticeRes] = await Promise.all([
       getBanners(),
       indexGameHotNew({ hot_count: 6, new_count: 3 }),
-      getWebConfig()
+      getWebConfig(),
+      getGameNotice()
     ])
 
     if (bannersRes.code === 200) {
@@ -53,6 +69,10 @@ const loadData = async () => {
       siteConfig.value = configRes.data
     }
     configLoading.value = false
+
+    if (noticeRes.code === 200 && noticeRes.data) {
+      gameNotices.value = noticeRes.data
+    }
 
     // 首页弹窗 - 使用 popup.id 作为 key
     const popupRes = await getHomePopup()
@@ -72,8 +92,81 @@ const loadData = async () => {
   }
 }
 
+// 当公告索引变化时，先重置滚动状态以便重新测量
+watch(currentNoticeIndex, () => {
+  needsScroll.value = false
+})
+
+// 检测文字是否超出容器宽度
+watch([currentNoticeIndex, () => gameNotices.value, needsScroll], () => {
+  if (needsScroll.value) return
+
+  setTimeout(() => {
+    if (noticeContainerRef.value && noticeTextRef.value) {
+      const containerWidth = noticeContainerRef.value.offsetWidth
+      const textWidth = noticeTextRef.value.scrollWidth
+      needsScroll.value = textWidth > containerWidth
+    }
+  }, 50)
+}, { immediate: true })
+
+// 滚动公告上下轮播
+watch([() => gameNotices.value, currentNoticeIndex, needsScroll], () => {
+  if (noticeTimer) {
+    clearTimeout(noticeTimer)
+  }
+
+  if (gameNotices.value.length === 0) return
+
+  const currentNotice = gameNotices.value[currentNoticeIndex.value]
+  const textLength = currentNotice?.title?.length || 0
+
+  // 需要横向滚动时：根据长度计算滚动时间 + 停顿
+  // 不需要滚动时：3秒后切换
+  const scrollTime = needsScroll.value
+    ? Math.max(textLength * 0.25, 5) * 1000 + 1000
+    : 3000
+
+  noticeTimer = setTimeout(() => {
+    currentNoticeIndex.value = (currentNoticeIndex.value + 1) % gameNotices.value.length
+  }, scrollTime)
+}, { immediate: true })
+
+// 点击滚动公告，打开详情弹框
+const handleNoticeClick = async (notice: IndexDataItem) => {
+  noticeDialogOpen.value = true
+  noticeDetailLoading.value = true
+  selectedNotice.value = notice
+
+  try {
+    const { code, data } = await getIndexDetail(notice.id)
+    if (code === 200 && data) {
+      selectedNotice.value = data
+    }
+  } catch (error) {
+    console.error('获取公告详情失败:', error)
+  } finally {
+    noticeDetailLoading.value = false
+  }
+}
+
+const closeNoticeDialog = () => {
+  noticeDialogOpen.value = false
+}
+
+// 计算滚动时长
+const getScrollDuration = (title: string) => {
+  return Math.max(title.length * 0.2, 6)
+}
+
 onMounted(() => {
   loadData()
+})
+
+onUnmounted(() => {
+  if (noticeTimer) {
+    clearTimeout(noticeTimer)
+  }
 })
 </script>
 
@@ -87,13 +180,6 @@ onMounted(() => {
       <PageLoading v-if="loading" />
 
       <main v-else class="px-3 pb-20 pt-3">
-        <!-- 轮播图 -->
-        <BannerCarousel
-          :banners="banners"
-          :image-base-url="imageBaseUrl"
-          class="mb-3"
-        />
-
         <!-- 快捷入口 -->
         <section class="grid grid-cols-4 gap-2 mb-3">
           <router-link
@@ -111,6 +197,51 @@ onMounted(() => {
             </div>
             <span class="mt-1 text-[12px] text-gray-700">{{ link.name }}</span>
           </router-link>
+        </section>
+
+        <!-- 轮播图 -->
+        <BannerCarousel
+          :banners="banners"
+          :image-base-url="imageBaseUrl"
+          class="mb-3"
+        />
+
+        <!-- 滚动公告 (type=7) -->
+        <section v-if="gameNotices.length > 0" class="mb-3">
+          <div
+            class="bg-gradient-to-r from-[#fff8e6] to-[#fff2d6] rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm border border-[#ffe4a0] cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]"
+            @click="handleNoticeClick(gameNotices[currentNoticeIndex])"
+          >
+            <div class="flex-shrink-0 text-lg">
+              📢
+            </div>
+            <div ref="noticeContainerRef" class="flex-1 overflow-hidden relative h-5">
+              <div
+                v-for="(notice, index) in gameNotices"
+                :key="notice.id"
+                class="absolute inset-0 transition-all duration-500 ease-in-out"
+                :class="index === currentNoticeIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+              >
+                <div class="h-full overflow-hidden flex items-center">
+                  <div
+                    v-if="needsScroll && index === currentNoticeIndex"
+                    class="inline-flex whitespace-nowrap text-sm text-[#8b5a00] animate-marquee-text"
+                    :style="{ animationDuration: `${getScrollDuration(notice.title)}s` }"
+                  >
+                    <span>{{ notice.title }}</span>
+                    <span class="pl-16">{{ notice.title }}</span>
+                  </div>
+                  <span
+                    v-else
+                    :ref="index === currentNoticeIndex ? (el) => noticeTextRef = el as HTMLSpanElement : undefined"
+                    class="text-sm text-[#8b5a00] whitespace-nowrap"
+                  >
+                    {{ notice.title }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- 热门游戏 -->
@@ -217,6 +348,72 @@ onMounted(() => {
         </div>
       </div>
     </Teleport>
+
+    <!-- 滚动公告详情弹框 -->
+    <Teleport to="body">
+      <Transition name="dialog">
+        <div
+          v-if="noticeDialogOpen"
+          class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          @click.self="closeNoticeDialog"
+        >
+          <div class="bg-white w-[calc(100vw-32px)] max-w-lg max-h-[80vh] overflow-hidden flex flex-col rounded-2xl shadow-2xl">
+            <!-- 头部 -->
+            <div class="flex items-center justify-between p-4 border-b">
+              <div class="flex-1 pr-4">
+                <h3 class="text-lg font-bold text-gray-900">
+                  {{ selectedNotice?.title }}
+                </h3>
+                <div v-if="selectedNotice?.created_at" class="text-xs text-gray-500 mt-1">
+                  发布于 {{ selectedNotice.created_at }}
+                </div>
+              </div>
+              <button
+                @click="closeNoticeDialog"
+                class="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0"
+              >
+                <X class="h-5 w-5" />
+              </button>
+            </div>
+
+            <!-- 内容 -->
+            <div class="flex-1 overflow-y-auto p-4">
+              <div v-if="noticeDetailLoading" class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              </div>
+              <div
+                v-else
+                class="text-sm text-gray-700 leading-7 prose prose-sm max-w-none"
+                v-html="selectedNotice?.content || ''"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
     </div>
   </div>
 </template>
+
+<style scoped>
+.dialog-enter-active,
+.dialog-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.dialog-enter-active > div,
+.dialog-leave-active > div {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.dialog-enter-from,
+.dialog-leave-to {
+  opacity: 0;
+}
+
+.dialog-enter-from > div,
+.dialog-leave-to > div {
+  transform: scale(0.95);
+  opacity: 0;
+}
+</style>

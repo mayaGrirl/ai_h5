@@ -464,3 +464,17 @@ textarea {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
+
+/* ========== 横向滚动公告动画 ========== */
+@keyframes marquee-text {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-text {
+  animation: marquee-text 8s linear infinite;
+}

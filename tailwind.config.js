@@ -47,7 +47,16 @@ export default {
       spacing: {
         'safe-bottom': 'env(safe-area-inset-bottom)',
         'safe-top': 'env(safe-area-inset-top)',
-      }
+      },
+      animation: {
+        'marquee-text': 'marquee-text 8s linear infinite',
+      },
+      keyframes: {
+        'marquee-text': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+      },
     }
   },
   plugins: []
