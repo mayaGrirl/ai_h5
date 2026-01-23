@@ -6,7 +6,7 @@ export interface CardExchangeDto {
   commission: number;
   safe_ask?: string;
   answer?: string;
-  verify_code?: number;
+  verify_code?: string | number;
 }
 
 /**

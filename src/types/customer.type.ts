@@ -65,8 +65,9 @@ export interface ViewCardVerifyTypeDto {
  * 设置密保问题
  */
 export interface SetSecurityPassDto {
-  safe_ask: string;
-  answer: string;
+  safe_ask?: string;
+  answer?: string;
+  verify_code?: string;
 }
 
 /**

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { checkSecurityPass } from '@/api/customer'
 import { cardRecords } from '@/api/shop'
@@ -7,18 +7,25 @@ import { toast } from '@/composables/useToast'
 import { SAFE_QUESTION_OPTIONS } from '@/constants'
 import type { CardRecordField } from '@/types/shop.type'
 import PageHeader from '@/components/PageHeader.vue'
+import ReceiveSms from '@/components/ReceiveSms.vue'
+import { useAuthStore } from '@/stores/auth'
 import dayjs from 'dayjs'
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 
 // 验证状态
 const verified = ref<boolean | null>(null)
 const isSubmitting = ref(false)
 
+// 验证类型: safeQuestion 或 smsVerify
+const verifyType = computed(() => authStore.currentCustomer?.selectcardVerifyType || 'safeQuestion')
+
 // 表单数据
 const formData = ref({
   safe_ask: '',
-  answer: ''
+  answer: '',
+  verify_code: ''
 })
 const errors = ref<Record<string, string>>({})
 
@@ -56,19 +63,30 @@ const clearSecureToken = () => {
 const validate = () => {
   errors.value = {}
 
-  if (!formData.value.safe_ask) {
-    errors.value.safe_ask = t('mine.toolcase.question-options.default')
-    return false
+  // 密保问题验证
+  if (verifyType.value === 'safeQuestion') {
+    if (!formData.value.safe_ask) {
+      errors.value.safe_ask = t('mine.toolcase.question-options.default')
+      return false
+    }
+
+    if (!formData.value.answer) {
+      errors.value.answer = t('common.form.placeholder.enter') + t('mine.toolcase.form-label.answer')
+      return false
+    }
+
+    if (formData.value.answer.length > 50) {
+      errors.value.answer = t('mine.security-settings.group-account.password.answer-max')
+      return false
+    }
   }
 
-  if (!formData.value.answer) {
-    errors.value.answer = t('common.form.placeholder.enter') + t('mine.toolcase.form-label.answer')
-    return false
-  }
-
-  if (formData.value.answer.length > 50) {
-    errors.value.answer = t('mine.security-settings.group-account.password.answer-max')
-    return false
+  // 短信验证码验证
+  if (verifyType.value === 'smsVerify') {
+    if (!formData.value.verify_code) {
+      errors.value.verify_code = t('common.sms-verify_code-placeholder')
+      return false
+    }
   }
 
   return true
@@ -82,7 +100,8 @@ const handleSubmit = async () => {
   try {
     const res = await checkSecurityPass({
       safe_ask: formData.value.safe_ask,
-      answer: formData.value.answer
+      answer: formData.value.answer,
+      verify_code: formData.value.verify_code
     })
 
     if (res.code === 200) {
@@ -279,38 +298,58 @@ onUnmounted(() => {
     <!-- 未验证：显示验证表单 -->
     <main v-else-if="!verified" class="px-3 pb-20 pt-3">
       <form @submit.prevent="handleSubmit" class="mt-5">
-        <div class="bg-white rounded-xl shadow-sm p-3">
-          <div class="flex items-center gap-2">
-            <label class="text-gray-700 w-16 flex-shrink-0">{{ t('mine.toolcase.form-label.question') }}</label>
-            <select
-              v-model="formData.safe_ask"
-              class="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none h-12 bg-transparent"
-            >
-              <option value="">{{ t('mine.toolcase.question-options.default') }}</option>
-              <option
-                v-for="option in SAFE_QUESTION_OPTIONS"
-                :key="option.value"
-                :value="option.value"
+        <!-- 密保问题验证 -->
+        <template v-if="verifyType === 'safeQuestion'">
+          <div class="bg-white rounded-xl shadow-sm p-3">
+            <div class="flex items-center gap-2">
+              <label class="text-gray-700 w-16 flex-shrink-0">{{ t('mine.toolcase.form-label.question') }}</label>
+              <select
+                v-model="formData.safe_ask"
+                class="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none h-12 bg-transparent"
               >
-                {{ t(option.i18nKey) }}
-              </option>
-            </select>
+                <option value="">{{ t('mine.toolcase.question-options.default') }}</option>
+                <option
+                  v-for="option in SAFE_QUESTION_OPTIONS"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ t(option.i18nKey) }}
+                </option>
+              </select>
+            </div>
+            <p v-if="errors.safe_ask" class="mt-1 text-xs text-red-500">{{ errors.safe_ask }}</p>
           </div>
-          <p v-if="errors.safe_ask" class="mt-1 text-xs text-red-500">{{ errors.safe_ask }}</p>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-3 mt-2">
-          <div class="flex items-center gap-2">
-            <label class="text-gray-700 w-16 flex-shrink-0">{{ t('mine.toolcase.form-label.answer') }}</label>
-            <input
-              v-model="formData.answer"
-              type="text"
-              :placeholder="t('common.form.placeholder.enter') + t('mine.toolcase.form-label.answer')"
-              class="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
-            />
+          <div class="bg-white rounded-xl shadow-sm p-3 mt-2">
+            <div class="flex items-center gap-2">
+              <label class="text-gray-700 w-16 flex-shrink-0">{{ t('mine.toolcase.form-label.answer') }}</label>
+              <input
+                v-model="formData.answer"
+                type="text"
+                :placeholder="t('common.form.placeholder.enter') + t('mine.toolcase.form-label.answer')"
+                class="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none h-12"
+              />
+            </div>
+            <p v-if="errors.answer" class="mt-1 text-xs text-red-500">{{ errors.answer }}</p>
           </div>
-          <p v-if="errors.answer" class="mt-1 text-xs text-red-500">{{ errors.answer }}</p>
-        </div>
+        </template>
+
+        <!-- 短信验证码验证 -->
+        <template v-if="verifyType === 'smsVerify'">
+          <div class="bg-white rounded-xl shadow-sm p-3">
+            <div class="flex items-center gap-2">
+              <label class="text-gray-700 w-16 flex-shrink-0">{{ t('common.sms-verify_code-label') }}</label>
+              <div class="flex-1 flex items-center gap-2 flex-nowrap">
+                <ReceiveSms
+                  v-model="formData.verify_code"
+                  scene="view_card_password"
+                  :disabled="isSubmitting"
+                />
+              </div>
+            </div>
+            <p v-if="errors.verify_code" class="mt-1 text-xs text-red-500">{{ errors.verify_code }}</p>
+          </div>
+        </template>
 
         <button
           type="submit"
