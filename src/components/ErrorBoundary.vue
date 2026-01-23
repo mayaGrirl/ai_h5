@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onErrorCaptured } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   fallback?: boolean
 }>()
 
@@ -23,6 +23,12 @@ const resetError = () => {
   errorMessage.value = ''
 }
 
+// 刷新页面
+const handleReload = () => {
+  resetError()
+  window.location.reload()
+}
+
 defineExpose({
   resetError,
   hasError
@@ -41,7 +47,7 @@ defineExpose({
         {{ errorMessage }}
       </p>
       <button
-        @click="() => { resetError(); location.reload(); }"
+        @click="handleReload"
         class="mt-4 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
       >
         刷新页面

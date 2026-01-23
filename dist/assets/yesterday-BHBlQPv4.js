@@ -1,1 +1,0 @@
-import{d as s,o as r,B as a,q as n,l as o,v as c}from"./vue-vendor-ntQnFNWs.js";const d={class:"min-h-screen bg-gray-50 flex items-center justify-center"},m=s({__name:"yesterday",setup(i){const t=a();return r(()=>{t.replace("/ranking?tab=yesterday")}),(l,e)=>(c(),n("div",d,[...e[0]||(e[0]=[o("div",{class:"text-gray-500"},"跳转中...",-1)])]))}});export{m as default};
