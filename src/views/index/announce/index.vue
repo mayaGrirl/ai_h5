@@ -35,19 +35,19 @@ const loadData = async () => {
   }
 }
 
-// 点击公告项，打开弹框
+// 点击公告项，打开弹框（免登录接口）
 const handleItemClick = async (item: IndexDataItem) => {
   dialogOpen.value = true
   detailLoading.value = true
   selectedItem.value = item
 
   try {
-    const { code, data } = await getIndexDetail(item.id)
-    if (code === 200 && data) {
-      selectedItem.value = data
+    const res = await getIndexDetail(item.id)
+    if (res?.code === 200 && res?.data) {
+      selectedItem.value = res.data
     }
-  } catch (error) {
-    console.error('获取公告详情失败:', error)
+  } catch {
+    // 免登录页面，忽略错误，使用已有的item数据
   } finally {
     detailLoading.value = false
   }

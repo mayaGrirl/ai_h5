@@ -36,13 +36,13 @@ const getTypeConfig = (type: string) => {
 
 <template>
   <Teleport to="body">
-    <div class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-3 pointer-events-none">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] flex flex-col gap-3 pointer-events-none w-[calc(100%-32px)] max-w-[320px]">
       <TransitionGroup name="toast">
         <div
           v-for="t in toasts"
           :key="t.id"
           :class="[
-            'flex items-center gap-3 px-4 py-3 rounded-xl text-white text-sm shadow-2xl min-w-[220px] max-w-[320px] pointer-events-auto backdrop-blur-sm',
+            'flex items-center gap-3 px-4 py-3 rounded-xl text-white text-sm shadow-2xl pointer-events-auto backdrop-blur-sm',
             getTypeConfig(t.type).bg
           ]"
         >
@@ -69,22 +69,22 @@ const getTypeConfig = (type: string) => {
 @keyframes toast-in {
   0% {
     opacity: 0;
-    transform: translateY(-30px) scale(0.9);
+    transform: scale(0.9);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes toast-out {
   0% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-20px) scale(0.9);
+    transform: scale(0.9);
   }
 }
 </style>

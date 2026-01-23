@@ -43,7 +43,7 @@ const handleBack = () => {
 <template>
   <header
     :class="cn(
-      'relative flex h-12 items-center text-white safe-area-top',
+      'relative flex h-16 items-center text-white text-xl safe-area-top',
       transparent
         ? 'bg-transparent'
         : 'bg-gradient-to-r from-red-600 to-red-500 shadow-md',
@@ -55,17 +55,17 @@ const handleBack = () => {
       v-if="isShowBack"
       @click="handleBack"
       :class="[
-        'absolute left-1 flex items-center gap-0.5 px-2 py-1.5 rounded-lg transition-all duration-150',
+        'absolute left-2 flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all duration-150',
         'text-white/90 hover:text-white hover:bg-white/10 active:bg-white/20',
         isPressed ? 'scale-90' : 'scale-100'
       ]"
     >
-      <ChevronLeft class="h-5 w-5" :stroke-width="2.5" />
-      <span class="text-sm font-medium">{{ t('common.header.back') }}</span>
+      <ChevronLeft class="h-6 w-6" :stroke-width="2.5" />
+      <span class="text-lg font-medium">{{ t('common.header.back') }}</span>
     </button>
 
     <!-- 中间标题 -->
-    <h1 class="mx-auto text-base font-semibold tracking-wide">
+    <h1 class="mx-auto text-lg font-semibold tracking-wide">
       {{ title }}
     </h1>
 

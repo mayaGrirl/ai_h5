@@ -132,19 +132,19 @@ watch([() => gameNotices.value, currentNoticeIndex, needsScroll], () => {
   }, scrollTime)
 }, { immediate: true })
 
-// 点击滚动公告，打开详情弹框
+// 点击滚动公告，打开详情弹框（免登录接口）
 const handleNoticeClick = async (notice: IndexDataItem) => {
   noticeDialogOpen.value = true
   noticeDetailLoading.value = true
   selectedNotice.value = notice
 
   try {
-    const { code, data } = await getIndexDetail(notice.id)
-    if (code === 200 && data) {
-      selectedNotice.value = data
+    const res = await getIndexDetail(notice.id)
+    if (res?.code === 200 && res?.data) {
+      selectedNotice.value = res.data
     }
-  } catch (error) {
-    console.error('获取公告详情失败:', error)
+  } catch {
+    // 免登录页面，忽略错误，使用已有的notice数据
   } finally {
     noticeDetailLoading.value = false
   }

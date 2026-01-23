@@ -1,0 +1,1 @@
+import{h as r}from"./index-CxBbivxG.js";const c=a=>r.post("/api/app/v1/card/records",a),p=()=>r.get("/api/app/v1/card/detail",{}),e=a=>r.post("/api/app/v1/card/exchange",a);export{p as a,c as b,e as c};
