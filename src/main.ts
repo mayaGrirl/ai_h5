@@ -9,6 +9,13 @@ import './assets/styles/main.css'
 
 const app = createApp(App)
 
+// 全局错误处理器
+app.config.errorHandler = (err, instance, info) => {
+  console.error('Global error:', err)
+  console.error('Component:', instance)
+  console.error('Error info:', info)
+}
+
 // Pinia 状态管理
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)

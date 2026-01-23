@@ -46,47 +46,26 @@ service.interceptors.request.use(
   }
 )
 
-// 响应拦截器 - 处理认证错误
+// 响应拦截器 - 统一处理响应
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.status === 200) {
       return response
     }
-    if (response?.status === 401 || response?.status === 403) {
-      handleAuthError()
-    }
     return Promise.reject(response)
   }
 )
 
-// 响应拦截器 - 提取数据
+// 响应拦截器 - 提取数据和错误处理
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     return response.data
   },
   (error: AxiosError) => {
-    // 超时处理
-    if (!error.response && error?.message.indexOf('timeout') !== -1) {
-      return Promise.reject(error)
+    // 认证错误处理
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
+      handleAuthError()
     }
-
-    // HTTP 状态码错误处理
-    switch (error?.response?.status) {
-      case 401:
-      case 403:
-        handleAuthError()
-        break
-      case 404:
-        console.error('请求地址不存在')
-        break
-      case 501:
-      case 502:
-      case 503:
-      case 504:
-        console.error('服务端错误')
-        break
-    }
-
     return Promise.reject(error)
   }
 )

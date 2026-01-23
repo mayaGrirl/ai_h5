@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Toast from '@/components/Toast.vue'
+import ErrorBoundary from '@/components/ErrorBoundary.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -53,12 +54,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <RouterView v-slot="{ Component, route }">
-    <Transition :name="transitionName" mode="out-in">
-      <component :is="Component" :key="route.path" />
-    </Transition>
-  </RouterView>
-  <Toast />
+  <ErrorBoundary>
+    <RouterView v-slot="{ Component, route }">
+      <Transition :name="transitionName" mode="out-in">
+        <component :is="Component" :key="route.path" />
+      </Transition>
+    </RouterView>
+    <Toast />
+  </ErrorBoundary>
 </template>
 
 <style scoped>
