@@ -207,15 +207,15 @@ onUnmounted(() => {
         />
 
         <!-- 滚动公告 (type=7) -->
-        <section v-if="gameNotices.length > 0" class="mb-3">
+        <section v-if="gameNotices.length > 0" class="mb-2">
           <div
-            class="bg-gradient-to-r from-[#fff8e6] to-[#fff2d6] rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm border border-[#ffe4a0] cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]"
+            class="bg-gradient-to-r from-[#fff8e6] to-[#fff2d6] rounded-md px-2 py-1 flex items-center gap-1.5 shadow-sm border border-[#ffe4a0] cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]"
             @click="handleNoticeClick(gameNotices[currentNoticeIndex])"
           >
-            <div class="flex-shrink-0 text-lg">
+            <div class="flex-shrink-0 text-sm">
               📢
             </div>
-            <div ref="noticeContainerRef" class="flex-1 overflow-hidden relative h-5">
+            <div ref="noticeContainerRef" class="flex-1 overflow-hidden relative h-3.5">
               <div
                 v-for="(notice, index) in gameNotices"
                 :key="notice.id"
