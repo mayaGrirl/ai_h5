@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
+      host: '0.0.0.0',
       proxy: {
         '/api': {
           target: env.VITE_API_URL || 'https://api.kaixin28.com',

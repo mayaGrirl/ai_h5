@@ -68,28 +68,26 @@ onUnmounted(() => {
   <div
     v-for="(item, index) in list"
     :key="`all-key-${index}`"
-    class="grid grid-cols-[1.2fr_0.8fr_0.8fr_1fr] px-3 py-3 border-b text-sm items-center"
+    class="grid grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_1fr] px-3 py-3 border-b text-sm items-center"
   >
-    <!-- 来源 -->
-    <div class="text-center">
-      <div class="text-gray-900">{{ item?.type_label || '' }}</div>
+    <!-- 时间 -->
+    <div class="text-center text-xs text-gray-600">
+      {{ item?.updated_at ? item.updated_at.slice(5, 16).replace(' ', '\n') : '' }}
     </div>
 
-    <!-- 变化前 -->
-    <div class="text-center font-medium text-red-500">{{ (item?.b_deposit || 0).toLocaleString() }}</div>
+    <!-- 账变前 -->
+    <div class="text-center font-medium text-gray-700">{{ (item?.b_deposit || 0).toLocaleString() }}</div>
 
-    <!-- 变化 -->
-    <div class="text-center font-medium text-red-500">{{ (item?.deposit || 0).toLocaleString() }}</div>
-
-    <!-- 余额 -->
-    <div class="flex justify-center items-center gap-1 text-red-500 font-medium">
-      {{ (item?.a_deposit || 0).toLocaleString() }}
-      <img
-        src="/ranking/coin.png"
-        alt="coin"
-        class="inline-block w-[13px] h-[13px]"
-      />
+    <!-- 账变 -->
+    <div class="text-center font-medium" :class="(item?.a_deposit || 0) >= (item?.b_deposit || 0) ? 'text-green-500' : 'text-red-500'">
+      {{ (item?.a_deposit || 0) >= (item?.b_deposit || 0) ? '+' : '-' }}{{ Math.abs(item?.deposit || 0).toLocaleString() }}
     </div>
+
+    <!-- 账变后 -->
+    <div class="text-center font-medium text-red-500">{{ (item?.a_deposit || 0).toLocaleString() }}</div>
+
+    <!-- 类名 -->
+    <div class="text-center text-xs text-gray-900">{{ item?.type_label || '' }}</div>
   </div>
 
   <!-- 底部哨兵 -->

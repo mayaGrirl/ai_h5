@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Bell, Star, Gift, UsersRound, X } from 'lucide-vue-next'
+import { Bell, Star, Gift, UsersRound, X, MessageCircle } from 'lucide-vue-next'
 import { getBanners, getHomePopup, indexGameHotNew, getWebConfig, getGameNotice, getIndexDetail } from '@/api/home'
 import { useLocalized } from '@/composables/useLocalized'
 import type { IndexDataItem, IndexGameItem, webConfig } from '@/types/index.type'
@@ -9,6 +10,7 @@ import PageLoading from '@/components/PageLoading.vue'
 import HomeHeader from '@/components/HomeHeader.vue'
 import BannerCarousel from '@/components/BannerCarousel.vue'
 
+const router = useRouter()
 const { t } = useI18n()
 const { localize } = useLocalized()
 
@@ -311,8 +313,18 @@ onUnmounted(() => {
               联系客服
             </button>
           </a>
+          <!-- 在线消息入口 - 由 show_customer_service 控制显示 -->
+          <button
+            v-if="siteConfig.show_customer_service === 1"
+            @click="router.push('/im')"
+            class="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] text-[14px] font-medium text-white shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <MessageCircle class="h-4 w-4" />
+            在线消息
+          </button>
         </section>
         <section v-else-if="configLoading" class="space-y-3">
+          <div class="h-11 w-full rounded-full bg-gray-200 animate-pulse"></div>
           <div class="h-11 w-full rounded-full bg-gray-200 animate-pulse"></div>
           <div class="h-11 w-full rounded-full bg-gray-200 animate-pulse"></div>
         </section>

@@ -57,12 +57,22 @@ const goBack = () => {
 
         <!-- 子页面渲染区域 -->
         <div class="p-2">
-          <!-- 表头 -->
-          <div class="grid grid-cols-[1.2fr_0.8fr_0.8fr_1fr] px-3 py-2 text-xs text-gray-500 border-b">
+          <!-- 积分记录表头 -->
+          <div v-if="currentTab === 'points'" class="grid grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_1fr] px-3 py-2 text-xs text-gray-500 border-b">
             <div class="text-center">时间</div>
-            <div class="text-center">变化</div>
-            <div class="text-center">余额</div>
-            <div class="text-center">备注</div>
+            <div class="text-center">账变前</div>
+            <div class="text-center">账变</div>
+            <div class="text-center">账变后</div>
+            <div class="text-center">类名</div>
+          </div>
+
+          <!-- 账户记录表头 -->
+          <div v-else-if="currentTab === 'deposit'" class="grid grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_1fr] px-3 py-2 text-xs text-gray-500 border-b">
+            <div class="text-center">时间</div>
+            <div class="text-center">账变前</div>
+            <div class="text-center">账变</div>
+            <div class="text-center">账变后</div>
+            <div class="text-center">类名</div>
           </div>
 
           <PointsPage v-if="currentTab === 'points'" />

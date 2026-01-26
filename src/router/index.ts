@@ -485,6 +485,92 @@ const routes: RouteRecordRaw[] = [
       }
     ]
   },
+  // IM 即时通讯页面（全屏，无底部导航）
+  {
+    path: '/im',
+    component: AuthLayout,
+    children: [
+      {
+        path: '',
+        name: 'IMConversations',
+        component: () => import('@/views/im/index.vue'),
+        meta: { title: 'im-conversations', requiresAuth: true }
+      },
+      {
+        path: 'chat/:id',
+        name: 'IMChat',
+        component: () => import('@/views/im/chat.vue'),
+        meta: { title: 'im-chat', requiresAuth: true }
+      },
+      {
+        path: 'friend-requests',
+        name: 'IMFriendRequests',
+        component: () => import('@/views/im/friend-requests.vue'),
+        meta: { title: 'im-friend-requests', requiresAuth: true }
+      },
+      {
+        path: 'system-messages',
+        name: 'IMSystemMessages',
+        component: () => import('@/views/im/system-messages.vue'),
+        meta: { title: 'im-system-messages', requiresAuth: true }
+      },
+      {
+        path: 'friend/:id',
+        name: 'IMFriendChat',
+        component: () => import('@/views/im/chat.vue'),
+        meta: { title: 'im-friend-chat', requiresAuth: true }
+      },
+      {
+        path: 'customer-service',
+        name: 'IMCustomerService',
+        component: () => import('@/views/im/chat.vue'),
+        meta: { title: 'im-customer-service', requiresAuth: true }
+      },
+      // 群聊相关路由
+      {
+        path: 'group/create',
+        name: 'IMGroupCreate',
+        component: () => import('@/views/im/group/create.vue'),
+        meta: { title: 'im-group-create', requiresAuth: true }
+      },
+      {
+        path: 'group/search',
+        name: 'IMGroupSearch',
+        component: () => import('@/views/im/group/search.vue'),
+        meta: { title: 'im-group-search', requiresAuth: true }
+      },
+      {
+        path: 'group/:id/settings',
+        name: 'IMGroupSettings',
+        component: () => import('@/views/im/group/settings.vue'),
+        meta: { title: 'im-group-settings', requiresAuth: true }
+      },
+      {
+        path: 'group/:id/members',
+        name: 'IMGroupMembers',
+        component: () => import('@/views/im/group/members.vue'),
+        meta: { title: 'im-group-members', requiresAuth: true }
+      },
+      {
+        path: 'group/:id/applications',
+        name: 'IMGroupApplications',
+        component: () => import('@/views/im/group/applications.vue'),
+        meta: { title: 'im-group-applications', requiresAuth: true }
+      },
+      {
+        path: 'group/:id/info',
+        name: 'IMGroupInfo',
+        component: () => import('@/views/im/group/info.vue'),
+        meta: { title: 'im-group-info', requiresAuth: true }
+      },
+      {
+        path: 'group/join/:code',
+        name: 'IMGroupJoin',
+        component: () => import('@/views/im/group/join.vue'),
+        meta: { title: 'im-group-join', requiresAuth: true }
+      }
+    ]
+  },
   // 404
   {
     path: '/:pathMatch(.*)*',

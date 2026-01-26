@@ -88,6 +88,7 @@ export interface webConfig {
   h5_url:string;
   pc_url:string;
   pic_url:string;
+  show_customer_service?: number; // 是否显示客服入口，1显示，0不显示
 }
 
 /**

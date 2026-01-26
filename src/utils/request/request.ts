@@ -4,8 +4,20 @@ import { CryptoUtils } from '@/utils/crypto'
 import { accessToken } from '@/utils/storage/token'
 import { getLocale } from '@/i18n'
 
+// 获取 API 基础地址
+// 开发环境使用 Vite proxy，生产环境直接请求 API 域名
+const getBaseURL = (): string => {
+  // 生产环境使用环境变量配置的 API 地址
+  if (import.meta.env.PROD) {
+    return import.meta.env.VITE_API_URL || ''
+  }
+  // 开发环境使用相对路径，由 Vite proxy 转发
+  return ''
+}
+
 // 创建 axios 实例
 const service = axios.create({
+  baseURL: getBaseURL(),
   timeout: 300000,
   headers: {
     Accept: 'application/json',

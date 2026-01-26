@@ -2,11 +2,14 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useIMStore } from '@/stores/im'
 import Toast from '@/components/Toast.vue'
 import ErrorBoundary from '@/components/ErrorBoundary.vue'
+import VoiceCallModal from '@/components/VoiceCallModal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const imStore = useIMStore()
 
 // 页面过渡动画名称
 const transitionName = ref('page-fade')
@@ -45,12 +48,27 @@ watch(
   }
 )
 
-// 初始化时获取用户信息
+// 初始化时获取用户信息并建立 IM 连接
 onMounted(async () => {
   if (authStore.isLogin && authStore.token) {
     await authStore.fetchCurrentCustomer()
+    // 全局初始化 IM 连接，确保能接收语音通话等实时消息
+    await imStore.init()
+    console.log('[App] IM store initialized for voice calls')
   }
 })
+
+// 监听登录状态变化，登录后初始化 IM 连接
+watch(
+  () => authStore.isLogin,
+  async (isLogin) => {
+    if (isLogin && authStore.token && !imStore.isConnected) {
+      console.log('[App] User logged in, initializing IM connection...')
+      await imStore.init()
+      console.log('[App] IM store initialized after login')
+    }
+  }
+)
 </script>
 
 <template>
@@ -61,6 +79,8 @@ onMounted(async () => {
       </Transition>
     </RouterView>
     <Toast />
+    <!-- 语音通话弹窗（全局） -->
+    <VoiceCallModal />
   </ErrorBoundary>
 </template>
 

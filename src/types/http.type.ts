@@ -1,3 +1,6 @@
+// API 成功状态码
+export const API_SUCCESS_CODE = 200;
+
 // 接口返回的类型
 export interface HttpRes<T> {
   code: number;
