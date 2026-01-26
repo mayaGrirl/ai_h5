@@ -4,6 +4,7 @@
  */
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Check, X } from 'lucide-vue-next'
 import { toast } from '@/composables/useToast'
 import { getApplications, handleApplication } from '@/api/group'
@@ -11,6 +12,7 @@ import type { GroupApplication } from '@/types/group.type'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 
 const groupId = computed(() => Number(route.params.id))
 const applications = ref<GroupApplication[]>([])
@@ -38,10 +40,10 @@ async function loadApplications() {
       hasMore.value = res.data.list.length >= res.data.pagination.size
       page.value++
     } else {
-      toast.error(res.message || '加载失败')
+      toast.error(res.message || t('im.ui.load_failed'))
     }
   } catch (error) {
-    toast.error('加载失败')
+    toast.error(t('im.ui.load_failed'))
   } finally {
     isLoading.value = false
   }
@@ -57,12 +59,12 @@ async function handleApply(application: GroupApplication, approve: boolean) {
 
     if (res.code === 200) {
       applications.value = applications.value.filter(a => a.id !== application.id)
-      toast.success(approve ? '已通过申请' : '已拒绝申请')
+      toast.success(approve ? t('im.group.application_approved') : t('im.group.application_rejected'))
     } else {
-      toast.error(res.message || '处理失败')
+      toast.error(res.message || t('im.ui.operation_failed'))
     }
   } catch (error) {
-    toast.error('处理失败')
+    toast.error(t('im.ui.operation_failed'))
   } finally {
     isProcessing.value = false
   }
@@ -86,14 +88,14 @@ onMounted(() => {
       <button class="back-btn" @click="goBack">
         <ArrowLeft :size="24" />
       </button>
-      <h1 class="title">入群申请</h1>
+      <h1 class="title">{{ t('im.group_applications.title') }}</h1>
       <div class="placeholder"></div>
     </div>
 
     <!-- 申请列表 -->
     <div class="application-list">
       <div v-if="isLoading && applications.length === 0" class="loading">
-        加载中...
+        {{ t('im.ui.loading') }}
       </div>
 
       <div
@@ -110,7 +112,7 @@ onMounted(() => {
         <div class="application-info">
           <div class="applicant-name">{{ app.nickname }}</div>
           <div v-if="app.message" class="application-message">
-            申请信息: {{ app.message }}
+            {{ t('im.group_applications.apply_message') }}: {{ app.message }}
           </div>
           <div class="application-time">{{ app.created_at }}</div>
         </div>
@@ -125,7 +127,7 @@ onMounted(() => {
       </div>
 
       <div v-if="!isLoading && applications.length === 0" class="empty-tip">
-        暂无待处理的入群申请
+        {{ t('im.group_applications.empty') }}
       </div>
     </div>
   </div>

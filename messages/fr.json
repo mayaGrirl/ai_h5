@@ -54,6 +54,15 @@
       "edit-nickname": "Changer le pseudonyme",
       "x": "Déconnexion"
     },
+    "receipt-text": {
+      "tab-points": "Historique des points",
+      "tab-deposit": "Historique des dépôts",
+      "header-time": "Heure",
+      "header-before": "Avant",
+      "header-change": "Changement",
+      "header-after": "Après",
+      "header-type": "Type"
+    },
     "quick": {
       "mail": "Messages",
       "challenge": "Défi",

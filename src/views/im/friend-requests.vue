@@ -4,9 +4,12 @@
  */
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useFriendStore } from '@/stores/friend'
 import { ArrowLeft, UserCheck, UserX, Clock } from 'lucide-vue-next'
 import { formatTime as formatTimeUtil } from '@/utils/time'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const friendStore = useFriendStore()
@@ -46,7 +49,7 @@ onMounted(async () => {
       <button @click="goBack" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
         <ArrowLeft class="h-5 w-5 text-gray-600" />
       </button>
-      <h1 class="text-base font-medium text-gray-900">新的好友</h1>
+      <h1 class="text-base font-medium text-gray-900">{{ t('im.friend_requests.title') }}</h1>
       <div class="w-8"></div>
     </header>
 
@@ -60,7 +63,7 @@ onMounted(async () => {
       <!-- 空状态 -->
       <div v-else-if="friendStore.friendRequests.length === 0" class="flex flex-col items-center justify-center py-16">
         <Clock class="h-16 w-16 text-gray-300" />
-        <p class="mt-4 text-sm text-gray-400">暂无好友申请</p>
+        <p class="mt-4 text-sm text-gray-400">{{ t('im.friend_requests.empty') }}</p>
       </div>
 
       <!-- 申请列表 -->
@@ -88,7 +91,7 @@ onMounted(async () => {
               {{ request.message }}
             </p>
             <p v-else class="mt-1 truncate text-xs text-gray-400">
-              请求添加你为好友
+              {{ t('im.friend_requests.default_message') }}
             </p>
           </div>
 

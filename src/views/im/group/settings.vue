@@ -4,6 +4,7 @@
  */
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowLeft, ChevronRight, Users, Bell, BellOff, UserPlus, Crown, LogOut, Trash2, Link, Copy, RefreshCw, Settings, Check } from 'lucide-vue-next'
 import { toast } from '@/composables/useToast'
 import { getSettings, updateSettings, muteGroup, getInviteLink, resetInviteCode } from '@/api/group'
@@ -13,6 +14,7 @@ import { MemberRole, JoinMode } from '@/types/group.type'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 
 const groupId = computed(() => Number(route.params.id))
 const settings = ref<GroupSettings | null>(null)
@@ -24,11 +26,11 @@ const isOwner = computed(() => settings.value?.my_role === MemberRole.OWNER)
 const isAdmin = computed(() => (settings.value?.my_role ?? 0) >= MemberRole.ADMIN)
 
 // 加群方式选项
-const joinModeOptions = [
-  { value: JoinMode.FREE, label: '免申请直接入群', desc: '任何人可直接加入' },
-  { value: JoinMode.APPLY, label: '申请入群', desc: '需管理员审核后加入' },
-  { value: JoinMode.INVITE_ONLY, label: '仅限邀请', desc: '只能通过邀请链接加入' },
-]
+const joinModeOptions = computed(() => [
+  { value: JoinMode.FREE, label: t('im.group_settings.join_mode_free'), desc: t('im.group_settings.join_mode_free_desc') },
+  { value: JoinMode.APPLY, label: t('im.group_settings.join_mode_apply'), desc: t('im.group_settings.join_mode_apply_desc') },
+  { value: JoinMode.INVITE_ONLY, label: t('im.group_settings.join_mode_invite'), desc: t('im.group_settings.join_mode_invite_desc') },
+])
 
 // 入群条件编辑
 const showConditionsEditor = ref(false)
@@ -54,10 +56,10 @@ async function loadSettings() {
         inviteCode.value = res.data.invite_code
       }
     } else {
-      toast.error(res.message || '获取设置失败')
+      toast.error(res.message || t('im.group_settings.load_failed'))
     }
   } catch (error) {
-    toast.error('获取设置失败')
+    toast.error(t('im.group_settings.load_failed'))
   } finally {
     isLoading.value = false
   }
@@ -77,12 +79,12 @@ async function toggleMute() {
 
     if (res.code === 200) {
       settings.value.is_muted = newMuted
-      toast.success(newMuted ? '已开启全员禁言' : '已关闭全员禁言')
+      toast.success(newMuted ? t('im.group_settings.all_mute_on') : t('im.group_settings.all_mute_off'))
     } else {
-      toast.error(res.message || '设置失败')
+      toast.error(res.message || t('im.group_settings.update_failed'))
     }
   } catch (error) {
-    toast.error('设置失败')
+    toast.error(t('im.group_settings.update_failed'))
   } finally {
     isMuting.value = false
   }
@@ -104,12 +106,12 @@ async function toggleAllowAddFriend() {
 
     if (res.code === 200) {
       settings.value.allow_add_friend = newValue
-      toast.success(newValue ? '已允许群内加好友' : '已禁止群内加好友')
+      toast.success(t('im.group_settings.update_success'))
     } else {
-      toast.error(res.message || '设置失败')
+      toast.error(res.message || t('im.group_settings.update_failed'))
     }
   } catch (error) {
-    toast.error('设置失败')
+    toast.error(t('im.group_settings.update_failed'))
   } finally {
     isUpdating.value = false
   }
@@ -129,13 +131,13 @@ async function changeJoinMode(mode: number) {
 
     if (res.code === 200) {
       settings.value.join_mode = mode
-      settings.value.join_mode_text = joinModeOptions.find(o => o.value === mode)?.label || ''
-      toast.success('加群方式已更新')
+      settings.value.join_mode_text = joinModeOptions.value.find(o => o.value === mode)?.label || ''
+      toast.success(t('im.group_settings.update_success'))
     } else {
-      toast.error(res.message || '设置失败')
+      toast.error(res.message || t('im.group_settings.update_failed'))
     }
   } catch (error) {
-    toast.error('设置失败')
+    toast.error(t('im.group_settings.update_failed'))
   } finally {
     isUpdating.value = false
   }
@@ -155,12 +157,12 @@ async function toggleInviteApproval() {
 
     if (res.code === 200) {
       settings.value.invite_require_approval = newValue
-      toast.success(newValue ? '邀请入群需审核' : '邀请入群免审核')
+      toast.success(t('im.group_settings.update_success'))
     } else {
-      toast.error(res.message || '设置失败')
+      toast.error(res.message || t('im.group_settings.update_failed'))
     }
   } catch (error) {
-    toast.error('设置失败')
+    toast.error(t('im.group_settings.update_failed'))
   } finally {
     isUpdating.value = false
   }
@@ -182,12 +184,12 @@ async function saveConditions() {
       // 重新获取以更新 join_conditions_text
       await loadSettings()
       showConditionsEditor.value = false
-      toast.success('入群条件已更新')
+      toast.success(t('im.group_settings.update_success'))
     } else {
-      toast.error(res.message || '设置失败')
+      toast.error(res.message || t('im.group_settings.update_failed'))
     }
   } catch (error) {
-    toast.error('设置失败')
+    toast.error(t('im.group_settings.update_failed'))
   } finally {
     isUpdating.value = false
   }
@@ -203,7 +205,7 @@ async function loadInviteLink() {
       inviteCode.value = res.data.invite_code
     }
   } catch (error) {
-    toast.error('获取邀请链接失败')
+    toast.error(t('im.ui.operation_failed'))
   }
 }
 
@@ -217,7 +219,7 @@ async function copyInviteLink() {
 
   try {
     await navigator.clipboard.writeText(link)
-    toast.success('邀请链接已复制')
+    toast.success(t('im.ui.operation_success'))
   } catch (error) {
     // 降级方案
     const textarea = document.createElement('textarea')
@@ -226,7 +228,7 @@ async function copyInviteLink() {
     textarea.select()
     document.execCommand('copy')
     document.body.removeChild(textarea)
-    toast.success('邀请链接已复制')
+    toast.success(t('im.ui.operation_success'))
   }
 }
 
@@ -236,7 +238,7 @@ const isResetting = ref(false)
 async function handleResetInviteCode() {
   if (!isOwner.value || isResetting.value) return
 
-  if (!confirm('重置后原邀请链接将失效，确定要重置吗？')) return
+  if (!confirm(t('im.group_settings.reset_invite_confirm'))) return
 
   isResetting.value = true
 
@@ -244,12 +246,12 @@ async function handleResetInviteCode() {
     const res = await resetInviteCode(groupId.value)
     if (res.code === 200) {
       inviteCode.value = res.data.invite_code
-      toast.success('邀请码已重置')
+      toast.success(t('im.ui.operation_success'))
     } else {
-      toast.error(res.message || '重置失败')
+      toast.error(res.message || t('im.ui.operation_failed'))
     }
   } catch (error) {
-    toast.error('重置失败')
+    toast.error(t('im.ui.operation_failed'))
   } finally {
     isResetting.value = false
   }
@@ -271,20 +273,20 @@ const isLeaving = ref(false)
 async function handleLeave() {
   if (isLeaving.value) return
 
-  if (!confirm('确定要退出该群聊吗？')) return
+  if (!confirm(t('im.group_settings.leave_confirm'))) return
 
   isLeaving.value = true
 
   try {
     const res = await leaveConversation(groupId.value)
     if (res.code === 200) {
-      toast.success('已退出群聊')
+      toast.success(t('im.group.leave_success'))
       router.replace('/im')
     } else {
-      toast.error(res.message || '退出失败')
+      toast.error(res.message || t('im.ui.operation_failed'))
     }
   } catch (error: any) {
-    toast.error(error.message || '退出失败')
+    toast.error(error.message || t('im.ui.operation_failed'))
   } finally {
     isLeaving.value = false
   }
@@ -296,20 +298,20 @@ const isDissolving = ref(false)
 async function handleDissolve() {
   if (isDissolving.value) return
 
-  if (!confirm('确定要解散该群聊吗？此操作不可恢复。')) return
+  if (!confirm(t('im.group_settings.dissolve_confirm'))) return
 
   isDissolving.value = true
 
   try {
     const res = await dissolveGroup(groupId.value)
     if (res.code === 200) {
-      toast.success('群聊已解散')
+      toast.success(t('im.group.dissolve_success'))
       router.replace('/im')
     } else {
-      toast.error(res.message || '解散失败')
+      toast.error(res.message || t('im.ui.operation_failed'))
     }
   } catch (error: any) {
-    toast.error(error.message || '解散失败')
+    toast.error(error.message || t('im.ui.operation_failed'))
   } finally {
     isDissolving.value = false
   }
@@ -332,11 +334,11 @@ onMounted(() => {
       <button class="back-btn" @click="goBack">
         <ArrowLeft :size="24" />
       </button>
-      <h1 class="title">群设置</h1>
+      <h1 class="title">{{ t('im.group_settings.title') }}</h1>
       <div class="placeholder"></div>
     </div>
 
-    <div v-if="isLoading" class="loading">加载中...</div>
+    <div v-if="isLoading" class="loading">{{ t('im.ui.loading') }}</div>
 
     <div v-else-if="settings" class="settings-content">
       <!-- 群信息 -->
@@ -349,7 +351,7 @@ onMounted(() => {
           />
           <div class="group-info">
             <div class="group-name">{{ settings.name }}</div>
-            <div class="group-number">群号: {{ settings.group_number }}</div>
+            <div class="group-number">{{ t('im.group_settings.group_number') }}: {{ settings.group_number }}</div>
           </div>
         </div>
 
@@ -371,15 +373,15 @@ onMounted(() => {
 
       <!-- 成员管理 -->
       <div class="section">
-        <div class="section-title">成员管理</div>
+        <div class="section-title">{{ t('im.group_settings.members') }}</div>
 
         <div class="menu-item" @click="goToMembers">
           <div class="menu-left">
             <Users :size="20" />
-            <span>群成员</span>
+            <span>{{ t('im.group_settings.members') }}</span>
           </div>
           <div class="menu-right">
-            <span class="menu-value">{{ settings.member_count }} 人</span>
+            <span class="menu-value">{{ settings.member_count }}</span>
             <ChevronRight :size="20" color="#ccc" />
           </div>
         </div>
@@ -387,7 +389,7 @@ onMounted(() => {
         <div v-if="isAdmin" class="menu-item" @click="goToApplications">
           <div class="menu-left">
             <UserPlus :size="20" />
-            <span>入群申请</span>
+            <span>{{ t('im.group_applications.title') }}</span>
           </div>
           <div class="menu-right">
             <ChevronRight :size="20" color="#ccc" />
@@ -397,11 +399,11 @@ onMounted(() => {
 
       <!-- 加群设置 -->
       <div class="section">
-        <div class="section-title">加群设置</div>
+        <div class="section-title">{{ t('im.group_settings.join_mode') }}</div>
 
         <!-- 加群方式 -->
         <div v-if="isOwner" class="join-mode-section">
-          <div class="subsection-title">加群方式</div>
+          <div class="subsection-title">{{ t('im.group_settings.join_mode') }}</div>
           <div class="join-mode-options">
             <div
               v-for="option in joinModeOptions"
@@ -422,7 +424,7 @@ onMounted(() => {
         </div>
         <div v-else class="menu-item">
           <div class="menu-left">
-            <span>加群方式</span>
+            <span>{{ t('im.group_settings.join_mode') }}</span>
           </div>
           <div class="menu-right">
             <span class="menu-value">{{ settings.join_mode_text }}</span>
@@ -498,13 +500,13 @@ onMounted(() => {
 
       <!-- 群设置 -->
       <div class="section">
-        <div class="section-title">群管理</div>
+        <div class="section-title">{{ t('im.group_settings.group_management') }}</div>
 
         <div v-if="isOwner" class="menu-item" @click="toggleMute">
           <div class="menu-left">
             <BellOff v-if="settings.is_muted" :size="20" />
             <Bell v-else :size="20" />
-            <span>全员禁言</span>
+            <span>{{ t('im.group_settings.all_mute') }}</span>
           </div>
           <div class="menu-right">
             <button
@@ -522,8 +524,8 @@ onMounted(() => {
           <div class="menu-left">
             <UserPlus :size="20" />
             <div class="menu-label">
-              <span>允许群内互加好友</span>
-              <span class="menu-hint">开启后，群成员可以互相添加好友</span>
+              <span>{{ t('im.group_settings.allow_add_friend') }}</span>
+              <span class="menu-hint">{{ t('im.group_settings.allow_add_friend_hint') }}</span>
             </div>
           </div>
           <div class="menu-right">
@@ -541,11 +543,11 @@ onMounted(() => {
 
       <!-- 我在群里 -->
       <div class="section">
-        <div class="section-title">我在群里</div>
+        <div class="section-title">{{ t('im.group_settings.other_settings') }}</div>
 
         <div class="menu-item">
           <div class="menu-left">
-            <span>我的身份</span>
+            <span>{{ t('im.group_members.role_member') }}</span>
           </div>
           <div class="menu-right">
             <span class="menu-value role-badge" :class="{ owner: isOwner, admin: isAdmin && !isOwner }">
@@ -563,7 +565,7 @@ onMounted(() => {
           @click="handleLeave"
         >
           <LogOut :size="20" />
-          退出群聊
+          {{ t('im.group_settings.leave_group') }}
         </button>
 
         <button
@@ -572,7 +574,7 @@ onMounted(() => {
           @click="handleDissolve"
         >
           <Trash2 :size="20" />
-          解散群聊
+          {{ t('im.group_settings.dissolve_group') }}
         </button>
       </div>
     </div>
@@ -636,9 +638,9 @@ onMounted(() => {
               </div>
             </div>
             <div class="modal-footer">
-              <button class="modal-btn cancel" @click="showConditionsEditor = false">取消</button>
+              <button class="modal-btn cancel" @click="showConditionsEditor = false">{{ t('im.ui.cancel') }}</button>
               <button class="modal-btn confirm" @click="saveConditions" :disabled="isUpdating">
-                {{ isUpdating ? '保存中...' : '保存' }}
+                {{ isUpdating ? t('im.ui.loading') : t('im.ui.save') }}
               </button>
             </div>
           </div>

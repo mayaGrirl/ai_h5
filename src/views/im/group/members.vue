@@ -4,6 +4,7 @@
  */
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Search, Crown, Shield, MoreVertical, VolumeX, X, UserPlus } from 'lucide-vue-next'
 import { toast } from '@/composables/useToast'
 import { getMembers, getSettings, kickMember, setAdmin, muteMember } from '@/api/group'
@@ -16,6 +17,7 @@ const router = useRouter()
 const route = useRoute()
 const friendStore = useFriendStore()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const groupId = computed(() => Number(route.params.id))
 const currentUserId = computed(() => authStore.currentCustomer?.id)
@@ -59,7 +61,7 @@ async function loadData() {
       members.value = membersRes.data.list
     }
   } catch (error) {
-    toast.error('加载失败')
+    toast.error(t('im.ui.load_failed'))
   } finally {
     isLoading.value = false
   }
@@ -100,7 +102,7 @@ async function handleMemberAction(action: string) {
   if (!member || isProcessing.value) return
 
   if (action === 'kick') {
-    if (!confirm(`确定要将 ${member.nickname} 移出群聊吗？`)) {
+    if (!confirm(t('im.group_members.kick_confirm', { name: member.nickname }))) {
       return
     }
   }
@@ -152,18 +154,18 @@ async function handleMemberAction(action: string) {
       case 'addFriend':
         const success = await friendStore.sendFriendRequest(member.id)
         if (success) {
-          toast.success('好友申请已发送')
+          toast.success(t('im.group_members.friend_request_sent'))
         }
         return // 直接返回，不走下面的判断
     }
 
     if (res && res.code === 200) {
-      toast.success('操作成功')
+      toast.success(t('im.ui.operation_success'))
     } else if (res) {
-      toast.error(res.message || '操作失败')
+      toast.error(res.message || t('im.ui.operation_failed'))
     }
   } catch (error: any) {
-    toast.error(error.message || '操作失败')
+    toast.error(error.message || t('im.ui.operation_failed'))
   } finally {
     isProcessing.value = false
   }
@@ -193,7 +195,7 @@ onMounted(() => {
       <button class="back-btn" @click="goBack">
         <ArrowLeft :size="24" />
       </button>
-      <h1 class="title">群成员 ({{ members.length }})</h1>
+      <h1 class="title">{{ t('im.group_members.title_with_count', { count: members.length }) }}</h1>
       <div class="placeholder"></div>
     </div>
 
@@ -204,14 +206,14 @@ onMounted(() => {
         <input
           v-model="searchKeyword"
           type="text"
-          placeholder="搜索成员"
+          :placeholder="t('im.group_members.search_placeholder')"
         />
       </div>
     </div>
 
     <!-- 成员列表 -->
     <div class="member-list">
-      <div v-if="isLoading" class="loading">加载中...</div>
+      <div v-if="isLoading" class="loading">{{ t('im.ui.loading') }}</div>
 
       <div
         v-else
@@ -256,7 +258,7 @@ onMounted(() => {
       </div>
 
       <div v-if="!isLoading && filteredMembers.length === 0" class="empty-tip">
-        暂无成员
+        {{ t('im.group_members.empty') }}
       </div>
     </div>
 
@@ -279,7 +281,7 @@ onMounted(() => {
                 @click="handleMemberAction('addFriend')"
               >
                 <UserPlus :size="18" />
-                添加好友
+                {{ t('im.group_members.add_friend') }}
               </button>
 
               <!-- 管理员操作 -->
@@ -290,14 +292,14 @@ onMounted(() => {
                     class="action-item"
                     @click="handleMemberAction('removeAdmin')"
                   >
-                    取消管理员
+                    {{ t('im.group_members.remove_admin') }}
                   </button>
                   <button
                     v-else
                     class="action-item"
                     @click="handleMemberAction('setAdmin')"
                   >
-                    设为管理员
+                    {{ t('im.group_members.set_admin') }}
                   </button>
                 </template>
                 <template v-if="isOwner || selectedMember.role !== MemberRole.ADMIN">
@@ -306,25 +308,25 @@ onMounted(() => {
                     class="action-item"
                     @click="handleMemberAction('unmute')"
                   >
-                    解除禁言
+                    {{ t('im.group_members.unmute') }}
                   </button>
                   <button
                     v-else
                     class="action-item"
                     @click="handleMemberAction('mute')"
                   >
-                    禁言
+                    {{ t('im.group_members.mute') }}
                   </button>
                   <button
                     class="action-item danger"
                     @click="handleMemberAction('kick')"
                   >
-                    移出群聊
+                    {{ t('im.group_members.kick') }}
                   </button>
                 </template>
               </template>
             </div>
-            <button class="action-cancel" @click="closeActionMenu">取消</button>
+            <button class="action-cancel" @click="closeActionMenu">{{ t('im.ui.cancel') }}</button>
           </div>
         </div>
       </Transition>

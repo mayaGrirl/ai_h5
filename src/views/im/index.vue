@@ -4,6 +4,7 @@
  */
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useIMStore } from '@/stores/im'
 import { useFriendStore } from '@/stores/friend'
 import { ArrowLeft, MessageCircle, Search, Users, UserPlus, Bell, Headphones, Home, Gamepad2, Trophy, ShoppingBag, User, UsersRound } from 'lucide-vue-next'
@@ -14,6 +15,7 @@ import { formatConversationTime } from '@/utils/time'
 const router = useRouter()
 const imStore = useIMStore()
 const friendStore = useFriendStore()
+const { t } = useI18n()
 
 // 当前 Tab: 'contacts' | 'chat'
 const activeTab = ref<'contacts' | 'chat'>('contacts')
@@ -65,26 +67,26 @@ function getLastMessagePreview(conv: Conversation): string {
   if (!conv.last_message) return ''
 
   if (conv.last_message.is_recalled) {
-    return '[消息已撤回]'
+    return `[${t('im.chat.recalled_message')}]`
   }
 
   switch (conv.last_message.type) {
     case 1: // TEXT
       return conv.last_message.content || ''
     case 2: // IMAGE
-      return '[图片]'
+      return `[${t('im.message_type.image')}]`
     case 3: // VOICE
-      return '[语音]'
+      return `[${t('im.message_type.voice')}]`
     case 4: // VIDEO
-      return '[视频]'
+      return `[${t('im.message_type.video')}]`
     case 5: // FILE
-      return '[文件]'
+      return `[${t('im.message_type.file')}]`
     case 6: // LOCATION
-      return '[位置]'
+      return `[${t('im.message_type.location')}]`
     case 7: // CONTACT
-      return '[名片]'
+      return `[${t('im.message_type.contact')}]`
     case 8: // PACK (红包)
-      return '[红包]'
+      return `[${t('im.message_type.pack')}]`
     default:
       return conv.last_message.content || ''
   }
@@ -227,7 +229,7 @@ onMounted(async () => {
       <button @click="goBack" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
         <ArrowLeft class="h-5 w-5 text-gray-600" />
       </button>
-      <h1 class="text-base font-medium text-gray-900">消息</h1>
+      <h1 class="text-base font-medium text-gray-900">{{ t('im.ui.messages') }}</h1>
       <button @click="openSearchPanel" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
         <UserPlus class="h-5 w-5 text-gray-600" />
       </button>
@@ -246,7 +248,7 @@ onMounted(async () => {
       >
         <div class="flex items-center justify-center gap-1">
           <Users class="h-4 w-4" />
-          <span>通讯录</span>
+          <span>{{ t('im.ui.contacts') }}</span>
           <span
             v-if="friendStore.pendingRequestCount > 0"
             class="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-xs text-white"
@@ -270,7 +272,7 @@ onMounted(async () => {
       >
         <div class="flex items-center justify-center gap-1">
           <MessageCircle class="h-4 w-4" />
-          <span>聊天</span>
+          <span>{{ t('im.ui.messages') }}</span>
           <span
             v-if="imStore.totalUnread > 0"
             class="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-xs text-white"
@@ -292,7 +294,7 @@ onMounted(async () => {
         <input
           v-model="searchKeyword"
           type="text"
-          :placeholder="activeTab === 'contacts' ? '搜索联系人' : '搜索会话'"
+          :placeholder="t('im.contacts.search_placeholder')"
           class="ml-2 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
         />
       </div>
@@ -300,9 +302,9 @@ onMounted(async () => {
 
     <!-- 连接状态 -->
     <div v-if="!imStore.isConnected" class="bg-yellow-50 px-4 py-2 text-center text-xs text-yellow-600">
-      <span v-if="imStore.connectionState === 'connecting'">连接中...</span>
-      <span v-else-if="imStore.connectionState === 'reconnecting'">重新连接中...</span>
-      <span v-else>未连接</span>
+      <span v-if="imStore.connectionState === 'connecting'">{{ t('im.websocket.connect_success') }}...</span>
+      <span v-else-if="imStore.connectionState === 'reconnecting'">{{ t('im.websocket.disconnected') }}...</span>
+      <span v-else>{{ t('im.websocket.disconnected') }}</span>
     </div>
 
     <!-- 通讯录 Tab 内容 -->
@@ -322,7 +324,7 @@ onMounted(async () => {
           <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500">
             <UserPlus class="h-5 w-5 text-white" />
           </div>
-          <span class="text-sm font-medium text-gray-900">新的好友申请</span>
+          <span class="text-sm font-medium text-gray-900">{{ t('im.friend_requests.title') }}</span>
         </div>
         <span class="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-xs text-white">
           {{ friendStore.pendingRequestCount }}
@@ -338,7 +340,7 @@ onMounted(async () => {
           <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500">
             <UsersRound class="h-5 w-5 text-white" />
           </div>
-          <span class="text-sm font-medium text-gray-900">创建群聊</span>
+          <span class="text-sm font-medium text-gray-900">{{ t('im.group_create.title') }}</span>
         </div>
         <div
           @click="router.push('/im/group/search')"
@@ -347,7 +349,7 @@ onMounted(async () => {
           <div class="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500">
             <Search class="h-5 w-5 text-white" />
           </div>
-          <span class="text-sm font-medium text-gray-900">搜索群聊</span>
+          <span class="text-sm font-medium text-gray-900">{{ t('im.group_search.search') }}</span>
         </div>
       </div>
 
@@ -398,16 +400,16 @@ onMounted(async () => {
       <!-- 好友列表分组 -->
       <div class="mt-3">
         <div class="px-4 py-2 text-xs font-medium text-gray-500">
-          好友 ({{ friendStore.contacts.friends.length }})
+          {{ t('im.contacts.friends') }} ({{ friendStore.contacts.friends.length }})
         </div>
         <div v-if="friendStore.contacts.friends.length === 0" class="flex flex-col items-center justify-center py-12">
           <Users class="h-12 w-12 text-gray-300" />
-          <p class="mt-3 text-sm text-gray-400">暂无好友</p>
+          <p class="mt-3 text-sm text-gray-400">{{ t('im.contacts.no_friends') }}</p>
           <button
             @click="openSearchPanel"
             class="mt-4 rounded-full bg-blue-500 px-6 py-2 text-sm text-white hover:bg-blue-600"
           >
-            添加好友
+            {{ t('im.group_members.add_friend') }}
           </button>
         </div>
         <div v-else class="divide-y divide-gray-100 bg-white">
@@ -444,13 +446,13 @@ onMounted(async () => {
       <!-- 空状态 -->
       <div v-else-if="filteredConversations.length === 0" class="flex flex-col items-center justify-center py-16">
         <MessageCircle class="h-16 w-16 text-gray-300" />
-        <p class="mt-4 text-sm text-gray-400">暂无聊天记录</p>
-        <p class="mt-1 text-xs text-gray-400">从通讯录开始聊天吧</p>
+        <p class="mt-4 text-sm text-gray-400">{{ t('im.conversation.no_conversations') }}</p>
+        <p class="mt-1 text-xs text-gray-400">{{ t('im.contacts.search_placeholder') }}</p>
         <button
           @click="activeTab = 'contacts'"
           class="mt-4 rounded-full bg-blue-500 px-6 py-2 text-sm text-white"
         >
-          去通讯录
+          {{ t('im.ui.contacts') }}
         </button>
       </div>
 
@@ -537,14 +539,13 @@ onMounted(async () => {
           <div class="w-full max-w-sm overflow-hidden rounded-xl bg-white">
             <!-- 标题 -->
             <div class="border-b border-gray-100 px-4 py-3">
-              <h3 class="text-center text-base font-medium text-gray-900">删除聊天</h3>
+              <h3 class="text-center text-base font-medium text-gray-900">{{ t('im.conversation.delete') }}</h3>
             </div>
 
             <!-- 提示内容 -->
             <div class="p-4">
               <p class="text-center text-sm text-gray-600">
-                确定要删除与「{{ deletingConversation ? getConversationDisplayName(deletingConversation) : '' }}」的聊天吗？<br/>
-                删除后将从聊天列表移除并清除本地聊天记录。
+                {{ t('im.conversation.delete_confirm') }}
               </p>
             </div>
 
@@ -554,14 +555,14 @@ onMounted(async () => {
                 @click="closeDeleteConfirm"
                 class="flex-1 py-3 text-sm text-gray-500 active:bg-gray-50"
               >
-                取消
+                {{ t('im.ui.cancel') }}
               </button>
               <button
                 @click="confirmDeleteChat"
                 :disabled="isDeleting"
                 class="flex-1 border-l border-gray-100 py-3 text-sm font-medium text-red-500 active:bg-gray-50 disabled:opacity-50"
               >
-                {{ isDeleting ? '删除中...' : '删除' }}
+                {{ isDeleting ? t('im.ui.loading') : t('im.chat.delete') }}
               </button>
             </div>
           </div>
@@ -575,8 +576,8 @@ onMounted(async () => {
         <div v-if="showSearchPanel" class="fixed inset-0 z-50 flex flex-col bg-white">
           <!-- 头部 -->
           <header class="flex h-12 items-center justify-between border-b border-gray-200 px-4">
-            <button @click="closeSearchPanel" class="text-sm text-gray-600">取消</button>
-            <h1 class="text-base font-medium text-gray-900">添加好友</h1>
+            <button @click="closeSearchPanel" class="text-sm text-gray-600">{{ t('im.ui.cancel') }}</button>
+            <h1 class="text-base font-medium text-gray-900">{{ t('im.group_members.add_friend') }}</h1>
             <div class="w-10"></div>
           </header>
 
@@ -588,12 +589,12 @@ onMounted(async () => {
                 v-model="searchInput"
                 @input="handleSearch"
                 type="text"
-                placeholder="输入用户名或手机号搜索"
+                :placeholder="t('im.contacts.search_placeholder')"
                 class="ml-2 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
                 autofocus
               />
             </div>
-            <p class="mt-2 text-xs text-gray-400">请输入至少2个字符进行搜索</p>
+            <p class="mt-2 text-xs text-gray-400">{{ t('im.ui.search') }}</p>
           </div>
 
           <!-- 搜索结果 -->
@@ -606,7 +607,7 @@ onMounted(async () => {
             <!-- 空状态 -->
             <div v-else-if="searchInput.length >= 2 && friendStore.searchResults.length === 0" class="flex flex-col items-center justify-center py-12">
               <Search class="h-12 w-12 text-gray-300" />
-              <p class="mt-3 text-sm text-gray-400">未找到相关用户</p>
+              <p class="mt-3 text-sm text-gray-400">{{ t('im.ui.no_data') }}</p>
             </div>
 
             <!-- 搜索结果列表 -->
@@ -631,14 +632,14 @@ onMounted(async () => {
                   class="rounded-full bg-gray-100 px-4 py-1.5 text-xs text-gray-500"
                   disabled
                 >
-                  已添加
+                  {{ t('im.friend.already_friend') }}
                 </button>
                 <button
                   v-else
                   @click="handleAddFriend(user.id)"
                   class="rounded-full bg-blue-500 px-4 py-1.5 text-xs text-white hover:bg-blue-600"
                 >
-                  添加
+                  {{ t('im.group_members.add_friend') }}
                 </button>
               </div>
             </div>
@@ -662,7 +663,7 @@ onMounted(async () => {
             class="flex w-full flex-col items-center justify-center py-1"
           >
             <Home class="h-5 w-5 text-gray-400" />
-            <span class="text-[10px] mt-1 text-gray-400">首页</span>
+            <span class="text-[10px] mt-1 text-gray-400">{{ t('tab.home') }}</span>
           </button>
         </li>
         <li class="flex-1">
@@ -671,7 +672,7 @@ onMounted(async () => {
             class="flex w-full flex-col items-center justify-center py-1"
           >
             <ShoppingBag class="h-5 w-5 text-gray-400" />
-            <span class="text-[10px] mt-1 text-gray-400">商城</span>
+            <span class="text-[10px] mt-1 text-gray-400">{{ t('tab.shop') }}</span>
           </button>
         </li>
         <li class="flex-1">
@@ -680,7 +681,7 @@ onMounted(async () => {
             class="flex w-full flex-col items-center justify-center py-1"
           >
             <Gamepad2 class="h-5 w-5 text-gray-400" />
-            <span class="text-[10px] mt-1 text-gray-400">游戏</span>
+            <span class="text-[10px] mt-1 text-gray-400">{{ t('tab.games') }}</span>
           </button>
         </li>
         <li class="flex-1">
@@ -689,7 +690,7 @@ onMounted(async () => {
             class="flex w-full flex-col items-center justify-center py-1"
           >
             <Trophy class="h-5 w-5 text-gray-400" />
-            <span class="text-[10px] mt-1 text-gray-400">排行</span>
+            <span class="text-[10px] mt-1 text-gray-400">{{ t('tab.ranking') }}</span>
           </button>
         </li>
         <li class="flex-1">
@@ -698,7 +699,7 @@ onMounted(async () => {
             class="flex w-full flex-col items-center justify-center py-1"
           >
             <User class="h-5 w-5 text-gray-400" />
-            <span class="text-[10px] mt-1 text-gray-400">我的</span>
+            <span class="text-[10px] mt-1 text-gray-400">{{ t('tab.mine') }}</span>
           </button>
         </li>
       </ul>

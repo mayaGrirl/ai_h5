@@ -2,18 +2,20 @@
 import { computed } from 'vue'
 import { ChevronLeft } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import PointsPage from './points/index.vue'
 import DepositPage from './deposit/index.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
 const currentTab = computed(() => (route.query.tab as string) || 'points')
 
-const tabs = [
-  { key: 'points', label: '积分记录' },
-  { key: 'deposit', label: '账户记录' }
-]
+const tabs = computed(() => [
+  { key: 'points', label: t('mine.receipt-text.tab-points') },
+  { key: 'deposit', label: t('mine.receipt-text.tab-deposit') }
+])
 
 const switchTab = (key: string) => {
   router.replace({ query: { ...route.query, tab: key } })
@@ -33,7 +35,7 @@ const goBack = () => {
           <button @click="goBack" class="flex items-center text-white">
             <ChevronLeft class="h-5 w-5" />
           </button>
-          <span class="text-white font-bold">账户记录</span>
+          <span class="text-white font-bold">{{ t('mine.setting.receipt-text') }}</span>
           <div class="w-5"></div>
         </div>
       </header>
@@ -59,20 +61,20 @@ const goBack = () => {
         <div class="p-2">
           <!-- 积分记录表头 -->
           <div v-if="currentTab === 'points'" class="grid grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_1fr] px-3 py-2 text-xs text-gray-500 border-b">
-            <div class="text-center">时间</div>
-            <div class="text-center">账变前</div>
-            <div class="text-center">账变</div>
-            <div class="text-center">账变后</div>
-            <div class="text-center">类名</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-time') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-before') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-change') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-after') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-type') }}</div>
           </div>
 
           <!-- 账户记录表头 -->
           <div v-else-if="currentTab === 'deposit'" class="grid grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_1fr] px-3 py-2 text-xs text-gray-500 border-b">
-            <div class="text-center">时间</div>
-            <div class="text-center">账变前</div>
-            <div class="text-center">账变</div>
-            <div class="text-center">账变后</div>
-            <div class="text-center">类名</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-time') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-before') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-change') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-after') }}</div>
+            <div class="text-center">{{ t('mine.receipt-text.header-type') }}</div>
           </div>
 
           <PointsPage v-if="currentTab === 'points'" />

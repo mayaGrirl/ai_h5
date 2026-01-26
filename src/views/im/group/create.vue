@@ -4,6 +4,7 @@
  */
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Camera, Check, Search } from 'lucide-vue-next'
 import { toast } from '@/composables/useToast'
 import { createGroup } from '@/api/group'
@@ -12,6 +13,7 @@ import { useFriendStore } from '@/stores/friend'
 
 const router = useRouter()
 const friendStore = useFriendStore()
+const { t } = useI18n()
 
 const groupName = ref('')
 const description = ref('')
@@ -36,13 +38,13 @@ async function handleAvatarChange(event: Event) {
 
   // 验证文件类型
   if (!file.type.startsWith('image/')) {
-    toast.error('请选择图片文件')
+    toast.error(t('im.group_create.select_image'))
     return
   }
 
   // 验证文件大小 (最大 5MB)
   if (file.size > 5 * 1024 * 1024) {
-    toast.error('图片大小不能超过5MB')
+    toast.error(t('im.group_create.image_size_limit'))
     return
   }
 
@@ -59,13 +61,13 @@ async function handleAvatarChange(event: Event) {
     const res = await uploadFile(file)
     if (res.code === 200) {
       avatar.value = res.data.file_url
-      toast.success('头像上传成功')
+      toast.success(t('im.group_create.avatar_upload_success'))
     } else {
-      toast.error(res.message || '上传失败')
+      toast.error(res.message || t('im.ui.upload_failed'))
       avatarPreview.value = ''
     }
   } catch (error) {
-    toast.error('上传失败')
+    toast.error(t('im.ui.upload_failed'))
     avatarPreview.value = ''
   } finally {
     isUploadingAvatar.value = false
@@ -108,12 +110,12 @@ function isSelected(memberId: string | number): boolean {
 // 创建群
 async function handleCreate() {
   if (!groupName.value.trim()) {
-    toast.warning('请输入群名称')
+    toast.warning(t('im.group_create.enter_group_name'))
     return
   }
 
   if (groupName.value.length > 50) {
-    toast.warning('群名称不能超过50个字符')
+    toast.warning(t('im.group_create.group_name_limit'))
     return
   }
 
@@ -128,14 +130,14 @@ async function handleCreate() {
     })
 
     if (res.code === 200) {
-      toast.success('创建成功')
+      toast.success(t('im.group_create.create_success'))
       // 跳转到群聊页面
       router.replace(`/im/chat/${res.data.conversation_id}`)
     } else {
-      toast.error(res.message || '创建失败')
+      toast.error(res.message || t('im.group_create.create_failed'))
     }
   } catch (error) {
-    toast.error('创建失败')
+    toast.error(t('im.group_create.create_failed'))
   } finally {
     isSubmitting.value = false
   }
@@ -154,7 +156,7 @@ function goBack() {
       <button class="back-btn" @click="goBack">
         <ArrowLeft :size="24" />
       </button>
-      <h1 class="title">创建群聊</h1>
+      <h1 class="title">{{ t('im.group_create.title') }}</h1>
       <button
         class="submit-btn"
         :disabled="!groupName.trim() || isSubmitting"
@@ -183,24 +185,24 @@ function goBack() {
         <div v-else class="avatar-placeholder">
           <Camera :size="32" color="#999" />
         </div>
-        <span class="avatar-tip">{{ avatarPreview ? '更换头像' : '设置群头像' }}</span>
+        <span class="avatar-tip">{{ avatarPreview ? t('im.group_create.change_avatar') : t('im.group_create.set_avatar') }}</span>
       </div>
 
       <div class="form-item">
-        <label>群名称</label>
+        <label>{{ t('im.group_create.group_name') }}</label>
         <input
           v-model="groupName"
           type="text"
-          placeholder="请输入群名称"
+          :placeholder="t('im.group_create.group_name_placeholder')"
           maxlength="50"
         />
       </div>
 
       <div class="form-item">
-        <label>群介绍（选填）</label>
+        <label>{{ t('im.group_create.group_description') }}</label>
         <textarea
           v-model="description"
-          placeholder="请输入群介绍"
+          :placeholder="t('im.group_create.group_description_placeholder')"
           rows="3"
           maxlength="200"
         ></textarea>
@@ -210,8 +212,8 @@ function goBack() {
     <!-- 选择成员 -->
     <div class="member-section">
       <div class="section-header">
-        <span class="section-title">选择群成员</span>
-        <span class="selected-count">已选 {{ selectedMembers.length }} 人</span>
+        <span class="section-title">{{ t('im.group_create.select_members') }}</span>
+        <span class="selected-count">{{ t('im.group_create.selected_count', { count: selectedMembers.length }) }}</span>
       </div>
 
       <div class="search-box">
@@ -219,7 +221,7 @@ function goBack() {
         <input
           v-model="searchKeyword"
           type="text"
-          placeholder="搜索好友"
+          :placeholder="t('im.group_create.search_friends')"
         />
       </div>
 
@@ -242,7 +244,7 @@ function goBack() {
         </div>
 
         <div v-if="friends.length === 0" class="empty-tip">
-          暂无好友
+          {{ t('im.group_create.no_friends') }}
         </div>
       </div>
     </div>

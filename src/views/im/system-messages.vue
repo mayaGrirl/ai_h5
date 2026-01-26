@@ -2,8 +2,9 @@
 /**
  * 系统消息列表页面
  */
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useFriendStore } from '@/stores/friend'
 import {
   ArrowLeft,
@@ -23,6 +24,7 @@ import { formatConversationTime } from '@/utils/time'
 
 const router = useRouter()
 const friendStore = useFriendStore()
+const { t } = useI18n()
 
 const activeFilter = ref<string | undefined>(undefined)
 
@@ -50,14 +52,14 @@ function getIconConfig(type: string) {
 }
 
 // 过滤选项
-const filterOptions = [
-  { value: undefined, label: '全部' },
-  { value: 'winning', label: '中奖' },
-  { value: 'recharge', label: '充值' },
-  { value: 'withdraw', label: '提现' },
-  { value: 'announcement', label: '公告' },
-  { value: 'activity', label: '活动' },
-]
+const filterOptions = computed(() => [
+  { value: undefined, label: t('im.system_messages.filter.all') },
+  { value: 'winning', label: t('im.system_messages.filter.winning') },
+  { value: 'recharge', label: t('im.system_messages.filter.recharge') },
+  { value: 'withdraw', label: t('im.system_messages.filter.withdraw') },
+  { value: 'announcement', label: t('im.system_messages.filter.announcement') },
+  { value: 'activity', label: t('im.system_messages.filter.activity') },
+])
 
 // 格式化时间
 function formatTime(dateStr: string): string {
@@ -116,13 +118,13 @@ onMounted(async () => {
       <button @click="goBack" class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100">
         <ArrowLeft class="h-5 w-5 text-gray-600" />
       </button>
-      <h1 class="text-base font-medium text-gray-900">系统消息</h1>
+      <h1 class="text-base font-medium text-gray-900">{{ t('im.system_messages.title') }}</h1>
       <button
         v-if="friendStore.systemMessageUnread > 0"
         @click="markAllAsRead"
         class="text-sm text-blue-500"
       >
-        全部已读
+        {{ t('im.system_messages.mark_all_read') }}
       </button>
       <div v-else class="w-14"></div>
     </header>
@@ -154,7 +156,7 @@ onMounted(async () => {
       <!-- 空状态 -->
       <div v-else-if="friendStore.systemMessages.length === 0" class="flex flex-col items-center justify-center py-16">
         <Bell class="h-16 w-16 text-gray-300" />
-        <p class="mt-4 text-sm text-gray-400">暂无系统消息</p>
+        <p class="mt-4 text-sm text-gray-400">{{ t('im.system_messages.empty') }}</p>
       </div>
 
       <!-- 消息列表 -->

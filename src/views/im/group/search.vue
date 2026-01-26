@@ -4,12 +4,14 @@
  */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Search, Users } from 'lucide-vue-next'
 import { toast } from '@/composables/useToast'
 import { searchGroups, applyToJoin } from '@/api/group'
 import type { GroupSearchResult } from '@/types/group.type'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const keyword = ref('')
 const groups = ref<GroupSearchResult[]>([])
@@ -20,7 +22,7 @@ const page = ref(1)
 // 搜索群
 async function handleSearch() {
   if (!keyword.value.trim()) {
-    toast.warning('请输入群号或群名')
+    toast.warning(t('im.group_search.enter_keyword'))
     return
   }
 
@@ -49,10 +51,10 @@ async function loadGroups() {
       hasMore.value = res.data.list.length >= res.data.pagination.size
       page.value++
     } else {
-      toast.error(res.message || '搜索失败')
+      toast.error(res.message || t('im.group_search.search_failed'))
     }
   } catch (error) {
-    toast.error('搜索失败')
+    toast.error(t('im.group_search.search_failed'))
   } finally {
     isLoading.value = false
   }
@@ -80,17 +82,17 @@ async function handleJoin(group: GroupSearchResult) {
 
     if (res.code === 200) {
       if (res.data.type === 'joined') {
-        toast.success('已加入群聊')
+        toast.success(t('im.group_search.joined_group'))
         // 跳转到群聊页面
         router.push(`/im/chat/${res.data.conversation_id}`)
       } else {
         toast.success(res.data.message)
       }
     } else {
-      toast.error(res.message || '申请失败')
+      toast.error(res.message || t('im.group_search.apply_failed'))
     }
   } catch (error) {
-    toast.error('申请失败')
+    toast.error(t('im.group_search.apply_failed'))
   } finally {
     isJoining.value = false
   }
@@ -114,12 +116,12 @@ function goBack() {
         <input
           v-model="keyword"
           type="text"
-          placeholder="输入群号或群名搜索"
+          :placeholder="t('im.group_search.placeholder')"
           @keyup.enter="handleSearch"
         />
       </div>
       <button class="search-btn" @click="handleSearch">
-        搜索
+        {{ t('im.group_search.search') }}
       </button>
     </div>
 
@@ -139,7 +141,7 @@ function goBack() {
         <div class="group-info">
           <div class="group-name">{{ group.name }}</div>
           <div class="group-meta">
-            <span class="group-number">群号: {{ group.group_number }}</span>
+            <span class="group-number">{{ t('im.group_search.group_number') }}: {{ group.group_number }}</span>
             <span class="member-count">
               <Users :size="12" />
               {{ group.member_count }}
@@ -154,16 +156,16 @@ function goBack() {
           :class="{ 'is-member': group.is_member }"
           @click.stop="handleGroupClick(group)"
         >
-          {{ group.is_member ? '进入' : (group.join_mode === 2 ? '加入' : '申请') }}
+          {{ group.is_member ? t('im.group_search.enter') : (group.join_mode === 2 ? t('im.group_search.join') : t('im.group_search.apply')) }}
         </button>
       </div>
 
       <div v-if="groups.length === 0 && !isLoading" class="empty-tip">
-        {{ keyword ? '暂无搜索结果' : '输入群号或群名搜索' }}
+        {{ keyword ? t('im.group_search.no_result') : t('im.group_search.enter_to_search') }}
       </div>
 
       <div v-if="isLoading" class="loading-tip">
-        加载中...
+        {{ t('im.ui.loading') }}
       </div>
     </div>
   </div>

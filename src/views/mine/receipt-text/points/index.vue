@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { pointsRecords } from '@/api/customer'
 import { toast } from '@/composables/useToast'
 import type { PointsRecordField } from '@/types/customer.type'
+
+const { t } = useI18n()
 
 const list = ref<PointsRecordField[]>([])
 const page = ref(1)
@@ -33,7 +36,7 @@ const fetchData = async (pageNo: number) => {
       toast.error(message)
     }
   } catch (error) {
-    toast.error('获取数据失败')
+    toast.error(t('common.catch-error'))
   } finally {
     loading.value = false
   }
@@ -92,10 +95,10 @@ onUnmounted(() => {
 
   <!-- 底部哨兵 -->
   <div v-if="hasMore" ref="loadMoreRef" class="py-4 text-center text-xs text-gray-400">
-    {{ loading ? '加载中...' : '上拉加载更多' }}
+    {{ loading ? t('common.loading') : t('common.loading-hit') }}
   </div>
 
   <div v-if="!hasMore" class="py-4 text-center text-xs text-gray-400">
-    没有更多数据了
+    {{ t('common.loading-list-empty') }}
   </div>
 </template>
