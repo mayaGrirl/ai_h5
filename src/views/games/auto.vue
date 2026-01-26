@@ -165,9 +165,11 @@ const handleSubmit = async (status: number) => {
     } else {
       toast.error(res.message || t('games.auto.operation-failed'))
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('操作失败', error)
-    toast.error(t('games.auto.operation-failed-retry'))
+    const axiosError = error as { response?: { data?: { message?: string } } }
+    const errorMessage = axiosError?.response?.data?.message
+    toast.error(errorMessage || t('games.auto.operation-failed-retry'))
   } finally {
     isSubmitting.value = false
   }

@@ -1,1 +1,0 @@
-import{h as t}from"./index-CL3zLPQY.js";const r=p=>t.get(`/api/app/v1/block/identifier/${p}`,{}),a=()=>t.get("/api/app/v1/password/tip",{}),i=()=>t.get("/api/app/v1/r-key",{});export{a,r as g,i as h};

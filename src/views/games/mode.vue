@@ -88,8 +88,10 @@ const handleDelete = async () => {
     } else {
       toast.error(res.message || t('games.mode.delete-failed'))
     }
-  } catch (error) {
-    toast.error(t('games.mode.delete-failed-retry'))
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { data?: { message?: string } } }
+    const errorMessage = axiosError?.response?.data?.message
+    toast.error(errorMessage || t('games.mode.delete-failed-retry'))
   } finally {
     showDeleteConfirm.value = false
     deletingMode.value = null

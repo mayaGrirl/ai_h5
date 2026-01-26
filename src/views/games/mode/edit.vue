@@ -607,9 +607,11 @@ const handleSubmit = async () => {
     } else {
       toast.error(res.message || t('games.mode.save-failed'))
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('保存模式失败：', error)
-    toast.error(t('games.mode.save-failed-retry'))
+    const axiosError = error as { response?: { data?: { message?: string } } }
+    const errorMessage = axiosError?.response?.data?.message
+    toast.error(errorMessage || t('games.mode.save-failed-retry'))
   } finally {
     isSubmitting.value = false
   }

@@ -1102,9 +1102,11 @@ const handleSubmit = async () => {
     } else if (res.code !== 3001) {
       toast.error(res.message || t('games.play.bet-failed-retry'))
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('投注失败：', error)
-    toast.error(t('games.play.bet-failed-retry'))
+    const axiosError = error as { response?: { data?: { message?: string } } }
+    const errorMessage = axiosError?.response?.data?.message
+    toast.error(errorMessage || t('games.play.bet-failed-retry'))
   }
 }
 
