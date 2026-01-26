@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+/*import { useI18n } from 'vue-i18n'*/
 import { useAuthStore } from '@/stores/auth'
-import { Globe, Bell } from 'lucide-vue-next'
-import { LOCALES, type Locale } from '@/i18n'
+import {/* Globe,*/ Bell } from 'lucide-vue-next'
+/*import { LOCALES, type Locale } from '@/i18n'*/
 
 const router = useRouter()
-const { locale: currentLocale } = useI18n()
+/*const { locale: currentLocale } = useI18n()*/
 const authStore = useAuthStore()
 
 // 语言名称映射
-const localeNames: Record<Locale, string> = {
+/*const localeNames: Record<Locale, string> = {
   zh: '中文',
   en: 'EN',
   fr: 'FR'
-}
+}*/
 
 // 切换语言
-const switchLanguage = () => {
+/*const switchLanguage = () => {
   const currentIndex = LOCALES.indexOf(currentLocale.value as Locale)
   const nextIndex = (currentIndex + 1) % LOCALES.length
   const nextLocale = LOCALES[nextIndex]
 
   // 更新 i18n locale
   currentLocale.value = nextLocale
-}
+}*/
 
 // 跳转消息页
 const goToMessages = () => {
@@ -47,13 +47,13 @@ const goToMessages = () => {
     <!-- 右侧操作 -->
     <div class="flex items-center gap-3">
       <!-- 语言切换 -->
-      <button
+<!--      <button
         @click="switchLanguage"
         class="flex items-center gap-1 rounded-full bg-white/20 px-2 py-1 text-xs text-white"
       >
         <Globe class="h-3.5 w-3.5" />
         <span>{{ localeNames[currentLocale as Locale] }}</span>
-      </button>
+      </button>-->
 
       <!-- 消息 -->
       <button @click="goToMessages" class="relative text-white">
