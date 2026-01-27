@@ -870,6 +870,7 @@ const handleQuickSelect = (type: string) => {
   playAmounts.value = newAmounts
   selectedPlays.value = newSelected
   activeQuick.value = newActiveQuick
+  selectedMultiplier.value = null
 }
 
 // 倍数投注
